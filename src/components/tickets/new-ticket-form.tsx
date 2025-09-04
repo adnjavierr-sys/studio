@@ -23,13 +23,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wand2, Loader2 } from "lucide-react";
+import { Wand2, Loader2, Mail } from "lucide-react";
 import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { clients } from "@/lib/data";
 
 const ticketSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres."),
   client: z.string().min(1, "El cliente es obligatorio."),
+  clientEmail: z.string().email().optional(),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
   category: z.enum(["Support", "Hosting", "Oportuno", "Other"]),
   sla: z.enum(["Normal", "Alta", "Baja"]),
@@ -47,11 +49,21 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     defaultValues: {
       title: "",
       client: "",
+      clientEmail: "",
       description: "",
       category: "Support",
       sla: "Normal",
     },
   });
+
+  const handleClientChange = (clientName: string) => {
+    const selectedClient = clients.find(c => c.name === clientName);
+    if (selectedClient) {
+      form.setValue("client", selectedClient.name);
+      form.setValue("clientEmail", selectedClient.email);
+    }
+  };
+
 
   const onSubmit = async (data: TicketFormValues) => {
     setIsSubmitting(true);
@@ -103,19 +115,49 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="client"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cliente</FormLabel>
-              <FormControl>
-                <Input placeholder="ej., Acme Inc." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="client"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cliente</FormLabel>
+                <Select
+                  onValueChange={handleClientChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un cliente" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {clients.map(client => (
+                      <SelectItem key={client.id} value={client.name}>{client.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="clientEmail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email del Cliente</FormLabel>
+                <FormControl>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="email@cliente.com" {...field} readOnly className="pl-9 bg-slate-50" />
+                    </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="description"
