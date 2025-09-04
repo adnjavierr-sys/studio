@@ -52,6 +52,7 @@ export default function AgentsPage() {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
+      password: formData.get('password') as string,
       createdAt: new Date(),
     };
     setAgentList([newAgent, ...agentList]);
@@ -151,6 +152,10 @@ export default function AgentsPage() {
             <div>
               <Label htmlFor="add-email">Email</Label>
               <Input id="add-email" name="email" type="email" placeholder="jane.doe@example.com" required />
+            </div>
+            <div>
+              <Label htmlFor="add-password">Contraseña</Label>
+              <Input id="add-password" name="password" type="password" required />
             </div>
             <div>
               <Label htmlFor="add-role">Rol</Label>

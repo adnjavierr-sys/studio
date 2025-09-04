@@ -28,6 +28,7 @@ export type Agent = {
   name: string;
   email: string;
   role: 'Admin' | 'Support Level 1' | 'Support Level 2';
+  password?: string;
   createdAt: Date;
 };
 
@@ -68,9 +69,9 @@ export const policies: Policy[] = [
 ];
 
 export const agents: Agent[] = [
-    { id: 'AGT-001', name: 'Admin User', email: 'admin@unoti.com', role: 'Admin', createdAt: new Date('2022-01-01T09:00:00Z') },
-    { id: 'AGT-002', name: 'Jane Smith', email: 'jane.smith@unoti.com', role: 'Support Level 2', createdAt: new Date('2022-02-10T10:00:00Z') },
-    { id: 'AGT-003', name: 'Peter Jones', email: 'peter.jones@unoti.com', role: 'Support Level 1', createdAt: new Date('2022-03-15T11:00:00Z') },
+    { id: 'AGT-001', name: 'Admin User', email: 'admin@unoti.com', role: 'Admin', createdAt: new Date('2022-01-01T09:00:00Z'), password: 'password123' },
+    { id: 'AGT-002', name: 'Jane Smith', email: 'jane.smith@unoti.com', role: 'Support Level 2', createdAt: new Date('2022-02-10T10:00:00Z'), password: 'password123' },
+    { id: 'AGT-003', name: 'Peter Jones', email: 'peter.jones@unoti.com', role: 'Support Level 1', createdAt: new Date('2022-03-15T11:00:00Z'), password: 'password123' },
 ];
 
 export const dashboardStats = {
