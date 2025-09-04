@@ -22,6 +22,14 @@ export type Policy = {
   createdAt: Date;
 };
 
+export type Agent = {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Admin' | 'Support Level 1' | 'Support Level 2';
+  createdAt: Date;
+};
+
 export const tickets: Ticket[] = [
   { id: 'TKT-001', title: 'Website is down', client: 'Acme Inc.', category: 'Urgent', status: 'Open', createdAt: new Date('2023-10-26T10:00:00Z') },
   { id: 'TKT-002', title: 'Email not working', client: 'Stark Industries', category: 'Support', status: 'In Progress', createdAt: new Date('2023-10-26T11:30:00Z') },
@@ -46,6 +54,12 @@ export const policies: Policy[] = [
     { id: 'POL-002', title: 'Acceptable Use Policy (AUP)', description: 'A set of rules applied by the owner, creator or administrator of a network, website, or service.', createdAt: new Date('2022-01-02T10:00:00Z') },
     { id: 'POL-003', title: 'Privacy Policy', description: 'A statement or legal document that discloses some or all of the ways a party gathers, uses, discloses, and manages a customer or client\'s data.', createdAt: new Date('2022-01-03T11:00:00Z') },
     { id: 'POL-004', title: 'Data Retention Policy', description: 'A company’s established protocol for retaining information for operational or regulatory compliance needs.', createdAt: new Date('2022-01-04T12:00:00Z') },
+];
+
+export const agents: Agent[] = [
+    { id: 'AGT-001', name: 'Admin User', email: 'admin@unoti.com', role: 'Admin', createdAt: new Date('2022-01-01T09:00:00Z') },
+    { id: 'AGT-002', name: 'Jane Smith', email: 'jane.smith@unoti.com', role: 'Support Level 2', createdAt: new Date('2022-02-10T10:00:00Z') },
+    { id: 'AGT-003', name: 'Peter Jones', email: 'peter.jones@unoti.com', role: 'Support Level 1', createdAt: new Date('2022-03-15T11:00:00Z') },
 ];
 
 export const dashboardStats = {

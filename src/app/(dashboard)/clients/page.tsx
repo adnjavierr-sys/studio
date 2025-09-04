@@ -22,15 +22,81 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClientsPage() {
   const [clientList, setClientList] = useState<Client[]>(clients);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleRowClick = (clientId: string) => {
     router.push(`/clients/${clientId}`);
   };
+
+  const openDeleteDialog = (client: Client) => {
+    setSelectedClient(client);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteClient = () => {
+    if (selectedClient) {
+      setClientList(clientList.filter((c) => c.id !== selectedClient.id));
+      toast({
+        title: "Cliente eliminado",
+        description: `El cliente ${selectedClient.name} ha sido eliminado.`,
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedClient(null);
+    }
+  };
   
+  const openEditModal = (client: Client) => {
+    setSelectedClient(client);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateClient = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedClient) {
+      const formData = new FormData(event.currentTarget);
+      const updatedClient = {
+        ...selectedClient,
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        company: formData.get('company') as string,
+      };
+      setClientList(clientList.map(c => c.id === updatedClient.id ? updatedClient : c));
+      toast({
+        title: "Cliente actualizado",
+        description: `Los datos de ${updatedClient.name} han sido actualizados.`
+      });
+      setIsEditModalOpen(false);
+      setSelectedClient(null);
+    }
+  };
+
   return (
     <>
       <PageHeader
@@ -79,10 +145,13 @@ export default function ClientsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModal(client); }}>
                             <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={(e) => { e.stopPropagation(); openDeleteDialog(client); }}
+                          >
                             <Trash2 className="mr-2" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -102,6 +171,54 @@ export default function ClientsPage() {
           </Table>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente al cliente
+              <span className="font-semibold"> {selectedClient?.name}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteClient}>Eliminar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Client Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Cliente</DialogTitle>
+            <DialogDescription>
+              Actualiza la información del cliente.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedClient && (
+            <form onSubmit={handleUpdateClient} className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="name">Nombre</Label>
+                <Input id="name" name="name" defaultValue={selectedClient.name} />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" defaultValue={selectedClient.email} />
+              </div>
+              <div>
+                <Label htmlFor="company">Compañía</Label>
+                <Input id="company" name="company" defaultValue={selectedClient.company} />
+              </div>
+              <div className="flex justify-end pt-4">
+                <Button type="submit">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart, FileText, LayoutDashboard, Ticket, Users, Shield, PanelLeft, Settings } from 'lucide-react';
+import { BarChart, Contact, LayoutDashboard, Ticket, Users, Shield, PanelLeft, Settings } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -21,6 +21,7 @@ const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Panel' },
   { href: '/tickets', icon: Ticket, label: 'Tickets' },
   { href: '/clients', icon: Users, label: 'Clientes' },
+  { href: '/agents', icon: Contact, label: 'Agentes' },
   { href: '/reports', icon: BarChart, label: 'Reportes' },
   { href: '/policies', icon: Shield, label: 'Políticas' },
 ];
@@ -43,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   tooltip={{
                     children: item.label,
                     className: 'bg-primary text-primary-foreground',
