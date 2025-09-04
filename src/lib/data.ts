@@ -116,12 +116,35 @@ export const clients: Client[] = new Proxy(clientsData, {
   }
 });
 
-export const policies: Policy[] = [
+let policiesData: Policy[] = [
     { id: 'POL-001', title: 'Service Level Agreement (SLA)', type: 'Anual', description: 'Defines the level of service you expect from a vendor, laying out the metrics by which service is measured.', createdAt: new Date('2022-01-01T09:00:00Z') },
     { id: 'POL-002', title: 'Acceptable Use Policy (AUP)', type: 'Anual', description: 'A set of rules applied by the owner, creator or administrator of a network, website, or service.', createdAt: new Date('2022-01-02T10:00:00Z') },
     { id: 'POL-003', title: 'Privacy Policy', type: 'Ilimitada', description: 'A statement or legal document that discloses some or all of the ways a party gathers, uses, discloses, and manages a customer or client\'s data.', createdAt: new Date('2022-01-03T11:00:00Z') },
     { id: 'POL-004', title: 'Data Retention Policy', type: 'Ilimitada', description: 'A company’s established protocol for retaining information for operational or regulatory compliance needs.', createdAt: new Date('2022-01-04T12:00:00Z') },
 ];
+
+export const policies: Policy[] = new Proxy(policiesData, {
+    get(target, prop) {
+        if (prop === 'unshift') {
+            return (newPolicy: Policy) => {
+                target.unshift(newPolicy);
+                return target.length;
+            }
+        }
+        if (prop === 'splice') {
+            return (start: number, deleteCount?: number, ...items: Policy[]) => {
+                const result = target.splice(start, deleteCount, ...items);
+                return result;
+            }
+        }
+        return target[prop as any];
+    },
+    set(target, prop, value) {
+        (target as any)[prop] = value;
+        return true;
+    }
+});
+
 
 let agentsData: Agent[] = [
     { id: 'AGT-001', name: 'Admin User', email: 'admin@unoti.com', role: 'Admin', createdAt: new Date('2022-01-01T09:00:00Z'), password: 'password123' },

@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
-import { policies, Policy } from "@/lib/data";
+import { policies as initialPolicies, Policy } from "@/lib/data";
 import {
   Card,
   CardContent,
@@ -27,6 +27,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,8 +57,11 @@ const typeColors: { [key: string]: string } = {
 };
 
 export default function PoliciesPage() {
-  const [policyList, setPolicyList] = useState<Policy[]>(policies);
+  const [policyList, setPolicyList] = useState<Policy[]>(initialPolicies);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
 
   const handleAddPolicy = (event: React.FormEvent<HTMLFormElement>) => {
@@ -61,12 +74,61 @@ export default function PoliciesPage() {
       type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
       createdAt: new Date(),
     };
-    setPolicyList([newPolicy, ...policyList]);
+    initialPolicies.unshift(newPolicy);
+    setPolicyList([...initialPolicies]);
     toast({
       title: "Póliza añadida",
       description: `La póliza "${newPolicy.title}" ha sido añadida.`,
     });
     setIsAddModalOpen(false);
+  };
+
+  const openEditModal = (policy: Policy) => {
+    setSelectedPolicy(policy);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdatePolicy = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedPolicy) {
+      const formData = new FormData(event.currentTarget);
+      const updatedPolicy = {
+        ...selectedPolicy,
+        title: formData.get('title') as string,
+        description: formData.get('description') as string,
+        type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
+      };
+      const newPolicyList = policyList.map(p => p.id === updatedPolicy.id ? updatedPolicy : p);
+      setPolicyList(newPolicyList);
+      initialPolicies.splice(initialPolicies.findIndex(p => p.id === updatedPolicy.id), 1, updatedPolicy);
+      toast({
+        title: "Póliza actualizada",
+        description: `La póliza "${updatedPolicy.title}" ha sido actualizada.`
+      });
+      setIsEditModalOpen(false);
+      setSelectedPolicy(null);
+    }
+  };
+  
+  const openDeleteDialog = (policy: Policy) => {
+    setSelectedPolicy(policy);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeletePolicy = () => {
+    if (selectedPolicy) {
+      const indexToDelete = initialPolicies.findIndex(p => p.id === selectedPolicy.id);
+      if (indexToDelete > -1) {
+        initialPolicies.splice(indexToDelete, 1);
+      }
+      setPolicyList([...initialPolicies]);
+      toast({
+        title: "Póliza eliminada",
+        description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedPolicy(null);
+    }
   };
 
   return (
@@ -97,10 +159,10 @@ export default function PoliciesPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => openEditModal(policy)}>
                     <Pencil className="mr-2" /> Modificar
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive">
+                  <DropdownMenuItem className="text-destructive" onClick={() => openDeleteDialog(policy)}>
                     <Trash2 className="mr-2" /> Eliminar
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -155,6 +217,63 @@ export default function PoliciesPage() {
           </form>
         </DialogContent>
       </Dialog>
+      
+      {/* Edit Policy Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Póliza</DialogTitle>
+            <DialogDescription>
+              Actualiza la información de la póliza.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedPolicy && (
+            <form onSubmit={handleUpdatePolicy} className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="edit-title">Título</Label>
+                <Input id="edit-title" name="title" defaultValue={selectedPolicy.title} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-type">Tipo de Póliza</Label>
+                <Select name="type" required defaultValue={selectedPolicy.type}>
+                  <SelectTrigger id="edit-type">
+                    <SelectValue placeholder="Selecciona un tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Mensual">Mensual</SelectItem>
+                    <SelectItem value="Anual">Anual</SelectItem>
+                    <SelectItem value="Ilimitada">Ilimitada</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-description">Descripción</Label>
+                <Textarea id="edit-description" name="description" defaultValue={selectedPolicy.description} required rows={5} />
+              </div>
+              <div className="flex justify-end pt-4">
+                <Button type="submit">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente la póliza
+              <span className="font-semibold"> {selectedPolicy?.title}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeletePolicy}>Eliminar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
