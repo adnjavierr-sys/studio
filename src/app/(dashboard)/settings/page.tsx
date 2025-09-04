@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Separator } from "@/components/ui/separator";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -29,9 +31,21 @@ export default function SettingsPage() {
     <>
       <PageHeader
         title="Configuración"
-        description="Administra la configuración de tu aplicación."
+        description="Administra la configuración y apariencia de tu aplicación."
       />
-      <div className="p-6 pt-0">
+      <div className="p-6 pt-0 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Personalización de Tema</CardTitle>
+            <CardDescription>
+              Elige un tema para personalizar la apariencia de la aplicación.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ThemeSwitcher />
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Correo Saliente (SMTP)</CardTitle>
