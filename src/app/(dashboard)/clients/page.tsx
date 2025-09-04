@@ -38,6 +38,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +49,7 @@ export default function ClientsPage() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -97,13 +99,32 @@ export default function ClientsPage() {
     }
   };
 
+  const handleAddClient = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newClient: Client = {
+      id: `CLI-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      company: formData.get('company') as string,
+      createdAt: new Date(),
+    };
+    setClientList([newClient, ...clientList]);
+    toast({
+      title: "Cliente añadido",
+      description: `El cliente ${newClient.name} ha sido añadido.`,
+    });
+    setIsAddModalOpen(false);
+  };
+
+
   return (
     <>
       <PageHeader
         title="Clientes"
         description="Administra los perfiles e información de tus clientes."
       >
-        <Button>
+        <Button onClick={() => setIsAddModalOpen(true)}>
           <PlusCircle />
           Añadir Cliente
         </Button>
@@ -217,6 +238,35 @@ export default function ClientsPage() {
               </div>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add Client Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Añadir Nuevo Cliente</DialogTitle>
+            <DialogDescription>
+              Completa la información del nuevo cliente.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddClient} className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="add-name">Nombre</Label>
+              <Input id="add-name" name="name" placeholder="John Doe" required />
+            </div>
+            <div>
+              <Label htmlFor="add-email">Email</Label>
+              <Input id="add-email" name="email" type="email" placeholder="john.doe@example.com" required />
+            </div>
+            <div>
+              <Label htmlFor="add-company">Compañía</Label>
+              <Input id="add-company" name="company" placeholder="Acme Inc." required />
+            </div>
+            <div className="flex justify-end pt-4">
+              <Button type="submit">Añadir Cliente</Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </>
