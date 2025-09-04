@@ -34,11 +34,22 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
+  const [recipientEmail, setRecipientEmail] = useState("");
   const { toast } = useToast();
+  
+  const handleClientChange = (clientName: string) => {
+    const client = clients.find(c => c.name === clientName);
+    if (client) {
+      setRecipientEmail(client.email);
+    } else {
+      setRecipientEmail("");
+    }
+  };
 
   const handleAddAutomation = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
     const newAutomation: ReportAutomation = {
       id: `AUT-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
       clientName: formData.get("client") as string,
@@ -51,11 +62,11 @@ export default function ReportsPage() {
       title: "Automatización Creada",
       description: `Se enviarán reportes para ${newAutomation.clientName} con frecuencia ${newAutomation.frequency.toLowerCase()}.`,
     });
-    (event.currentTarget as HTMLFormElement).reset();
+    form.reset();
+    setRecipientEmail("");
   };
 
   const handleDeleteAutomation = (id: string) => {
-    // This is a workaround to make deletion work with the Proxy in data.ts
     const indexToDelete = initialAutomations.findIndex(a => a.id === id);
     if (indexToDelete > -1) {
       initialAutomations.splice(indexToDelete, 1);
@@ -120,7 +131,7 @@ export default function ReportsPage() {
             <form onSubmit={handleAddAutomation} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="client">Cliente</Label>
-                <Select name="client" required>
+                <Select name="client" required onValueChange={handleClientChange}>
                   <SelectTrigger id="client">
                     <SelectValue placeholder="Selecciona un cliente" />
                   </SelectTrigger>
@@ -146,7 +157,15 @@ export default function ReportsPage() {
               </div>
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="email">Email del Destinatario</Label>
-                <Input type="email" id="email" name="email" placeholder="cliente@ejemplo.com" required />
+                <Input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  placeholder="cliente@ejemplo.com" 
+                  required 
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                />
               </div>
               <Button type="submit" className="w-full md:w-auto">
                 <PlusCircle className="mr-2" />
