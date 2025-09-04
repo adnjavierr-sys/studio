@@ -29,6 +29,7 @@ export type Policy = {
   title: string;
   description: string;
   type: 'Mensual' | 'Anual' | 'Ilimitada';
+  clientName: string;
   createdAt: Date;
 };
 
@@ -117,10 +118,10 @@ export const clients: Client[] = new Proxy(clientsData, {
 });
 
 let policiesData: Policy[] = [
-    { id: 'POL-001', title: 'Service Level Agreement (SLA)', type: 'Anual', description: 'Defines the level of service you expect from a vendor, laying out the metrics by which service is measured.', createdAt: new Date('2022-01-01T09:00:00Z') },
-    { id: 'POL-002', title: 'Acceptable Use Policy (AUP)', type: 'Anual', description: 'A set of rules applied by the owner, creator or administrator of a network, website, or service.', createdAt: new Date('2022-01-02T10:00:00Z') },
-    { id: 'POL-003', title: 'Privacy Policy', type: 'Ilimitada', description: 'A statement or legal document that discloses some or all of the ways a party gathers, uses, discloses, and manages a customer or client\'s data.', createdAt: new Date('2022-01-03T11:00:00Z') },
-    { id: 'POL-004', title: 'Data Retention Policy', type: 'Ilimitada', description: 'A company’s established protocol for retaining information for operational or regulatory compliance needs.', createdAt: new Date('2022-01-04T12:00:00Z') },
+    { id: 'POL-001', title: 'Service Level Agreement (SLA)', type: 'Anual', clientName: 'Acme Inc.', description: 'Defines the level of service you expect from a vendor, laying out the metrics by which service is measured.', createdAt: new Date('2022-01-01T09:00:00Z') },
+    { id: 'POL-002', title: 'Acceptable Use Policy (AUP)', type: 'Anual', clientName: 'Stark Industries', description: 'A set of rules applied by the owner, creator or administrator of a network, website, or service.', createdAt: new Date('2022-01-02T10:00:00Z') },
+    { id: 'POL-003', title: 'Privacy Policy', type: 'Ilimitada', clientName: 'Wayne Enterprises', description: 'A statement or legal document that discloses some or all of the ways a party gathers, uses, discloses, and manages a customer or client\'s data.', createdAt: new Date('2022-01-03T11:00:00Z') },
+    { id: 'POL-004', title: 'Data Retention Policy', type: 'Ilimitada', clientName: 'Acme Inc.', description: 'A company’s established protocol for retaining information for operational or regulatory compliance needs.', createdAt: new Date('2022-01-04T12:00:00Z') },
 ];
 
 export const policies: Policy[] = new Proxy(policiesData, {

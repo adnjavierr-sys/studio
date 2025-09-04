@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
-import { policies as initialPolicies, Policy } from "@/lib/data";
+import { policies as initialPolicies, Policy, clients } from "@/lib/data";
 import {
   Card,
   CardContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, PlusCircle } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, PlusCircle, User } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -72,6 +72,7 @@ export default function PoliciesPage() {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
       type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
+      clientName: formData.get('clientName') as string,
       createdAt: new Date(),
     };
     initialPolicies.unshift(newPolicy);
@@ -97,6 +98,7 @@ export default function PoliciesPage() {
         title: formData.get('title') as string,
         description: formData.get('description') as string,
         type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
+        clientName: formData.get('clientName') as string,
       };
       const newPolicyList = policyList.map(p => p.id === updatedPolicy.id ? updatedPolicy : p);
       setPolicyList(newPolicyList);
@@ -171,6 +173,10 @@ export default function PoliciesPage() {
             <CardContent>
               <div className="flex justify-between items-center mb-4">
                 <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <User className="h-4 w-4" />
+                  <span>{policy.clientName}</span>
+                </div>
               </div>
               <p className="text-sm text-muted-foreground">
                 {policy.description}
@@ -193,6 +199,19 @@ export default function PoliciesPage() {
             <div>
               <Label htmlFor="add-title">Título</Label>
               <Input id="add-title" name="title" placeholder="Service Level Agreement (SLA)" required />
+            </div>
+            <div>
+              <Label htmlFor="add-clientName">Cliente</Label>
+              <Select name="clientName" required>
+                <SelectTrigger id="add-clientName">
+                  <SelectValue placeholder="Selecciona un cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map(client => (
+                    <SelectItem key={client.id} value={client.name}>{client.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="add-type">Tipo de Póliza</Label>
@@ -232,6 +251,19 @@ export default function PoliciesPage() {
               <div>
                 <Label htmlFor="edit-title">Título</Label>
                 <Input id="edit-title" name="title" defaultValue={selectedPolicy.title} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-clientName">Cliente</Label>
+                <Select name="clientName" required defaultValue={selectedPolicy.clientName}>
+                  <SelectTrigger id="edit-clientName">
+                    <SelectValue placeholder="Selecciona un cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map(client => (
+                      <SelectItem key={client.id} value={client.name}>{client.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="edit-type">Tipo de Póliza</Label>
