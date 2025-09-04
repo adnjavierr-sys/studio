@@ -9,7 +9,6 @@ import { Check } from "lucide-react";
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
   
-  // Get the current theme from localStorage or default to the first theme
   const [activeTheme, setActiveTheme] = useState(() => {
     if (typeof window === 'undefined') return themes[0];
     const savedThemeName = localStorage.getItem("app-theme");
@@ -23,9 +22,17 @@ export function ThemeSwitcher() {
   useEffect(() => {
     if (mounted) {
       const root = document.documentElement;
-      Object.entries(activeTheme.cssVars).forEach(([prop, value]) => {
-        root.style.setProperty(prop, value);
-      });
+      const themeCssVars = document.getElementById('theme-css-vars');
+      if (themeCssVars) {
+        themeCssVars.innerHTML = `
+          :root {
+            ${Object.entries(activeTheme.cssVars.light).map(([prop, value]) => `${prop}: ${value};`).join('\n')}
+          }
+          .dark {
+            ${Object.entries(activeTheme.cssVars.dark).map(([prop, value]) => `${prop}: ${value};`).join('\n')}
+          }
+        `;
+      }
       localStorage.setItem("app-theme", activeTheme.name);
     }
   }, [activeTheme, mounted]);
@@ -45,7 +52,7 @@ export function ThemeSwitcher() {
               activeTheme.name === theme.name ? "border-primary" : "border-transparent"
             )}
           >
-            <div className="flex items-center gap-2 rounded-md bg-slate-100 p-2">
+            <div className="flex items-center gap-2 rounded-md bg-muted p-2">
               <div className="h-6 w-6 rounded-full" style={{ backgroundColor: theme.colors.primary }} />
               <div className="h-6 w-6 rounded-full" style={{ backgroundColor: theme.colors.accent }} />
               <div className="h-6 w-6 rounded-full" style={{ backgroundColor: theme.colors.background }} />

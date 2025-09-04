@@ -14,10 +14,23 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+  }, []);
+  
+  const toggleDarkMode = (checked: boolean) => {
+    document.documentElement.classList.toggle('dark', checked);
+    setIsDarkMode(checked);
+    localStorage.setItem('theme-mode', checked ? 'dark' : 'light');
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,11 +51,26 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle>Personalización de Tema</CardTitle>
             <CardDescription>
-              Elige un tema para personalizar la apariencia de la aplicación.
+              Elige un tema para personalizar la apariencia de la aplicación y activa o desactiva el modo oscuro.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ThemeSwitcher />
+            <div className="space-y-6">
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="dark-mode-switch" className="text-base">Modo Oscuro</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Activa el modo oscuro para una experiencia visual con menos brillo.
+                  </p>
+                </div>
+                <Switch
+                  id="dark-mode-switch"
+                  checked={isDarkMode}
+                  onCheckedChange={toggleDarkMode}
+                />
+              </div>
+              <ThemeSwitcher />
+            </div>
           </CardContent>
         </Card>
 
