@@ -7,7 +7,7 @@ import { tickets, Ticket } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History, ShieldAlert, ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,6 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { es } from 'date-fns/locale';
 import { Label } from '@/components/ui/label';
+import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
@@ -179,6 +185,32 @@ export default function TicketDetailsPage() {
                  <h3 className="text-lg font-semibold mb-2">Descripción</h3>
                  <p className="text-muted-foreground bg-slate-50 p-4 rounded-md border">{ticket.title}</p>
               </div>
+               {ticket.imageUrl && (
+                <div className="pt-4">
+                    <h3 className="text-lg font-semibold mb-2 flex items-center"><ImageIcon className="mr-2" /> Imagen Adjunta</h3>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <div className="relative aspect-video w-full max-w-sm rounded-lg overflow-hidden border cursor-pointer">
+                                <Image
+                                    src={ticket.imageUrl}
+                                    alt="Imagen adjunta del ticket"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl p-2">
+                            <Image 
+                                src={ticket.imageUrl} 
+                                alt="Imagen adjunta del ticket" 
+                                width={1200} 
+                                height={800} 
+                                className="rounded-md"
+                            />
+                        </DialogContent>
+                    </Dialog>
+                </div>
+               )}
             </CardContent>
           </Card>
           

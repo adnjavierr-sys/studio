@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,10 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wand2, Loader2, Mail } from "lucide-react";
+import { Wand2, Loader2, Mail, Upload, X } from "lucide-react";
 import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { clients } from "@/lib/data";
+import { clients, tickets, Ticket } from "@/lib/data";
+import Image from 'next/image';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const ticketSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres."),
@@ -35,6 +39,13 @@ const ticketSchema = z.object({
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
   category: z.enum(["Support", "Hosting", "Oportuno", "Other"]),
   sla: z.enum(["Normal", "Alta", "Baja"]),
+  image: z
+    .custom<File | undefined>()
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, `El tamaño máximo de la imagen es 5MB.`)
+    .refine(
+      (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Solo se aceptan formatos .jpg, .jpeg, .png y .webp."
+    ),
 });
 
 type TicketFormValues = z.infer<typeof ticketSchema>;
@@ -42,6 +53,8 @@ type TicketFormValues = z.infer<typeof ticketSchema>;
 export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const form = useForm<TicketFormValues>({
@@ -53,6 +66,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       description: "",
       category: "Support",
       sla: "Normal",
+      image: undefined,
     },
   });
 
@@ -64,12 +78,35 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     }
   };
 
-
   const onSubmit = async (data: TicketFormValues) => {
     setIsSubmitting(true);
-    // Here you would typically send the data to your backend.
-    // We'll simulate it with a delay.
-    console.log(data);
+    let imageUrl: string | undefined = undefined;
+
+    if (data.image) {
+      // In a real app, you'd upload the file to a storage service (e.g., Firebase Storage)
+      // and get a URL back. For this demo, we'll use a local object URL.
+      imageUrl = URL.createObjectURL(data.image);
+    }
+
+    const newTicket: Ticket = {
+      id: `TKT-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+      title: data.title,
+      client: data.client,
+      category: data.category,
+      status: 'Open',
+      sla: data.sla,
+      createdAt: new Date(),
+      imageUrl: imageUrl,
+      updates: [{
+        timestamp: new Date(),
+        author: 'System',
+        update: 'Ticket Creado.'
+      }]
+    };
+
+    tickets.unshift(newTicket);
+
+    console.log(newTicket);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     toast({
@@ -98,6 +135,26 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     }
     setIsSuggesting(false);
   };
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      form.setValue('image', file);
+      setPreview(URL.createObjectURL(file));
+    } else {
+      form.setValue('image', undefined);
+      setPreview(null);
+    }
+  };
+
+  const removeImage = () => {
+    form.setValue('image', undefined);
+    setPreview(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  };
+
 
   return (
     <Form {...form}>
@@ -168,9 +225,42 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
                 <Textarea
                   placeholder="Por favor, describe el problema en detalle..."
                   className="resize-none"
-                  rows={6}
+                  rows={4}
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Adjuntar Imagen (Opcional)</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-4">
+                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2" />
+                        Seleccionar Archivo
+                    </Button>
+                    <Input 
+                        type="file" 
+                        className="hidden" 
+                        ref={fileInputRef}
+                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                        onChange={handleFileChange} 
+                    />
+                    {preview && (
+                        <div className="relative group">
+                            <Image src={preview} alt="Vista previa" width={64} height={64} className="rounded-md object-cover h-16 w-16" />
+                            <Button type="button" size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100" onClick={removeImage}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

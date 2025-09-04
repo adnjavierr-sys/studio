@@ -14,6 +14,7 @@ export type Ticket = {
   sla: 'Normal' | 'Alta' | 'Baja';
   createdAt: Date;
   updates?: TicketUpdate[];
+  imageUrl?: string;
 };
 
 export type Client = {
@@ -61,7 +62,8 @@ export const tickets: Ticket[] = [
     createdAt: new Date('2023-10-26T10:00:00Z'),
     updates: [
       { timestamp: new Date('2023-10-26T10:00:00Z'), author: 'System', update: 'Ticket Creado.' }
-    ]
+    ],
+    imageUrl: 'https://picsum.photos/seed/TKT-001/1200/800',
   },
   { 
     id: 'TKT-002', 
