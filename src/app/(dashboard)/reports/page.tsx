@@ -29,37 +29,37 @@ export default function ReportsPage() {
   return (
     <>
       <PageHeader
-        title="Reports"
-        description="Generate and export ticket data reports."
+        title="Reportes"
+        description="Genera y exporta reportes de datos de tickets."
       >
         <Button>
           <Download />
-          Export Report
+          Exportar Reporte
         </Button>
       </PageHeader>
       <div className="p-6 pt-0 space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Report Generation</CardTitle>
+            <CardTitle>Generación de Reportes</CardTitle>
             <CardDescription>
-              Select a report type to generate and view the data.
+              Selecciona un tipo de reporte para generar y ver los datos.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="max-w-xs">
               <Select defaultValue="tickets-by-category">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select report type" />
+                  <SelectValue placeholder="Seleccionar tipo de reporte" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="tickets-by-category">
-                    Tickets by Category
+                    Tickets por Categoría
                   </SelectItem>
                   <SelectItem value="tickets-by-client">
-                    Tickets by Client (coming soon)
+                    Tickets por Cliente (próximamente)
                   </SelectItem>
                   <SelectItem value="resolution-time">
-                    Average Resolution Time (coming soon)
+                    Tiempo Promedio de Resolución (próximamente)
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -69,9 +69,9 @@ export default function ReportsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Report: Tickets by Category</CardTitle>
+            <CardTitle>Reporte: Tickets por Categoría</CardTitle>
             <CardDescription>
-              A summary of the total number of tickets for each category.
+              Un resumen del número total de tickets para cada categoría.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -79,8 +79,8 @@ export default function ReportsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Ticket Count</TableHead>
+                    <TableHead>Categoría</TableHead>
+                    <TableHead className="text-right">Cantidad de Tickets</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

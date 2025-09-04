@@ -21,8 +21,8 @@ export default function PoliciesPage() {
   return (
     <>
       <PageHeader
-        title="Policies"
-        description="Administer your company's service and data policies."
+        title="Políticas"
+        description="Administra las políticas de servicio y datos de tu empresa."
       />
       <div className="p-6 pt-0 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {policies.map((policy) => (
@@ -31,7 +31,7 @@ export default function PoliciesPage() {
               <div>
                 <CardTitle>{policy.title}</CardTitle>
                 <CardDescription>
-                  Created: {format(policy.createdAt, "PPP")}
+                  Creado: {format(policy.createdAt, "PPP")}
                 </CardDescription>
               </div>
               <DropdownMenu>
@@ -42,10 +42,10 @@ export default function PoliciesPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
-                    <Pencil className="mr-2" /> Modify
+                    <Pencil className="mr-2" /> Modificar
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-destructive">
-                    <Trash2 className="mr-2" /> Delete
+                    <Trash2 className="mr-2" /> Eliminar
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

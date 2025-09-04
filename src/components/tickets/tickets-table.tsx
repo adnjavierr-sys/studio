@@ -35,6 +35,19 @@ const statusColors: { [key: string]: string } = {
   Closed: "bg-red-200 text-red-800",
 };
 
+const statusTranslations: { [key: string]: string } = {
+  Open: "Abierto",
+  "In Progress": "En Progreso",
+  Closed: "Cerrado",
+};
+
+const categoryTranslations: { [key: string]: string } = {
+  Support: "Soporte",
+  Hosting: "Hosting",
+  Urgent: "Urgente",
+  Other: "Otro",
+};
+
 export function TicketsTable() {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,32 +71,32 @@ export function TicketsTable() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Input
-          placeholder="Search by ID, title, or client..."
+          placeholder="Buscar por ID, título o cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="md:col-span-1"
         />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger>
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filtrar por estado" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All Statuses</SelectItem>
-            <SelectItem value="Open">Open</SelectItem>
-            <SelectItem value="In Progress">In Progress</SelectItem>
-            <SelectItem value="Closed">Closed</SelectItem>
+            <SelectItem value="All">Todos los Estados</SelectItem>
+            <SelectItem value="Open">Abierto</SelectItem>
+            <SelectItem value="In Progress">En Progreso</SelectItem>
+            <SelectItem value="Closed">Cerrado</SelectItem>
           </SelectContent>
         </Select>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger>
-            <SelectValue placeholder="Filter by category" />
+            <SelectValue placeholder="Filtrar por categoría" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All Categories</SelectItem>
-            <SelectItem value="Support">Support</SelectItem>
+            <SelectItem value="All">Todas las Categorías</SelectItem>
+            <SelectItem value="Support">Soporte</SelectItem>
             <SelectItem value="Hosting">Hosting</SelectItem>
-            <SelectItem value="Urgent">Urgent</SelectItem>
-            <SelectItem value="Other">Other</SelectItem>
+            <SelectItem value="Urgent">Urgente</SelectItem>
+            <SelectItem value="Other">Otro</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -92,12 +105,12 @@ export function TicketsTable() {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Client</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Título</TableHead>
+              <TableHead>Cliente</TableHead>
+              <TableHead>Categoría</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Creado en</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -108,11 +121,11 @@ export function TicketsTable() {
                   <TableCell>{ticket.title}</TableCell>
                   <TableCell>{ticket.client}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{ticket.category}</Badge>
+                    <Badge variant="secondary">{categoryTranslations[ticket.category]}</Badge>
                   </TableCell>
                   <TableCell>
                     <Badge className={statusColors[ticket.status]}>
-                      {ticket.status}
+                      {statusTranslations[ticket.status]}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -127,10 +140,10 @@ export function TicketsTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem>
-                          <Pencil className="mr-2" /> Edit
+                          <Pencil className="mr-2" /> Editar
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="mr-2" /> Delete
+                          <Trash2 className="mr-2" /> Eliminar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -141,7 +154,7 @@ export function TicketsTable() {
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
                   <TicketIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-muted-foreground">No tickets found.</p>
+                  <p className="mt-2 text-muted-foreground">No se encontraron tickets.</p>
                 </TableCell>
               </TableRow>
             )}

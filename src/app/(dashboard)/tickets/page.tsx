@@ -26,11 +26,11 @@ export default function TicketsPage() {
     <>
       <PageHeader
         title="Tickets"
-        description="Manage and track all customer support tickets."
+        description="Administra y da seguimiento a todos los tickets de soporte al cliente."
       >
         <Button onClick={() => setIsModalOpen(true)}>
           <PlusCircle />
-          New Ticket
+          Nuevo Ticket
         </Button>
       </PageHeader>
       <div className="p-6 pt-0">
@@ -40,9 +40,9 @@ export default function TicketsPage() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Create New Ticket</DialogTitle>
+            <DialogTitle>Crear Nuevo Ticket</DialogTitle>
             <DialogDescription>
-              Fill out the form below to submit a new ticket.
+              Completa el siguiente formulario para enviar un nuevo ticket.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">

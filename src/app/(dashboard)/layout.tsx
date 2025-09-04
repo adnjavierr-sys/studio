@@ -18,11 +18,11 @@ import { Logo } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Panel' },
   { href: '/tickets', icon: Ticket, label: 'Tickets' },
-  { href: '/clients', icon: Users, label: 'Clients' },
-  { href: '/reports', icon: BarChart, label: 'Reports' },
-  { href: '/policies', icon: Shield, label: 'Policies' },
+  { href: '/clients', icon: Users, label: 'Clientes' },
+  { href: '/reports', icon: BarChart, label: 'Reportes' },
+  { href: '/policies', icon: Shield, label: 'Políticas' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -61,19 +61,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton tooltip={{ children: 'Settings', className: 'bg-primary text-primary-foreground' }}>
+                    <SidebarMenuButton tooltip={{ children: 'Configuración', className: 'bg-primary text-primary-foreground' }}>
                         <Settings />
-                        <span>Settings</span>
+                        <span>Configuración</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
                     <SidebarMenuButton>
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://picsum.photos/100" alt="User Avatar" />
+                            <AvatarImage src="https://picsum.photos/100" alt="Avatar de Usuario" />
                             <AvatarFallback>U</AvatarFallback>
                         </Avatar>
                         <span className="flex flex-col text-left">
-                            <span className="text-sm font-medium">Admin User</span>
+                            <span className="text-sm font-medium">Usuario Admin</span>
                             <span className="text-xs text-muted-foreground">admin@unoti.com</span>
                         </span>
                     </SidebarMenuButton>

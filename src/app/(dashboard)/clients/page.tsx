@@ -28,12 +28,12 @@ export default function ClientsPage() {
   return (
     <>
       <PageHeader
-        title="Clients"
-        description="Manage your client profiles and information."
+        title="Clientes"
+        description="Administra los perfiles e información de tus clientes."
       >
         <Button>
           <PlusCircle />
-          Add Client
+          Añadir Cliente
         </Button>
       </PageHeader>
       <div className="p-6 pt-0">
@@ -41,10 +41,10 @@ export default function ClientsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Client</TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Member Since</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Compañía</TableHead>
+                <TableHead>Miembro Desde</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,10 +74,10 @@ export default function ClientsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <DropdownMenuItem>
-                            <Pencil className="mr-2" /> Edit
+                            <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2" /> Remove
+                            <Trash2 className="mr-2" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -88,7 +88,7 @@ export default function ClientsPage() {
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
                     <Users className="mx-auto h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-muted-foreground">No clients found.</p>
+                    <p className="mt-2 text-muted-foreground">No se encontraron clientes.</p>
                   </TableCell>
                 </TableRow>
               )}

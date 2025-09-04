@@ -27,9 +27,9 @@ import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 
 const ticketSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters."),
-  client: z.string().min(1, "Client is required."),
-  description: z.string().min(10, "Description must be at least 10 characters."),
+  title: z.string().min(5, "El título debe tener al menos 5 caracteres."),
+  client: z.string().min(1, "El cliente es obligatorio."),
+  description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
   category: z.enum(["Support", "Hosting", "Urgent", "Other"]),
 });
 
@@ -58,8 +58,8 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     toast({
-      title: "Ticket Submitted",
-      description: "Your new ticket has been created successfully.",
+      title: "Ticket Enviado",
+      description: "Tu nuevo ticket ha sido creado exitosamente.",
     });
     onFormSubmit();
   };
@@ -71,12 +71,12 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     if (result.category) {
       form.setValue("category", result.category);
       toast({
-        title: "Category Suggested",
-        description: `We've suggested the "${result.category}" category based on your description.`,
+        title: "Categoría Sugerida",
+        description: `Hemos sugerido la categoría "${result.category}" basada en tu descripción.`,
       });
     } else {
       toast({
-        title: "Suggestion Failed",
+        title: "Sugerencia Fallida",
         description: result.error,
         variant: "destructive",
       });
@@ -92,9 +92,9 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Ticket Title</FormLabel>
+              <FormLabel>Título del Ticket</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Website is showing a 500 error" {...field} />
+                <Input placeholder="ej., El sitio web muestra un error 500" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,9 +105,9 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
           name="client"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Client</FormLabel>
+              <FormLabel>Cliente</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Acme Inc." {...field} />
+                <Input placeholder="ej., Acme Inc." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,10 +118,10 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Descripción</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Please describe the issue in detail..."
+                  placeholder="Por favor, describe el problema en detalle..."
                   className="resize-none"
                   rows={6}
                   {...field}
@@ -136,7 +136,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Categoría</FormLabel>
               <div className="flex items-center gap-2">
                 <Select
                   onValueChange={field.onChange}
@@ -145,14 +145,14 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Support">Support</SelectItem>
+                    <SelectItem value="Support">Soporte</SelectItem>
                     <SelectItem value="Hosting">Hosting</SelectItem>
-                    <SelectItem value="Urgent">Urgent</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="Urgent">Urgente</SelectItem>
+                    <SelectItem value="Other">Otro</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button
@@ -161,7 +161,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
                   size="icon"
                   onClick={handleSuggestCategory}
                   disabled={isSuggesting}
-                  aria-label="Suggest Category"
+                  aria-label="Sugerir Categoría"
                 >
                   {isSuggesting ? (
                     <Loader2 className="animate-spin" />
@@ -177,7 +177,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 animate-spin" />}
-            Submit Ticket
+            Enviar Ticket
           </Button>
         </div>
       </form>
