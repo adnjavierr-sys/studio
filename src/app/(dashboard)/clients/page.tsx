@@ -89,7 +89,10 @@ export default function ClientsPage() {
         company: formData.get('company') as string,
         address: formData.get('address') as string,
       };
-      setClientList(clientList.map(c => c.id === updatedClient.id ? updatedClient : c));
+      const newClientList = clientList.map(c => c.id === updatedClient.id ? updatedClient : c);
+      setClientList(newClientList);
+      // Also update the source of truth
+      initialClients.splice(initialClients.findIndex(c => c.id === updatedClient.id), 1, updatedClient);
       toast({
         title: "Cliente actualizado",
         description: `Los datos de ${updatedClient.name} han sido actualizados.`
@@ -110,7 +113,10 @@ export default function ClientsPage() {
       address: formData.get('address') as string,
       createdAt: new Date(),
     };
-    setClientList(prevClients => [newClient, ...prevClients]);
+    // Add to the shared array first
+    initialClients.unshift(newClient);
+    // Then update the local state from the shared array
+    setClientList([...initialClients]);
     toast({
       title: "Cliente añadido",
       description: `El cliente ${newClient.name} ha sido añadido.`,

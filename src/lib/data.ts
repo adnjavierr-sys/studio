@@ -42,13 +42,23 @@ export const tickets: Ticket[] = [
   { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Urgent', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z') },
 ];
 
-export const clients: Client[] = [
+let clientsData: Client[] = [
     { id: 'CLI-001', name: 'John Doe', email: 'john.doe@acme.com', company: 'Acme Inc.', address: '123 Main St, Anytown, USA', createdAt: new Date('2022-01-15T10:00:00Z') },
     { id: 'CLI-002', name: 'Tony Stark', email: 'tony@stark.com', company: 'Stark Industries', address: '10880 Malibu Point, 90265, CA', createdAt: new Date('2022-02-20T11:30:00Z') },
     { id: 'CLI-003', name: 'Bruce Wayne', email: 'bruce@wayne.com', company: 'Wayne Enterprises', address: '1007 Mountain Drive, Gotham City', createdAt: new Date('2022-03-10T14:00:00Z') },
     { id: 'CLI-004', name: 'Sarah Connor', email: 'sarah.c@cyberdyne.com', company: 'Cyberdyne Systems', address: '18144 El Estero Road, Los Angeles', createdAt: new Date('2022-04-05T09:15:00Z') },
     { id: 'CLI-005', name: 'Garrick Ollivander', email: 'g.ollivander@wands.co.uk', company: 'Ollivanders Wand Shop', address: 'Diagon Alley, London, UK', createdAt: new Date('2022-05-25T16:45:00Z') },
 ];
+
+export const clients: Client[] = new Proxy(clientsData, {
+  get(target, prop) {
+    return target[prop as any];
+  },
+  set(target, prop, value) {
+    (target as any)[prop] = value;
+    return true;
+  }
+});
 
 export const policies: Policy[] = [
     { id: 'POL-001', title: 'Service Level Agreement (SLA)', description: 'Defines the level of service you expect from a vendor, laying out the metrics by which service is measured.', createdAt: new Date('2022-01-01T09:00:00Z') },
