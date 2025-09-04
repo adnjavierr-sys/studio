@@ -62,9 +62,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton tooltip={{ children: 'Configuración', className: 'bg-primary text-primary-foreground' }}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={pathname.startsWith('/settings')}
+                      tooltip={{ children: 'Configuración', className: 'bg-primary text-primary-foreground' }}
+                    >
+                      <Link href="/settings">
                         <Settings />
                         <span>Configuración</span>
+                      </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
