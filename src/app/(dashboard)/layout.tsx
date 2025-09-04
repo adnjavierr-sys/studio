@@ -31,8 +31,8 @@ const navItems = [
   { href: '/tickets', icon: Ticket, label: 'Tickets' },
   { href: '/clients', icon: Users, label: 'Clientes' },
   { href: '/agents', icon: Contact, label: 'Agentes' },
-  { href: '/reports', icon: BarChart, label: 'Reportes' },
   { href: '/policies', icon: Shield, label: 'Pólizas' },
+  { href: '/reports', icon: BarChart, label: 'Reportes' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
