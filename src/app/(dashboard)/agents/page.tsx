@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -30,6 +30,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -45,6 +55,7 @@ export default function AgentsPage() {
   const [agentList, setAgentList] = useState<Agent[]>(initialAgents);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -56,6 +67,27 @@ export default function AgentsPage() {
   const openEditModal = (agent: Agent) => {
     setSelectedAgent(agent);
     setIsEditModalOpen(true);
+  };
+
+  const openDeleteModal = (agent: Agent) => {
+    setSelectedAgent(agent);
+    setIsDeleteConfirmationOpen(true);
+  }
+
+  const handleDeleteAgent = () => {
+    if (selectedAgent) {
+      const indexToDelete = initialAgents.findIndex(a => a.id === selectedAgent.id);
+      if (indexToDelete > -1) {
+        initialAgents.splice(indexToDelete, 1);
+      }
+      setAgentList([...initialAgents]);
+      toast({
+        title: "Agente Eliminado",
+        description: `El agente ${selectedAgent.name} ha sido eliminado.`,
+      });
+      setIsDeleteConfirmationOpen(false);
+      setSelectedAgent(null);
+    }
   };
 
   const handleAddAgent = (event: React.FormEvent<HTMLFormElement>) => {
@@ -97,6 +129,28 @@ export default function AgentsPage() {
       });
       setIsEditModalOpen(false);
       setSelectedAgent(null);
+    }
+  };
+  
+  const handleSetTemporaryPassword = () => {
+    if (selectedAgent) {
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const agentIndex = initialAgents.findIndex(a => a.id === selectedAgent.id);
+      if (agentIndex !== -1) {
+        initialAgents[agentIndex].password = tempPassword;
+        // Also update the agent in the local state if needed, though it's not displayed
+        const updatedAgent = { ...selectedAgent, password: tempPassword };
+        setSelectedAgent(updatedAgent);
+        const newAgentList = agentList.map(a => a.id === updatedAgent.id ? updatedAgent : a);
+        setAgentList(newAgentList);
+
+        alert(`La nueva contraseña temporal para ${selectedAgent.name} es: ${tempPassword}`);
+
+        toast({
+          title: "Contraseña Temporal Generada",
+          description: `Se ha establecido una nueva contraseña para ${selectedAgent.name}.`,
+        });
+      }
     }
   };
 
@@ -152,7 +206,7 @@ export default function AgentsPage() {
                           <DropdownMenuItem onClick={() => openEditModal(agent)}>
                             <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem className="text-destructive" onClick={() => openDeleteModal(agent)}>
                             <Trash2 className="mr-2" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -247,13 +301,38 @@ export default function AgentsPage() {
                     </SelectContent>
                 </Select>
               </div>
-               <div className="flex justify-end pt-4">
+               <div className="flex justify-end pt-4 gap-2">
+                <Button type="button" variant="outline" onClick={handleSetTemporaryPassword}>
+                  <KeyRound />
+                  Generar Contraseña Temporal
+                </Button>
                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Agent Confirmation */}
+      <AlertDialog open={isDeleteConfirmationOpen} onOpenChange={setIsDeleteConfirmationOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente al agente 
+              <span className="font-semibold"> {selectedAgent?.name}</span> y todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAgent}>
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
+
+    
