@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, PlusCircle, Bell } from "lucide-react";
+import { Download, Trash2, PlusCircle, Bell, Send } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -37,6 +37,8 @@ import Papa from "papaparse";
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
   const [recipientEmail, setRecipientEmail] = useState("");
+  const [manualRecipientEmail, setManualRecipientEmail] = useState("");
+  const [selectedManualClient, setSelectedManualClient] = useState("");
   const { toast } = useToast();
   const router = useRouter();
   
@@ -46,6 +48,16 @@ export default function ReportsPage() {
       setRecipientEmail(client.email);
     } else {
       setRecipientEmail("");
+    }
+  };
+  
+  const handleManualClientChange = (clientName: string) => {
+    setSelectedManualClient(clientName);
+    const client = clients.find(c => c.name === clientName);
+    if (client) {
+      setManualRecipientEmail(client.email);
+    } else {
+      setManualRecipientEmail("");
     }
   };
 
@@ -112,6 +124,22 @@ export default function ReportsPage() {
       description: "El reporte de tickets se ha descargado como CSV.",
     });
   };
+  
+  const handleManualSend = () => {
+    if (!selectedManualClient || !manualRecipientEmail) {
+      toast({
+        title: "Error",
+        description: "Por favor, selecciona un cliente y asegúrate de que el email es válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Reporte Enviado",
+      description: `El reporte para ${selectedManualClient} ha sido enviado a ${manualRecipientEmail}.`,
+    });
+  };
 
   return (
     <>
@@ -153,6 +181,46 @@ export default function ReportsPage() {
             </div>
           </CardContent>
         </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Envío Manual de Reporte</CardTitle>
+                <CardDescription>
+                Envía un reporte de inmediato a un cliente específico.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col md:flex-row md:items-end gap-4">
+                    <div className="grid w-full gap-1.5">
+                        <Label htmlFor="manual-client">Cliente</Label>
+                        <Select onValueChange={handleManualClientChange}>
+                            <SelectTrigger id="manual-client">
+                                <SelectValue placeholder="Selecciona un cliente" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {clients.map(client => (
+                                <SelectItem key={client.id} value={client.name}>{client.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid w-full gap-1.5">
+                        <Label htmlFor="manual-email">Email del Destinatario</Label>
+                        <Input
+                            type="email"
+                            id="manual-email"
+                            placeholder="cliente@ejemplo.com"
+                            value={manualRecipientEmail}
+                            onChange={(e) => setManualRecipientEmail(e.target.value)}
+                        />
+                    </div>
+                    <Button onClick={handleManualSend} className="w-full md:w-auto">
+                        <Send className="mr-2" />
+                        Enviar Reporte
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -165,7 +233,7 @@ export default function ReportsPage() {
             <form onSubmit={handleAddAutomation} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="client">Cliente</Label>
-                <Select name="client" required onValueChange={handleClientChange}>
+                <Select name="client" required onValuechange={handleClientChange}>
                   <SelectTrigger id="client">
                     <SelectValue placeholder="Selecciona un cliente" />
                   </SelectTrigger>
@@ -279,3 +347,5 @@ export default function ReportsPage() {
     </>
   );
 }
+
+    
