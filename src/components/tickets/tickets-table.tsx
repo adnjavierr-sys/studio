@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -53,6 +54,7 @@ export function TicketsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const router = useRouter();
 
   const filteredTickets = tickets
     .filter((ticket) => {
@@ -66,6 +68,10 @@ export function TicketsTable() {
     .filter((ticket) => statusFilter === "All" || ticket.status === statusFilter)
     .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  
+  const handleRowClick = (ticketId: string) => {
+    router.push(`/tickets/${ticketId}`);
+  };
 
   return (
     <div className="space-y-4">
@@ -116,7 +122,7 @@ export function TicketsTable() {
           <TableBody>
             {filteredTickets.length > 0 ? (
               filteredTickets.map((ticket) => (
-                <TableRow key={ticket.id}>
+                <TableRow key={ticket.id} onClick={() => handleRowClick(ticket.id)} className="cursor-pointer">
                   <TableCell className="font-medium">{ticket.id}</TableCell>
                   <TableCell>{ticket.title}</TableCell>
                   <TableCell>{ticket.client}</TableCell>
@@ -133,7 +139,7 @@ export function TicketsTable() {
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                         <Button variant="ghost" size="icon">
                           <MoreHorizontal />
                         </Button>

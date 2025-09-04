@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
@@ -24,6 +25,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ClientsPage() {
   const [clientList, setClientList] = useState<Client[]>(clients);
+  const router = useRouter();
+
+  const handleRowClick = (clientId: string) => {
+    router.push(`/clients/${clientId}`);
+  };
   
   return (
     <>
@@ -50,7 +56,7 @@ export default function ClientsPage() {
             <TableBody>
               {clientList.length > 0 ? (
                 clientList.map((client) => (
-                  <TableRow key={client.id}>
+                  <TableRow key={client.id} onClick={() => handleRowClick(client.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar>
@@ -67,7 +73,7 @@ export default function ClientsPage() {
                     <TableCell>{format(client.createdAt, "PPP")}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal />
                           </Button>
