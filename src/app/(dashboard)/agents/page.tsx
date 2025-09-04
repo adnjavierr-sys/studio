@@ -126,8 +126,8 @@ export default function AgentsPage() {
             <TableBody>
               {agentList.length > 0 ? (
                 agentList.map((agent) => (
-                  <TableRow key={agent.id} onClick={() => handleRowClick(agent.id)} className="cursor-pointer">
-                    <TableCell className="font-medium">
+                  <TableRow key={agent.id} >
+                    <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(agent.id)}>
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarImage src={`https://picsum.photos/seed/${agent.id}/100`} />
@@ -139,17 +139,17 @@ export default function AgentsPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{agent.role}</TableCell>
-                    <TableCell>{format(agent.createdAt, "PPP")}</TableCell>
+                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{agent.role}</TableCell>
+                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{format(agent.createdAt, "PPP")}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModal(agent); }}>
+                          <DropdownMenuItem onClick={() => openEditModal(agent)}>
                             <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
