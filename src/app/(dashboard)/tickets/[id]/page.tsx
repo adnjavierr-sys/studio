@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { es } from 'date-fns/locale';
+import { Label } from '@/components/ui/label';
 
 const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
