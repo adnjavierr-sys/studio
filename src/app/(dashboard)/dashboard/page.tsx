@@ -1,18 +1,30 @@
+
 "use client";
 
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Ticket, Clock, CheckCircle } from 'lucide-react';
 import { dashboardStats, ticketsByCategory } from '@/lib/data';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart, Cell } from 'recharts';
+
+const chartColors = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
 
 export default function DashboardPage() {
   const chartConfig = {
     count: {
       label: 'Tickets',
-      color: 'hsl(var(--chart-1))',
     },
+    Support: { label: 'Soporte', color: 'hsl(var(--chart-1))' },
+    Hosting: { label: 'Hosting', color: 'hsl(var(--chart-2))' },
+    Oportuno: { label: 'Oportuno', color: 'hsl(var(--chart-3))' },
+    Other: { label: 'Otro', color: 'hsl(var(--chart-4))' },
   };
 
   return (
@@ -78,10 +90,18 @@ export default function DashboardPage() {
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
+                  tickFormatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label || value}
                 />
                 <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="var(--color-count)" radius={4} />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent labelKey="category" />}
+                />
+                <Bar dataKey="count" radius={4}>
+                  {ticketsByCategory.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                  ))}
+                </Bar>
               </RechartsBarChart>
             </ChartContainer>
           </CardContent>
