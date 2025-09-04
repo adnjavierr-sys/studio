@@ -21,8 +21,8 @@ export default function PoliciesPage() {
   return (
     <>
       <PageHeader
-        title="Políticas"
-        description="Administra las políticas de servicio y datos de tu empresa."
+        title="Pólizas"
+        description="Administra las pólizas de servicio y datos de tu empresa."
       />
       <div className="p-6 pt-0 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {policies.map((policy) => (

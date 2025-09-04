@@ -23,7 +23,7 @@ const navItems = [
   { href: '/clients', icon: Users, label: 'Clientes' },
   { href: '/agents', icon: Contact, label: 'Agentes' },
   { href: '/reports', icon: BarChart, label: 'Reportes' },
-  { href: '/policies', icon: Shield, label: 'Políticas' },
+  { href: '/policies', icon: Shield, label: 'Pólizas' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
