@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ticketsByCategory, clients, reportAutomations as initialAutomations, ReportAutomation } from "@/lib/data";
+import { tickets, ticketsByCategory, clients, reportAutomations as initialAutomations, ReportAutomation } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -32,6 +32,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import Papa from "papaparse";
 
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
@@ -85,13 +86,40 @@ export default function ReportsPage() {
     router.push(`/tickets?category=${encodeURIComponent(category)}`);
   };
 
+  const handleExport = () => {
+    const dataToExport = tickets.map(ticket => ({
+      ID: ticket.id,
+      Titulo: ticket.title,
+      Cliente: ticket.client,
+      Categoria: ticket.category,
+      Estado: ticket.status,
+      "Fecha de Creacion": ticket.createdAt.toISOString(),
+    }));
+
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "reporte_tickets.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Reporte Exportado",
+      description: "El reporte de tickets se ha descargado como CSV.",
+    });
+  };
+
   return (
     <>
       <PageHeader
         title="Reportes"
         description="Genera y exporta reportes de datos de tickets."
       >
-        <Button>
+        <Button onClick={handleExport}>
           <Download />
           Exportar Reporte
         </Button>
