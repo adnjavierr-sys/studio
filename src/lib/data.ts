@@ -12,6 +12,7 @@ export type Client = {
   name: string;
   email: string;
   company: string;
+  address: string;
   createdAt: Date;
 };
 
@@ -42,11 +43,11 @@ export const tickets: Ticket[] = [
 ];
 
 export const clients: Client[] = [
-    { id: 'CLI-001', name: 'John Doe', email: 'john.doe@acme.com', company: 'Acme Inc.', createdAt: new Date('2022-01-15T10:00:00Z') },
-    { id: 'CLI-002', name: 'Tony Stark', email: 'tony@stark.com', company: 'Stark Industries', createdAt: new Date('2022-02-20T11:30:00Z') },
-    { id: 'CLI-003', name: 'Bruce Wayne', email: 'bruce@wayne.com', company: 'Wayne Enterprises', createdAt: new Date('2022-03-10T14:00:00Z') },
-    { id: 'CLI-004', name: 'Sarah Connor', email: 'sarah.c@cyberdyne.com', company: 'Cyberdyne Systems', createdAt: new Date('2022-04-05T09:15:00Z') },
-    { id: 'CLI-005', name: 'Garrick Ollivander', email: 'g.ollivander@wands.co.uk', company: 'Ollivanders Wand Shop', createdAt: new Date('2022-05-25T16:45:00Z') },
+    { id: 'CLI-001', name: 'John Doe', email: 'john.doe@acme.com', company: 'Acme Inc.', address: '123 Main St, Anytown, USA', createdAt: new Date('2022-01-15T10:00:00Z') },
+    { id: 'CLI-002', name: 'Tony Stark', email: 'tony@stark.com', company: 'Stark Industries', address: '10880 Malibu Point, 90265, CA', createdAt: new Date('2022-02-20T11:30:00Z') },
+    { id: 'CLI-003', name: 'Bruce Wayne', email: 'bruce@wayne.com', company: 'Wayne Enterprises', address: '1007 Mountain Drive, Gotham City', createdAt: new Date('2022-03-10T14:00:00Z') },
+    { id: 'CLI-004', name: 'Sarah Connor', email: 'sarah.c@cyberdyne.com', company: 'Cyberdyne Systems', address: '18144 El Estero Road, Los Angeles', createdAt: new Date('2022-04-05T09:15:00Z') },
+    { id: 'CLI-005', name: 'Garrick Ollivander', email: 'g.ollivander@wands.co.uk', company: 'Ollivanders Wand Shop', address: 'Diagon Alley, London, UK', createdAt: new Date('2022-05-25T16:45:00Z') },
 ];
 
 export const policies: Policy[] = [

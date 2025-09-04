@@ -88,6 +88,7 @@ export default function ClientsPage() {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
         company: formData.get('company') as string,
+        address: formData.get('address') as string,
       };
       setClientList(clientList.map(c => c.id === updatedClient.id ? updatedClient : c));
       toast({
@@ -107,6 +108,7 @@ export default function ClientsPage() {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       company: formData.get('company') as string,
+      address: formData.get('address') as string,
       createdAt: new Date(),
     };
     setClientList([newClient, ...clientList]);
@@ -233,6 +235,10 @@ export default function ClientsPage() {
                 <Label htmlFor="company">Compañía</Label>
                 <Input id="company" name="company" defaultValue={selectedClient.company} />
               </div>
+              <div>
+                <Label htmlFor="address">Dirección</Label>
+                <Input id="address" name="address" defaultValue={selectedClient.address} />
+              </div>
               <div className="flex justify-end pt-4">
                 <Button type="submit">Guardar Cambios</Button>
               </div>
@@ -262,6 +268,10 @@ export default function ClientsPage() {
             <div>
               <Label htmlFor="add-company">Compañía</Label>
               <Input id="add-company" name="company" placeholder="Acme Inc." required />
+            </div>
+            <div>
+              <Label htmlFor="add-address">Dirección</Label>
+              <Input id="add-address" name="address" placeholder="123 Main St, Anytown, USA" required />
             </div>
             <div className="flex justify-end pt-4">
               <Button type="submit">Añadir Cliente</Button>

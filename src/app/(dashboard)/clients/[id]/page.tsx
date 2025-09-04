@@ -5,7 +5,7 @@ import { clients } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Mail, Building, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Mail, Building, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -27,6 +27,8 @@ export default function ClientDetailsPage() {
       </div>
     );
   }
+  
+  const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(client.address)}&output=embed`;
 
   return (
     <>
@@ -50,28 +52,48 @@ export default function ClientDetailsPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="mt-4 space-y-4">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
-                <div className="flex items-center space-x-3">
-                    <Mail className="text-muted-foreground" />
+          <CardContent className="mt-4 space-y-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
+                <div className="flex items-start space-x-3">
+                    <Mail className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Email</p>
                         <p className="text-muted-foreground">{client.email}</p>
                     </div>
                 </div>
-                 <div className="flex items-center space-x-3">
-                    <Building className="text-muted-foreground" />
+                 <div className="flex items-start space-x-3">
+                    <Building className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Compañía</p>
                         <p className="text-muted-foreground">{client.company}</p>
                     </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                    <Calendar className="text-muted-foreground" />
+                <div className="flex items-start space-x-3">
+                    <Calendar className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Miembro Desde</p>
                         <p className="text-muted-foreground">{format(client.createdAt, 'PPP')}</p>
                     </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                    <MapPin className="text-muted-foreground mt-1" />
+                    <div>
+                        <p className="text-sm font-medium">Dirección</p>
+                        <p className="text-muted-foreground">{client.address}</p>
+                    </div>
+                </div>
+             </div>
+             <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">Ubicación</h3>
+                <div className="aspect-video w-full rounded-lg overflow-hidden border">
+                    <iframe
+                        width="100%"
+                        height="100%"
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={mapSrc}>
+                    </iframe>
                 </div>
              </div>
           </CardContent>
