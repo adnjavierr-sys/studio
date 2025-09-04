@@ -15,10 +15,11 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
-    const agent = agents.find(a => a.email === email);
+    const agent = agents.find(a => a.email === email && a.password === password);
 
     if (agent) {
       toast({
@@ -29,7 +30,7 @@ export default function LoginPage() {
     } else {
       toast({
         title: "Error de Autenticación",
-        description: "El correo es incorrecto.",
+        description: "El correo o la contraseña son incorrectos.",
         variant: "destructive",
       });
     }
@@ -40,7 +41,7 @@ export default function LoginPage() {
       <CardHeader className="text-center">
         <Logo className="w-16 h-16 mx-auto mb-4" />
         <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
-        <CardDescription>Ingresa tu correo para acceder a tu cuenta.</CardDescription>
+        <CardDescription>Ingresa tus credenciales para acceder a tu cuenta.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleLogin} className="space-y-4">
@@ -53,6 +54,16 @@ export default function LoginPage() {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Contraseña</Label>
+            <Input 
+              id="password" 
+              type="password" 
+              required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <Button type="submit" className="w-full">
