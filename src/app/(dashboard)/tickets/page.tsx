@@ -1,0 +1,55 @@
+"use client";
+
+import { useState } from "react";
+import { PageHeader } from "@/components/page-header";
+import { TicketsTable } from "@/components/tickets/tickets-table";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { NewTicketForm } from "@/components/tickets/new-ticket-form";
+
+export default function TicketsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const handleFormSubmit = () => {
+    setIsModalOpen(false);
+    // Here you would typically refetch the tickets data
+  };
+
+  return (
+    <>
+      <PageHeader
+        title="Tickets"
+        description="Manage and track all customer support tickets."
+      >
+        <Button onClick={() => setIsModalOpen(true)}>
+          <PlusCircle />
+          New Ticket
+        </Button>
+      </PageHeader>
+      <div className="p-6 pt-0">
+        <TicketsTable />
+      </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Create New Ticket</DialogTitle>
+            <DialogDescription>
+              Fill out the form below to submit a new ticket.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <NewTicketForm onFormSubmit={handleFormSubmit} />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
