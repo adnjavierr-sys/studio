@@ -33,7 +33,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ReportsPage() {
-  const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations);
+  const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
   const { toast } = useToast();
 
   const handleAddAutomation = (event: React.FormEvent<HTMLFormElement>) => {
@@ -55,10 +55,13 @@ export default function ReportsPage() {
   };
 
   const handleDeleteAutomation = (id: string) => {
-    const newAutomations = automations.filter(a => a.id !== id);
-    // Update the source of truth
-    initialAutomations.splice(0, initialAutomations.length, ...newAutomations);
-    setAutomations(newAutomations);
+    // This is a workaround to make deletion work with the Proxy in data.ts
+    const indexToDelete = initialAutomations.findIndex(a => a.id === id);
+    if (indexToDelete > -1) {
+      initialAutomations.splice(indexToDelete, 1);
+    }
+    setAutomations([...initialAutomations]);
+
     toast({
       title: "Automatización Eliminada",
       description: "La configuración del reporte ha sido eliminada.",
@@ -162,7 +165,7 @@ export default function ReportsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {automations.length > 0 ? (
+                  {automations && automations.length > 0 ? (
                     automations.map((automation) => (
                       <TableRow key={automation.id}>
                         <TableCell className="font-medium">{automation.clientName}</TableCell>
