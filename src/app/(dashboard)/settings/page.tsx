@@ -20,8 +20,10 @@ import { useState, useEffect } from "react";
 export default function SettingsPage() {
   const { toast } = useToast();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const isDark = document.documentElement.classList.contains('dark');
     setIsDarkMode(isDark);
   }, []);
@@ -39,6 +41,10 @@ export default function SettingsPage() {
       description: "Tus ajustes de correo electrónico han sido guardados exitosamente.",
     });
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>
