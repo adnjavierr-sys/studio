@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -30,6 +31,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const typeColors: { [key: string]: string } = {
+  Mensual: "bg-blue-200 text-blue-800",
+  Anual: "bg-green-200 text-green-800",
+  Ilimitada: "bg-purple-200 text-purple-800",
+};
 
 export default function PoliciesPage() {
   const [policyList, setPolicyList] = useState<Policy[]>(policies);
@@ -43,6 +58,7 @@ export default function PoliciesPage() {
       id: `POL-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
       title: formData.get('title') as string,
       description: formData.get('description') as string,
+      type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
       createdAt: new Date(),
     };
     setPolicyList([newPolicy, ...policyList]);
@@ -91,6 +107,9 @@ export default function PoliciesPage() {
               </DropdownMenu>
             </CardHeader>
             <CardContent>
+              <div className="flex justify-between items-center mb-4">
+                <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
+              </div>
               <p className="text-sm text-muted-foreground">
                 {policy.description}
               </p>
@@ -112,6 +131,19 @@ export default function PoliciesPage() {
             <div>
               <Label htmlFor="add-title">Título</Label>
               <Input id="add-title" name="title" placeholder="Service Level Agreement (SLA)" required />
+            </div>
+            <div>
+              <Label htmlFor="add-type">Tipo de Póliza</Label>
+              <Select name="type" required defaultValue="Anual">
+                <SelectTrigger id="add-type">
+                  <SelectValue placeholder="Selecciona un tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mensual">Mensual</SelectItem>
+                  <SelectItem value="Anual">Anual</SelectItem>
+                  <SelectItem value="Ilimitada">Ilimitada</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="add-description">Descripción</Label>
