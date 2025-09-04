@@ -1,6 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact } from "lucide-react";
@@ -12,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { agents, Agent } from "@/lib/data";
+import { agents as initialAgents, Agent } from "@/lib/data";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -40,9 +42,21 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 export default function AgentsPage() {
-  const [agentList, setAgentList] = useState<Agent[]>(agents);
+  const [agentList, setAgentList] = useState<Agent[]>(initialAgents);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
+
+  const handleRowClick = (agentId: string) => {
+    router.push(`/agents/${agentId}`);
+  };
+
+  const openEditModal = (agent: Agent) => {
+    setSelectedAgent(agent);
+    setIsEditModalOpen(true);
+  };
 
   const handleAddAgent = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,13 +69,37 @@ export default function AgentsPage() {
       password: formData.get('password') as string,
       createdAt: new Date(),
     };
-    setAgentList([newAgent, ...agentList]);
+    initialAgents.unshift(newAgent);
+    setAgentList([...initialAgents]);
     toast({
       title: "Agente añadido",
       description: `El agente ${newAgent.name} ha sido añadido.`,
     });
     setIsAddModalOpen(false);
   };
+
+  const handleUpdateAgent = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedAgent) {
+      const formData = new FormData(event.currentTarget);
+      const updatedAgent = {
+        ...selectedAgent,
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
+      };
+      const newAgentList = agentList.map(a => a.id === updatedAgent.id ? updatedAgent : a);
+      setAgentList(newAgentList);
+      initialAgents.splice(initialAgents.findIndex(a => a.id === updatedAgent.id), 1, updatedAgent);
+      toast({
+        title: "Agente actualizado",
+        description: `Los datos de ${updatedAgent.name} han sido actualizados.`
+      });
+      setIsEditModalOpen(false);
+      setSelectedAgent(null);
+    }
+  };
+
 
   return (
     <>
@@ -88,7 +126,7 @@ export default function AgentsPage() {
             <TableBody>
               {agentList.length > 0 ? (
                 agentList.map((agent) => (
-                  <TableRow key={agent.id}>
+                  <TableRow key={agent.id} onClick={() => handleRowClick(agent.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar>
@@ -111,7 +149,7 @@ export default function AgentsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditModal(agent); }}>
                             <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
@@ -174,6 +212,46 @@ export default function AgentsPage() {
               <Button type="submit">Añadir Agente</Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Agent Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Agente</DialogTitle>
+            <DialogDescription>
+              Actualiza la información del agente.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedAgent && (
+            <form onSubmit={handleUpdateAgent} className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="edit-name">Nombre</Label>
+                <Input id="edit-name" name="name" defaultValue={selectedAgent.name} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input id="edit-email" name="email" type="email" defaultValue={selectedAgent.email} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-role">Rol</Label>
+                 <Select name="role" required defaultValue={selectedAgent.role}>
+                    <SelectTrigger id="edit-role">
+                    <SelectValue placeholder="Selecciona un rol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <SelectItem value="Support Level 1">Soporte Nivel 1</SelectItem>
+                    <SelectItem value="Support Level 2">Soporte Nivel 2</SelectItem>
+                    <SelectItem value="Admin">Admin</SelectItem>
+                    </SelectContent>
+                </Select>
+              </div>
+               <div className="flex justify-end pt-4">
+                <Button type="submit">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
     </>
