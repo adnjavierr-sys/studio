@@ -30,7 +30,7 @@ const ticketSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres."),
   client: z.string().min(1, "El cliente es obligatorio."),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
-  category: z.enum(["Support", "Hosting", "Urgent", "Other"]),
+  category: z.enum(["Support", "Hosting", "Oportuno", "Other"]),
 });
 
 type TicketFormValues = z.infer<typeof ticketSchema>;
@@ -151,7 +151,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
                   <SelectContent>
                     <SelectItem value="Support">Soporte</SelectItem>
                     <SelectItem value="Hosting">Hosting</SelectItem>
-                    <SelectItem value="Urgent">Urgente</SelectItem>
+                    <SelectItem value="Oportuno">Oportuno</SelectItem>
                     <SelectItem value="Other">Otro</SelectItem>
                   </SelectContent>
                 </Select>

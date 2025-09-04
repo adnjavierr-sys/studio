@@ -46,7 +46,7 @@ const statusTranslations: { [key: string]: string } = {
 const categoryTranslations: { [key: string]: string } = {
   Support: "Soporte",
   Hosting: "Hosting",
-  Urgent: "Urgente",
+  Oportuno: "Oportuno",
   Other: "Otro",
 };
 
@@ -110,7 +110,7 @@ function TicketsTableContent() {
             <SelectItem value="All">Todas las Categorías</SelectItem>
             <SelectItem value="Support">Soporte</SelectItem>
             <SelectItem value="Hosting">Hosting</SelectItem>
-            <SelectItem value="Urgent">Urgente</SelectItem>
+            <SelectItem value="Oportuno">Oportuno</SelectItem>
             <SelectItem value="Other">Otro</SelectItem>
           </SelectContent>
         </Select>

@@ -21,7 +21,7 @@ export type CategorizeTicketInput = z.infer<typeof CategorizeTicketInputSchema>;
 
 const CategorizeTicketOutputSchema = z.object({
   category: z
-    .enum(['Support', 'Hosting', 'Urgent', 'Other'])
+    .enum(['Support', 'Hosting', 'Oportuno', 'Other'])
     .describe('The predicted category for the ticket.'),
 });
 export type CategorizeTicketOutput = z.infer<typeof CategorizeTicketOutputSchema>;
@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert ticket categorization agent.
 
   Given the text of a ticket, predict the most appropriate category for the ticket.
-  The possible categories are: Support, Hosting, Urgent, Other.
+  The possible categories are: Support, Hosting, Oportuno, Other.
 
   Return ONLY the name of the category.
 

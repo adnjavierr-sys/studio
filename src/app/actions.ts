@@ -2,7 +2,7 @@
 
 import { categorizeTicket } from "@/ai/flows/categorize-new-tickets";
 
-export async function getTicketCategorySuggestion(ticketText: string): Promise<{ category?: 'Support' | 'Hosting' | 'Urgent' | 'Other', error?: string }> {
+export async function getTicketCategorySuggestion(ticketText: string): Promise<{ category?: 'Support' | 'Hosting' | 'Oportuno' | 'Other', error?: string }> {
   if (!ticketText || ticketText.trim().length < 10) {
     return { error: "Please provide more details in the ticket description for a suggestion." };
   }

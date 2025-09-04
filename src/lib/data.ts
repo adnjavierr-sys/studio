@@ -9,7 +9,7 @@ export type Ticket = {
   id: string;
   title: string;
   client: string;
-  category: 'Support' | 'Hosting' | 'Urgent' | 'Other';
+  category: 'Support' | 'Hosting' | 'Oportuno' | 'Other';
   status: 'Open' | 'In Progress' | 'Closed';
   createdAt: Date;
   updates?: TicketUpdate[];
@@ -54,7 +54,7 @@ export const tickets: Ticket[] = [
     id: 'TKT-001', 
     title: 'Website is down', 
     client: 'Acme Inc.', 
-    category: 'Urgent', 
+    category: 'Oportuno', 
     status: 'Open', 
     createdAt: new Date('2023-10-26T10:00:00Z'),
     updates: [
@@ -90,7 +90,7 @@ export const tickets: Ticket[] = [
   { id: 'TKT-005', title: 'General inquiry about services', client: 'Ollivanders Wand Shop', category: 'Other', status: 'Closed', createdAt: new Date('2023-10-23T16:45:00Z'), updates: [] },
   { id: 'TKT-006', title: 'Server migration request', client: 'Acme Inc.', category: 'Hosting', status: 'In Progress', createdAt: new Date('2023-10-27T08:00:00Z'), updates: [] },
   { id: 'TKT-007', title: 'Cannot access cPanel', client: 'Stark Industries', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-27T09:20:00Z'), updates: [] },
-  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Urgent', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z'), updates: [] },
+  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Oportuno', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z'), updates: [] },
 ];
 
 let clientsData: Client[] = [
@@ -210,6 +210,6 @@ export const dashboardStats = {
 export const ticketsByCategory = [
   { category: 'Support', count: tickets.filter(t => t.category === 'Support').length },
   { category: 'Hosting', count: tickets.filter(t => t.category === 'Hosting').length },
-  { category: 'Urgent', count: tickets.filter(t => t.category === 'Urgent').length },
+  { category: 'Oportuno', count: tickets.filter(t => t.category === 'Oportuno').length },
   { category: 'Other', count: tickets.filter(t => t.category === 'Other').length },
 ];

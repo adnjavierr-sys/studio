@@ -31,7 +31,7 @@ const statusTranslations: { [key: string]: string } = {
 const categoryTranslations: { [key: string]: string } = {
   Support: "Soporte",
   Hosting: "Hosting",
-  Urgent: "Urgente",
+  Oportuno: "Oportuno",
   Other: "Otro",
 };
 
