@@ -16,12 +16,15 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { agents } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { KeyRound, User, Mail } from "lucide-react";
+import { KeyRound, User, Mail, Eye, EyeOff } from "lucide-react";
 
 export default function ProfilePage() {
   const { toast } = useToast();
   // Simulate fetching the current logged-in user. In a real app, this would come from an auth context.
   const [currentUser, setCurrentUser] = useState(agents[0]);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   const handleProfileSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -138,14 +141,32 @@ export default function ProfilePage() {
                 <Label htmlFor="new-password">Nueva Contraseña</Label>
                  <div className="relative">
                   <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="new-password" name="new-password" type="password" className="pl-9" />
+                  <Input id="new-password" name="new-password" type={showNewPassword ? "text" : "password"} className="pl-9 pr-10" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? <EyeOff /> : <Eye />}
+                  </Button>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirmar Contraseña</Label>
                  <div className="relative">
                   <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input id="confirm-password" name="confirm-password" type="password" className="pl-9" />
+                  <Input id="confirm-password" name="confirm-password" type={showConfirmPassword ? "text" : "password"} className="pl-9 pr-10" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                  </Button>
                 </div>
               </div>
               <div className="flex justify-end pt-2">

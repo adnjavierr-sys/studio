@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound, Eye, EyeOff } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -57,6 +57,7 @@ export default function AgentsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -161,7 +162,7 @@ export default function AgentsPage() {
         title="Agentes"
         description="Administra los agentes de soporte."
       >
-        <Button onClick={() => setIsAddModalOpen(true)}>
+        <Button onClick={() => { setIsAddModalOpen(true); setShowPassword(false); }}>
           <PlusCircle />
           Añadir Agente
         </Button>
@@ -247,7 +248,18 @@ export default function AgentsPage() {
             </div>
             <div>
               <Label htmlFor="add-password">Contraseña</Label>
-              <Input id="add-password" name="password" type="password" required />
+              <div className="relative">
+                <Input id="add-password" name="password" type={showPassword ? "text" : "password"} required className="pr-10" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </Button>
+              </div>
             </div>
             <div>
               <Label htmlFor="add-role">Rol</Label>

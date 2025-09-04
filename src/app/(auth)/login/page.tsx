@@ -11,12 +11,14 @@ import { Logo } from "@/components/icons";
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { agents } from '@/lib/data';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
@@ -66,13 +68,25 @@ export default function LoginPage() {
                 </Button>
               </Link>
             </div>
-            <Input 
-              id="password" 
-              type="password" 
-              required 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input 
+                id="password" 
+                type={showPassword ? "text" : "password"}
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
+            </div>
           </div>
           <Button type="submit" className="w-full">
             Iniciar Sesión
