@@ -140,7 +140,7 @@ export default function TicketDetailsPage() {
                   <Calendar className="text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Fecha de Creación</p>
-                    <p className="text-muted-foreground">{format(ticket.createdAt, 'PPP p')}</p>
+                    <p className="text-muted-foreground">{format(ticket.createdAt, 'PPP')}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
