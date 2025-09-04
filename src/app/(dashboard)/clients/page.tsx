@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clients, Client } from "@/lib/data";
+import { clients as initialClients, Client } from "@/lib/data";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -38,14 +38,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ClientsPage() {
-  const [clientList, setClientList] = useState<Client[]>(clients);
+  const [clientList, setClientList] = useState<Client[]>(initialClients);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -111,7 +110,7 @@ export default function ClientsPage() {
       address: formData.get('address') as string,
       createdAt: new Date(),
     };
-    setClientList([newClient, ...clientList]);
+    setClientList(prevClients => [newClient, ...prevClients]);
     toast({
       title: "Cliente añadido",
       description: `El cliente ${newClient.name} ha sido añadido.`,
