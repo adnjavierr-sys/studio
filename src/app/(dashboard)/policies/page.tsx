@@ -5,12 +5,13 @@ import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { policies as initialPolicies, Policy, clients } from "@/lib/data";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, PlusCircle, User } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, PlusCircle, Shield } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -144,46 +145,58 @@ export default function PoliciesPage() {
           Añadir Póliza
         </Button>
       </PageHeader>
-      <div className="p-6 pt-0 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {policyList.map((policy) => (
-          <Card key={policy.id}>
-            <CardHeader className="flex flex-row items-start justify-between">
-              <div>
-                <CardTitle>{policy.title}</CardTitle>
-                <CardDescription>
-                  Creado: {format(policy.createdAt, "PPP")}
-                </CardDescription>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => openEditModal(policy)}>
-                    <Pencil className="mr-2" /> Modificar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive" onClick={() => openDeleteDialog(policy)}>
-                    <Trash2 className="mr-2" /> Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center mb-4">
-                <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  <span>{policy.clientName}</span>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {policy.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="p-6 pt-0">
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Título</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Fecha de Creación</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {policyList.length > 0 ? (
+                policyList.map((policy) => (
+                  <TableRow key={policy.id}>
+                    <TableCell className="font-medium">{policy.title}</TableCell>
+                    <TableCell>{policy.clientName}</TableCell>
+                    <TableCell>
+                      <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
+                    </TableCell>
+                    <TableCell>{format(policy.createdAt, "PPP")}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => openEditModal(policy)}>
+                            <Pencil className="mr-2" /> Modificar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => openDeleteDialog(policy)}>
+                            <Trash2 className="mr-2" /> Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    <Shield className="mx-auto h-8 w-8 text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">No se encontraron pólizas.</p>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       
       {/* Add Policy Modal */}
