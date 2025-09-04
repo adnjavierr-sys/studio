@@ -65,6 +65,13 @@ export default function ProfilePage() {
       });
       return;
     }
+    
+    // Update password in our "database"
+    const userIndex = agents.findIndex(a => a.id === currentUser.id);
+    if (userIndex !== -1) {
+      agents[userIndex].password = newPassword;
+      setCurrentUser({ ...currentUser, password: newPassword });
+    }
 
     toast({
       title: "Contraseña Actualizada",
