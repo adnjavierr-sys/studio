@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Download, Trash2, PlusCircle, Bell } from "lucide-react";
@@ -36,6 +37,7 @@ export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
   const [recipientEmail, setRecipientEmail] = useState("");
   const { toast } = useToast();
+  const router = useRouter();
   
   const handleClientChange = (clientName: string) => {
     const client = clients.find(c => c.name === clientName);
@@ -77,6 +79,10 @@ export default function ReportsPage() {
       title: "Automatización Eliminada",
       description: "La configuración del reporte ha sido eliminada.",
     });
+  };
+
+  const handleCategoryClick = (category: string) => {
+    router.push(`/tickets?category=${encodeURIComponent(category)}`);
   };
 
   return (
@@ -229,7 +235,7 @@ export default function ReportsPage() {
                 </TableHeader>
                 <TableBody>
                   {ticketsByCategory.map((item) => (
-                    <TableRow key={item.category}>
+                    <TableRow key={item.category} onClick={() => handleCategoryClick(item.category)} className="cursor-pointer">
                       <TableCell className="font-medium">
                         {item.category}
                       </TableCell>

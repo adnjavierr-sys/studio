@@ -1,7 +1,8 @@
+
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -49,12 +50,20 @@ const categoryTranslations: { [key: string]: string } = {
   Other: "Otro",
 };
 
-export function TicketsTable() {
+function TicketsTableContent() {
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (category && Object.keys(categoryTranslations).includes(category)) {
+      setCategoryFilter(category);
+    }
+  }, [searchParams]);
 
   const filteredTickets = tickets
     .filter((ticket) => {
@@ -168,5 +177,13 @@ export function TicketsTable() {
         </Table>
       </div>
     </div>
+  );
+}
+
+export function TicketsTable() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <TicketsTableContent />
+    </Suspense>
   );
 }
