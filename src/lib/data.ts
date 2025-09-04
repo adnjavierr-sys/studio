@@ -1,4 +1,10 @@
 
+export type TicketUpdate = {
+  timestamp: Date;
+  author: string; 
+  update: string; 
+};
+
 export type Ticket = {
   id: string;
   title: string;
@@ -6,6 +12,7 @@ export type Ticket = {
   category: 'Support' | 'Hosting' | 'Urgent' | 'Other';
   status: 'Open' | 'In Progress' | 'Closed';
   createdAt: Date;
+  updates?: TicketUpdate[];
 };
 
 export type Client = {
@@ -41,14 +48,47 @@ export type ReportAutomation = {
 };
 
 export const tickets: Ticket[] = [
-  { id: 'TKT-001', title: 'Website is down', client: 'Acme Inc.', category: 'Urgent', status: 'Open', createdAt: new Date('2023-10-26T10:00:00Z') },
-  { id: 'TKT-002', title: 'Email not working', client: 'Stark Industries', category: 'Support', status: 'In Progress', createdAt: new Date('2023-10-26T11:30:00Z') },
-  { id: 'TKT-003', title: 'Need to update DNS records', client: 'Wayne Enterprises', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-25T14:00:00Z') },
-  { id: 'TKT-004', title: 'Login page is slow', client: 'Cyberdyne Systems', category: 'Support', status: 'Closed', createdAt: new Date('2023-10-24T09:15:00Z') },
-  { id: 'TKT-005', title: 'General inquiry about services', client: 'Ollivanders Wand Shop', category: 'Other', status: 'Closed', createdAt: new Date('2023-10-23T16:45:00Z') },
-  { id: 'TKT-006', title: 'Server migration request', client: 'Acme Inc.', category: 'Hosting', status: 'In Progress', createdAt: new Date('2023-10-27T08:00:00Z') },
-  { id: 'TKT-007', title: 'Cannot access cPanel', client: 'Stark Industries', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-27T09:20:00Z') },
-  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Urgent', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z') },
+  { 
+    id: 'TKT-001', 
+    title: 'Website is down', 
+    client: 'Acme Inc.', 
+    category: 'Urgent', 
+    status: 'Open', 
+    createdAt: new Date('2023-10-26T10:00:00Z'),
+    updates: [
+      { timestamp: new Date('2023-10-26T10:00:00Z'), author: 'System', update: 'Ticket Creado.' }
+    ]
+  },
+  { 
+    id: 'TKT-002', 
+    title: 'Email not working', 
+    client: 'Stark Industries', 
+    category: 'Support', 
+    status: 'In Progress', 
+    createdAt: new Date('2023-10-26T11:30:00Z'),
+    updates: [
+      { timestamp: new Date('2023-10-26T11:30:00Z'), author: 'System', update: 'Ticket Creado.' },
+      { timestamp: new Date('2023-10-26T12:00:00Z'), author: 'Jane Smith', update: 'Status changed to In Progress.' }
+    ]
+  },
+  { id: 'TKT-003', title: 'Need to update DNS records', client: 'Wayne Enterprises', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-25T14:00:00Z'), updates: [] },
+  { 
+    id: 'TKT-004', 
+    title: 'Login page is slow', 
+    client: 'Cyberdyne Systems', 
+    category: 'Support', 
+    status: 'Closed', 
+    createdAt: new Date('2023-10-24T09:15:00Z'),
+    updates: [
+      { timestamp: new Date('2023-10-24T09:15:00Z'), author: 'System', update: 'Ticket Creado.' },
+      { timestamp: new Date('2023-10-24T10:00:00Z'), author: 'Peter Jones', update: 'Status changed to In Progress.' },
+      { timestamp: new Date('2023-10-24T11:00:00Z'), author: 'Peter Jones', update: 'Status changed to Closed. Issue resolved.' }
+    ]
+  },
+  { id: 'TKT-005', title: 'General inquiry about services', client: 'Ollivanders Wand Shop', category: 'Other', status: 'Closed', createdAt: new Date('2023-10-23T16:45:00Z'), updates: [] },
+  { id: 'TKT-006', title: 'Server migration request', client: 'Acme Inc.', category: 'Hosting', status: 'In Progress', createdAt: new Date('2023-10-27T08:00:00Z'), updates: [] },
+  { id: 'TKT-007', title: 'Cannot access cPanel', client: 'Stark Industries', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-27T09:20:00Z'), updates: [] },
+  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Urgent', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z'), updates: [] },
 ];
 
 let clientsData: Client[] = [
@@ -115,6 +155,12 @@ export const reportAutomations: ReportAutomation[] = new Proxy(automationsData, 
             return (newAutomation: ReportAutomation) => {
                 target.unshift(newAutomation);
                 return target.length;
+            }
+        }
+        if (prop === 'splice') {
+            return (start: number, deleteCount?: number) => {
+                const result = target.splice(start, deleteCount);
+                return result;
             }
         }
         return target[prop as any];
