@@ -33,6 +33,13 @@ export type Agent = {
   createdAt: Date;
 };
 
+export type ReportAutomation = {
+  id: string;
+  clientName: string;
+  frequency: 'Diaria' | 'Semanal' | 'Mensual';
+  recipientEmail: string;
+};
+
 export const tickets: Ticket[] = [
   { id: 'TKT-001', title: 'Website is down', client: 'Acme Inc.', category: 'Urgent', status: 'Open', createdAt: new Date('2023-10-26T10:00:00Z') },
   { id: 'TKT-002', title: 'Email not working', client: 'Stark Industries', category: 'Support', status: 'In Progress', createdAt: new Date('2023-10-26T11:30:00Z') },
@@ -54,6 +61,12 @@ let clientsData: Client[] = [
 
 export const clients: Client[] = new Proxy(clientsData, {
   get(target, prop) {
+    if (prop === 'unshift') {
+        return (newClient: Client) => {
+            target.unshift(newClient);
+            return target.length;
+        }
+    }
     return target[prop as any];
   },
   set(target, prop, value) {
@@ -77,11 +90,41 @@ let agentsData: Agent[] = [
 
 export const agents: Agent[] = new Proxy(agentsData, {
     get(target, prop) {
+        if (prop === 'unshift') {
+            return (newAgent: Agent) => {
+                target.unshift(newAgent);
+                return target.length;
+            }
+        }
         return target[prop as any];
     },
     set(target, prop, value) {
         (target as any)[prop] = value;
         return true;
+    }
+});
+
+let automationsData: ReportAutomation[] = [
+    { id: 'AUT-001', clientName: 'Acme Inc.', frequency: 'Semanal', recipientEmail: 'manager@acme.com' },
+    { id: 'AUT-002', clientName: 'Stark Industries', frequency: 'Mensual', recipientEmail: 'pepper.potts@stark.com' },
+];
+
+export const reportAutomations: ReportAutomation[] = new Proxy(automationsData, {
+    get(target, prop) {
+        if (prop === 'unshift') {
+            return (newAutomation: ReportAutomation) => {
+                target.unshift(newAutomation);
+                return target.length;
+            }
+        }
+        return target[prop as any];
+    },
+    set(target, prop, value) {
+        (target as any)[prop] = value;
+        return true;
+    },
+    deleteProperty(target, prop) {
+        return delete (target as any)[prop];
     }
 });
 
