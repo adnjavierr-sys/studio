@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -31,6 +32,7 @@ const ticketSchema = z.object({
   client: z.string().min(1, "El cliente es obligatorio."),
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
   category: z.enum(["Support", "Hosting", "Oportuno", "Other"]),
+  sla: z.enum(["Normal", "Alta", "Baja"]),
 });
 
 type TicketFormValues = z.infer<typeof ticketSchema>;
@@ -47,6 +49,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       client: "",
       description: "",
       category: "Support",
+      sla: "Normal",
     },
   });
 
@@ -131,49 +134,77 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoría</FormLabel>
-              <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Categoría</FormLabel>
+                <div className="flex items-center gap-2">
+                    <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                    >
+                    <FormControl>
+                        <SelectTrigger>
+                        <SelectValue placeholder="Selecciona una categoría" />
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="Support">Soporte</SelectItem>
+                        <SelectItem value="Hosting">Hosting</SelectItem>
+                        <SelectItem value="Oportuno">Oportuno</SelectItem>
+                        <SelectItem value="Other">Otro</SelectItem>
+                    </SelectContent>
+                    </Select>
+                    <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleSuggestCategory}
+                    disabled={isSuggesting}
+                    aria-label="Sugerir Categoría"
+                    >
+                    {isSuggesting ? (
+                        <Loader2 className="animate-spin" />
+                    ) : (
+                        <Wand2 />
+                    )}
+                    </Button>
+                </div>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="sla"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Prioridad (SLA)</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
                 >
-                  <FormControl>
+                    <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona una categoría" />
+                        <SelectValue placeholder="Selecciona una prioridad" />
                     </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Support">Soporte</SelectItem>
-                    <SelectItem value="Hosting">Hosting</SelectItem>
-                    <SelectItem value="Oportuno">Oportuno</SelectItem>
-                    <SelectItem value="Other">Otro</SelectItem>
-                  </SelectContent>
+                    </FormControl>
+                    <SelectContent>
+                    <SelectItem value="Baja">Baja</SelectItem>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="Alta">Alta</SelectItem>
+                    </SelectContent>
                 </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleSuggestCategory}
-                  disabled={isSuggesting}
-                  aria-label="Sugerir Categoría"
-                >
-                  {isSuggesting ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <Wand2 />
-                  )}
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 animate-spin" />}

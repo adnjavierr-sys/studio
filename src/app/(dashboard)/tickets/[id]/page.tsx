@@ -7,7 +7,7 @@ import { tickets, Ticket } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,6 +20,12 @@ const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
   "In Progress": "bg-yellow-200 text-yellow-800",
   Closed: "bg-red-200 text-red-800",
+};
+
+const slaColors: { [key: string]: string } = {
+  Baja: "bg-blue-200 text-blue-800",
+  Normal: "bg-gray-200 text-gray-800",
+  Alta: "bg-orange-200 text-orange-800",
 };
 
 const statusTranslations: { [key: string]: string } = {
@@ -156,6 +162,15 @@ export default function TicketDetailsPage() {
                     <p className="text-sm font-medium">Estado</p>
                     <Badge className={statusColors[ticket.status]}>
                       {statusTranslations[ticket.status]}
+                    </Badge>
+                  </div>
+                </div>
+                 <div className="flex items-center space-x-3">
+                  <ShieldAlert className="text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">Prioridad (SLA)</p>
+                    <Badge className={slaColors[ticket.sla]}>
+                      {ticket.sla}
                     </Badge>
                   </div>
                 </div>

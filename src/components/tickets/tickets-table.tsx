@@ -37,6 +37,12 @@ const statusColors: { [key: string]: string } = {
   Closed: "bg-red-200 text-red-800",
 };
 
+const slaColors: { [key: string]: string } = {
+  Baja: "bg-blue-200 text-blue-800",
+  Normal: "bg-gray-200 text-gray-800",
+  Alta: "bg-orange-200 text-orange-800",
+};
+
 const statusTranslations: { [key: string]: string } = {
   Open: "Abierto",
   "In Progress": "En Progreso",
@@ -123,6 +129,7 @@ function TicketsTableContent() {
               <TableHead>Título</TableHead>
               <TableHead>Cliente</TableHead>
               <TableHead>Categoría</TableHead>
+              <TableHead>Prioridad</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Creado en</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
@@ -137,6 +144,11 @@ function TicketsTableContent() {
                   <TableCell>{ticket.client}</TableCell>
                   <TableCell>
                     <Badge variant="secondary">{categoryTranslations[ticket.category]}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={slaColors[ticket.sla]}>
+                      {ticket.sla}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge className={statusColors[ticket.status]}>
@@ -167,7 +179,7 @@ function TicketsTableContent() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={8} className="h-24 text-center">
                   <TicketIcon className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-2 text-muted-foreground">No se encontraron tickets.</p>
                 </TableCell>

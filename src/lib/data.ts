@@ -11,6 +11,7 @@ export type Ticket = {
   client: string;
   category: 'Support' | 'Hosting' | 'Oportuno' | 'Other';
   status: 'Open' | 'In Progress' | 'Closed';
+  sla: 'Normal' | 'Alta' | 'Baja';
   createdAt: Date;
   updates?: TicketUpdate[];
 };
@@ -56,6 +57,7 @@ export const tickets: Ticket[] = [
     client: 'Acme Inc.', 
     category: 'Oportuno', 
     status: 'Open', 
+    sla: 'Alta',
     createdAt: new Date('2023-10-26T10:00:00Z'),
     updates: [
       { timestamp: new Date('2023-10-26T10:00:00Z'), author: 'System', update: 'Ticket Creado.' }
@@ -67,19 +69,21 @@ export const tickets: Ticket[] = [
     client: 'Stark Industries', 
     category: 'Support', 
     status: 'In Progress', 
+    sla: 'Alta',
     createdAt: new Date('2023-10-26T11:30:00Z'),
     updates: [
       { timestamp: new Date('2023-10-26T11:30:00Z'), author: 'System', update: 'Ticket Creado.' },
       { timestamp: new Date('2023-10-26T12:00:00Z'), author: 'Jane Smith', update: 'Status changed to In Progress.' }
     ]
   },
-  { id: 'TKT-003', title: 'Need to update DNS records', client: 'Wayne Enterprises', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-25T14:00:00Z'), updates: [] },
+  { id: 'TKT-003', title: 'Need to update DNS records', client: 'Wayne Enterprises', category: 'Hosting', status: 'Open', sla: 'Normal', createdAt: new Date('2023-10-25T14:00:00Z'), updates: [] },
   { 
     id: 'TKT-004', 
     title: 'Login page is slow', 
     client: 'Cyberdyne Systems', 
     category: 'Support', 
     status: 'Closed', 
+    sla: 'Baja',
     createdAt: new Date('2023-10-24T09:15:00Z'),
     updates: [
       { timestamp: new Date('2023-10-24T09:15:00Z'), author: 'System', update: 'Ticket Creado.' },
@@ -87,10 +91,10 @@ export const tickets: Ticket[] = [
       { timestamp: new Date('2023-10-24T11:00:00Z'), author: 'Peter Jones', update: 'Status changed to Closed. Issue resolved.' }
     ]
   },
-  { id: 'TKT-005', title: 'General inquiry about services', client: 'Ollivanders Wand Shop', category: 'Other', status: 'Closed', createdAt: new Date('2023-10-23T16:45:00Z'), updates: [] },
-  { id: 'TKT-006', title: 'Server migration request', client: 'Acme Inc.', category: 'Hosting', status: 'In Progress', createdAt: new Date('2023-10-27T08:00:00Z'), updates: [] },
-  { id: 'TKT-007', title: 'Cannot access cPanel', client: 'Stark Industries', category: 'Hosting', status: 'Open', createdAt: new Date('2023-10-27T09:20:00Z'), updates: [] },
-  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Oportuno', status: 'In Progress', createdAt: new Date('2023-10-27T10:00:00Z'), updates: [] },
+  { id: 'TKT-005', title: 'General inquiry about services', client: 'Ollivanders Wand Shop', category: 'Other', status: 'Closed', sla: 'Baja', createdAt: new Date('2023-10-23T16:45:00Z'), updates: [] },
+  { id: 'TKT-006', title: 'Server migration request', client: 'Acme Inc.', category: 'Hosting', status: 'In Progress', sla: 'Normal', createdAt: new Date('2023-10-27T08:00:00Z'), updates: [] },
+  { id: 'TKT-007', title: 'Cannot access cPanel', client: 'Stark Industries', category: 'Hosting', status: 'Open', sla: 'Normal', createdAt: new Date('2023-10-27T09:20:00Z'), updates: [] },
+  { id: 'TKT-008', title: 'Emergency server reboot', client: 'Wayne Enterprises', category: 'Oportuno', status: 'In Progress', sla: 'Alta', createdAt: new Date('2023-10-27T10:00:00Z'), updates: [] },
 ];
 
 let clientsData: Client[] = [
@@ -149,7 +153,7 @@ export const policies: Policy[] = new Proxy(policiesData, {
 
 let agentsData: Agent[] = [
     { id: 'AGT-001', name: 'Admin User', email: 'admin@unoti.com', role: 'Admin', createdAt: new Date('2022-01-01T09:00:00Z'), password: 'unotiadmin' },
-    { id: 'AGT-002', name: 'Jane Smith', email: 'jane.smith@unoti.com', role: 'Support Level 2', createdAt: new Date('2022-02-10T10:00:00Z'), password: 'password123' },
+    { id: 'AGT-002', name: 'Jane Smith', email: 'jane.smith@unoti.com', role: 'Support Level 2', createdAt: new Date('22-02-10T10:00:00Z'), password: 'password123' },
     { id: 'AGT-003', name: 'Peter Jones', email: 'peter.jones@unoti.com', role: 'Support Level 1', createdAt: new Date('2022-03-15T11:00:00Z'), password: 'password123' },
 ];
 
