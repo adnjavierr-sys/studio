@@ -41,7 +41,7 @@ export function ReportPreviewDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-6xl">
         <DialogHeader>
             <div className="flex items-center gap-4 mb-4">
                  <Image 
@@ -72,19 +72,27 @@ export function ReportPreviewDialog({
                   <TableHead>Título</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead>Categoría</TableHead>
+                  <TableHead>Prioridad</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Fecha de Creación</TableHead>
+                  <TableHead>Última Actualización</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {previewData.map((ticket) => (
                   <TableRow key={ticket.id}>
                     <TableCell>{ticket.id}</TableCell>
-                    <TableCell>{ticket.title}</TableCell>
+                    <TableCell className="max-w-[200px] truncate">{ticket.title}</TableCell>
                     <TableCell>{ticket.client}</TableCell>
                     <TableCell>{ticket.category}</TableCell>
+                    <TableCell>{ticket.sla}</TableCell>
                     <TableCell>{ticket.status}</TableCell>
                     <TableCell>{format(ticket.createdAt, "PPP")}</TableCell>
+                    <TableCell>
+                      {ticket.updates && ticket.updates.length > 0
+                        ? format(ticket.updates[ticket.updates.length - 1].timestamp, "PPP")
+                        : format(ticket.createdAt, "PPP")}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

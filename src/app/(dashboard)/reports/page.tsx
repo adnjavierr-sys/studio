@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
+import { format } from "date-fns";
 
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
@@ -106,8 +107,12 @@ export default function ReportsPage() {
       Titulo: ticket.title,
       Cliente: ticket.client,
       Categoria: ticket.category,
+      Prioridad_SLA: ticket.sla,
       Estado: ticket.status,
       "Fecha de Creacion": ticket.createdAt.toISOString(),
+      "Ultima Actualizacion": ticket.updates && ticket.updates.length > 0
+        ? ticket.updates[ticket.updates.length - 1].timestamp.toISOString()
+        : ticket.createdAt.toISOString(),
     }));
 
     const csv = Papa.unparse(dataToExport);
