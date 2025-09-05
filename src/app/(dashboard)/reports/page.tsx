@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { tickets, ticketsByCategory, clients, reportAutomations as initialAutomations, ReportAutomation } from "@/lib/data";
+import { tickets, ticketsByCategory, clients, reportAutomations as initialAutomations, ReportAutomation, Ticket } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -33,12 +33,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
+import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
 
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [manualRecipientEmail, setManualRecipientEmail] = useState("");
   const [selectedManualClient, setSelectedManualClient] = useState("");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   
@@ -98,8 +100,8 @@ export default function ReportsPage() {
     router.push(`/tickets?category=${encodeURIComponent(category)}`);
   };
 
-  const handleExport = () => {
-    const dataToExport = tickets.map(ticket => ({
+  const handleExport = (data: Ticket[]) => {
+    const dataToExport = data.map(ticket => ({
       ID: ticket.id,
       Titulo: ticket.title,
       Cliente: ticket.client,
@@ -123,6 +125,7 @@ export default function ReportsPage() {
       title: "Reporte Exportado",
       description: "El reporte de tickets se ha descargado como CSV.",
     });
+    setIsPreviewOpen(false);
   };
   
   const handleManualSend = () => {
@@ -147,7 +150,7 @@ export default function ReportsPage() {
         title="Reportes"
         description="Genera y exporta reportes de datos de tickets."
       >
-        <Button onClick={handleExport}>
+        <Button onClick={() => setIsPreviewOpen(true)}>
           <Download />
           Exportar Reporte
         </Button>
@@ -233,7 +236,7 @@ export default function ReportsPage() {
             <form onSubmit={handleAddAutomation} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="client">Cliente</Label>
-                <Select name="client" required onValuechange={handleClientChange}>
+                <Select name="client" required onValueChange={handleClientChange}>
                   <SelectTrigger id="client">
                     <SelectValue placeholder="Selecciona un cliente" />
                   </SelectTrigger>
@@ -344,8 +347,13 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <ReportPreviewDialog 
+        isOpen={isPreviewOpen} 
+        onOpenChange={setIsPreviewOpen} 
+        data={tickets} 
+        onConfirmExport={handleExport}
+      />
     </>
   );
 }
-
-    
