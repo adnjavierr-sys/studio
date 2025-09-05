@@ -1,6 +1,8 @@
 
+import { Timestamp } from "firebase/firestore";
+
 export type TicketUpdate = {
-  timestamp: Date;
+  timestamp: Date | Timestamp;
   author: string; 
   update: string; 
 };
@@ -12,7 +14,7 @@ export type Ticket = {
   category: 'Support' | 'Hosting' | 'Oportuno' | 'Other';
   status: 'Open' | 'In Progress' | 'Closed';
   sla: 'Normal' | 'Alta' | 'Baja';
-  createdAt: Date;
+  createdAt: Date | Timestamp;
   updates?: TicketUpdate[];
   imageUrl?: string;
 };
@@ -23,7 +25,7 @@ export type Client = {
   email: string;
   company: string;
   address: string;
-  createdAt: Date;
+  createdAt: Date | Timestamp;
 };
 
 export type Policy = {

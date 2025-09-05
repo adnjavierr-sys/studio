@@ -1,25 +1,61 @@
+
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { clients } from '@/lib/data';
+import { Client } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Mail, Building, MapPin } from 'lucide-react';
+import { ArrowLeft, Calendar, Mail, Building, MapPin, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
 
-  const client = clients.find((c) => c.id === id);
+  const [client, setClient] = useState<Client | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClient = async () => {
+      if (typeof id !== 'string') return;
+      setIsLoading(true);
+      try {
+        const docRef = doc(db, "clients", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setClient({ id: docSnap.id, ...docSnap.data() } as Client);
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching client:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClient();
+  }, [id]);
+  
+  if (isLoading) {
+    return (
+       <div className="p-6 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+       </div>
+    );
+  }
 
   if (!client) {
     return (
       <div className="p-6">
-        <PageHeader title="Cliente no encontrado" description="El cliente que buscas no existe."/>
+        <PageHeader title="Cliente no encontrado" description="El cliente que buscas no existe o ha sido eliminado."/>
         <Button onClick={() => router.push('/clients')}>
           <ArrowLeft className="mr-2" />
           Volver a Clientes
@@ -29,6 +65,7 @@ export default function ClientDetailsPage() {
   }
   
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(client.address)}&output=embed`;
+  const createdAtDate = client.createdAt instanceof Timestamp ? client.createdAt.toDate() : new Date();
 
   return (
     <>
@@ -72,7 +109,7 @@ export default function ClientDetailsPage() {
                     <Calendar className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Miembro Desde</p>
-                        <p className="text-muted-foreground">{format(client.createdAt, 'PPP')}</p>
+                        <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
                     </div>
                 </div>
                 <div className="flex items-start space-x-3">

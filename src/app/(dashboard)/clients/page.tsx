@@ -1,10 +1,11 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Pencil, Trash2, Users, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clients as initialClients, Client } from "@/lib/data";
+import { Client } from "@/lib/data";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -42,15 +43,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
 
 export default function ClientsPage() {
-  const [clientList, setClientList] = useState<Client[]>(initialClients);
+  const [clientList, setClientList] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  const fetchClients = async () => {
+    setIsLoading(true);
+    try {
+      const clientsCollection = collection(db, "clients");
+      const q = query(clientsCollection, orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const clients: Client[] = [];
+      querySnapshot.forEach((doc) => {
+        clients.push({ id: doc.id, ...doc.data() } as Client);
+      });
+      setClientList(clients);
+    } catch (error) {
+      console.error("Error fetching clients: ", error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los clientes.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
 
   const handleRowClick = (clientId: string) => {
     router.push(`/clients/${clientId}`);
@@ -61,15 +93,25 @@ export default function ClientsPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleDeleteClient = () => {
+  const handleDeleteClient = async () => {
     if (selectedClient) {
-      setClientList(clientList.filter((c) => c.id !== selectedClient.id));
-      toast({
-        title: "Cliente eliminado",
-        description: `El cliente ${selectedClient.name} ha sido eliminado.`,
-      });
-      setIsDeleteDialogOpen(false);
-      setSelectedClient(null);
+      try {
+        await deleteDoc(doc(db, "clients", selectedClient.id));
+        toast({
+          title: "Cliente eliminado",
+          description: `El cliente ${selectedClient.name} ha sido eliminado.`,
+        });
+        fetchClients(); // Refresh list
+      } catch (error) {
+         toast({
+          title: "Error",
+          description: "No se pudo eliminar el cliente.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsDeleteDialogOpen(false);
+        setSelectedClient(null);
+      }
     }
   };
   
@@ -78,50 +120,65 @@ export default function ClientsPage() {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateClient = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdateClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedClient) {
       const formData = new FormData(event.currentTarget);
-      const updatedClient = {
-        ...selectedClient,
+      const updatedData = {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
         company: formData.get('company') as string,
         address: formData.get('address') as string,
       };
-      const newClientList = clientList.map(c => c.id === updatedClient.id ? updatedClient : c);
-      setClientList(newClientList);
-      // Also update the source of truth
-      initialClients.splice(initialClients.findIndex(c => c.id === updatedClient.id), 1, updatedClient);
-      toast({
-        title: "Cliente actualizado",
-        description: `Los datos de ${updatedClient.name} han sido actualizados.`
-      });
-      setIsEditModalOpen(false);
-      setSelectedClient(null);
+      
+      try {
+        const clientRef = doc(db, "clients", selectedClient.id);
+        await updateDoc(clientRef, updatedData);
+        toast({
+          title: "Cliente actualizado",
+          description: `Los datos de ${updatedData.name} han sido actualizados.`
+        });
+        fetchClients(); // Refresh list
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar el cliente.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsEditModalOpen(false);
+        setSelectedClient(null);
+      }
     }
   };
 
-  const handleAddClient = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAddClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const newClient: Client = {
-      id: `CLI-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+    const newClient = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       company: formData.get('company') as string,
       address: formData.get('address') as string,
-      createdAt: new Date(),
+      createdAt: Timestamp.now(),
     };
-    // Add to the shared array first
-    initialClients.unshift(newClient);
-    // Then update the local state from the shared array
-    setClientList([...initialClients]);
-    toast({
-      title: "Cliente añadido",
-      description: `El cliente ${newClient.name} ha sido añadido.`,
-    });
-    setIsAddModalOpen(false);
+    
+    try {
+      await addDoc(collection(db, "clients"), newClient);
+      toast({
+        title: "Cliente añadido",
+        description: `El cliente ${newClient.name} ha sido añadido.`,
+      });
+      fetchClients(); // Refresh list
+    } catch (error) {
+       toast({
+        title: "Error",
+        description: "No se pudo añadir el cliente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddModalOpen(false);
+    }
   };
 
 
@@ -148,7 +205,14 @@ export default function ClientsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clientList.length > 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">Cargando clientes...</p>
+                  </TableCell>
+                </TableRow>
+              ) : clientList.length > 0 ? (
                 clientList.map((client) => (
                   <TableRow key={client.id} onClick={() => handleRowClick(client.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
@@ -164,7 +228,9 @@ export default function ClientsPage() {
                       </div>
                     </TableCell>
                     <TableCell>{client.company}</TableCell>
-                    <TableCell>{format(client.createdAt, "PPP")}</TableCell>
+                    <TableCell>
+                      {client.createdAt && format((client.createdAt as Timestamp).toDate(), "PPP")}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -192,6 +258,9 @@ export default function ClientsPage() {
                   <TableCell colSpan={4} className="h-24 text-center">
                     <Users className="mx-auto h-8 w-8 text-muted-foreground" />
                     <p className="mt-2 text-muted-foreground">No se encontraron clientes.</p>
+                     <p className="text-sm text-muted-foreground">
+                        Empieza por añadir tu primer cliente.
+                    </p>
                   </TableCell>
                 </TableRow>
               )}
