@@ -1,21 +1,114 @@
 
 "use client";
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { agents } from '@/lib/data';
+import { agents, Agent } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Mail, Shield } from 'lucide-react';
+import { ArrowLeft, Calendar, Mail, Shield, Pencil, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AgentDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
+  const { toast } = useToast();
 
-  const agent = agents.find((a) => a.id === id);
+  const [agent, setAgent] = useState<Agent | undefined>(
+    agents.find((a) => a.id === id)
+  );
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleDeleteAgent = () => {
+    if (agent) {
+      const indexToDelete = agents.findIndex(a => a.id === agent.id);
+      if (indexToDelete > -1) {
+        agents.splice(indexToDelete, 1);
+      }
+      toast({
+        title: "Agente Eliminado",
+        description: `El agente ${agent.name} ha sido eliminado.`,
+      });
+      setIsDeleteConfirmationOpen(false);
+      router.push('/agents');
+    }
+  };
+
+  const handleUpdateAgent = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (agent) {
+      const formData = new FormData(event.currentTarget);
+      const updatedAgentData = {
+        ...agent,
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
+      };
+      
+      const agentIndex = agents.findIndex(a => a.id === agent.id);
+      if (agentIndex !== -1) {
+        agents[agentIndex] = updatedAgentData;
+      }
+
+      setAgent(updatedAgentData);
+      
+      toast({
+        title: "Agente actualizado",
+        description: `Los datos de ${updatedAgentData.name} han sido actualizados.`
+      });
+      setIsEditModalOpen(false);
+    }
+  };
+
+  const handleSetTemporaryPassword = () => {
+    if (agent) {
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const agentIndex = agents.findIndex(a => a.id === agent.id);
+      if (agentIndex !== -1) {
+        agents[agentIndex].password = tempPassword;
+        const updatedAgent = { ...agent, password: tempPassword };
+        setAgent(updatedAgent);
+        alert(`La nueva contraseña temporal para ${agent.name} es: ${tempPassword}`);
+        toast({
+          title: "Contraseña Temporal Generada",
+          description: `Se ha establecido una nueva contraseña para ${agent.name}.`,
+        });
+      }
+    }
+  };
 
   if (!agent) {
     return (
@@ -32,10 +125,18 @@ export default function AgentDetailsPage() {
   return (
     <>
       <PageHeader title="Detalles del Agente">
-        <Button onClick={() => router.push('/agents')}>
-          <ArrowLeft className="mr-2" />
-          Volver a Agentes
-        </Button>
+        <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsEditModalOpen(true)}>
+                <Pencil /> Editar
+            </Button>
+            <Button variant="destructive" onClick={() => setIsDeleteConfirmationOpen(true)}>
+                <Trash2 /> Eliminar
+            </Button>
+            <Button onClick={() => router.push('/agents')} variant="secondary">
+                <ArrowLeft className="mr-2" />
+                Volver a Agentes
+            </Button>
+        </div>
       </PageHeader>
       <div className="p-6 pt-0">
         <Card>
@@ -78,6 +179,69 @@ export default function AgentDetailsPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Edit Agent Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Agente</DialogTitle>
+            <DialogDescription>
+              Actualiza la información del agente.
+            </DialogDescription>
+          </DialogHeader>
+          {agent && (
+            <form onSubmit={handleUpdateAgent} className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="edit-name">Nombre</Label>
+                <Input id="edit-name" name="name" defaultValue={agent.name} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-email">Email</Label>
+                <Input id="edit-email" name="email" type="email" defaultValue={agent.email} required />
+              </div>
+              <div>
+                <Label htmlFor="edit-role">Rol</Label>
+                 <Select name="role" required defaultValue={agent.role}>
+                    <SelectTrigger id="edit-role">
+                    <SelectValue placeholder="Selecciona un rol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <SelectItem value="Support Level 1">Soporte Nivel 1</SelectItem>
+                    <SelectItem value="Support Level 2">Soporte Nivel 2</SelectItem>
+                    <SelectItem value="Admin">Admin</SelectItem>
+                    </SelectContent>
+                </Select>
+              </div>
+               <div className="flex justify-end pt-4 gap-2">
+                <Button type="button" variant="outline" onClick={handleSetTemporaryPassword}>
+                  <KeyRound />
+                  Generar Contraseña Temporal
+                </Button>
+                <Button type="submit">Guardar Cambios</Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Agent Confirmation */}
+      <AlertDialog open={isDeleteConfirmationOpen} onOpenChange={setIsDeleteConfirmationOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente al agente 
+              <span className="font-semibold"> {agent?.name}</span> y todos sus datos asociados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAgent}>
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
