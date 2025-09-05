@@ -132,29 +132,6 @@ export default function AgentsPage() {
       setSelectedAgent(null);
     }
   };
-  
-  const handleSetTemporaryPassword = () => {
-    if (selectedAgent) {
-      const tempPassword = Math.random().toString(36).slice(-8);
-      const agentIndex = initialAgents.findIndex(a => a.id === selectedAgent.id);
-      if (agentIndex !== -1) {
-        initialAgents[agentIndex].password = tempPassword;
-        // Also update the agent in the local state if needed, though it's not displayed
-        const updatedAgent = { ...selectedAgent, password: tempPassword };
-        setSelectedAgent(updatedAgent);
-        const newAgentList = agentList.map(a => a.id === updatedAgent.id ? updatedAgent : a);
-        setAgentList(newAgentList);
-
-        alert(`La nueva contraseña temporal para ${selectedAgent.name} es: ${tempPassword}`);
-
-        toast({
-          title: "Contraseña Temporal Generada",
-          description: `Se ha establecido una nueva contraseña para ${selectedAgent.name}.`,
-        });
-      }
-    }
-  };
-
 
   return (
     <>
@@ -314,10 +291,6 @@ export default function AgentsPage() {
                 </Select>
               </div>
                <div className="flex justify-end pt-4 gap-2">
-                <Button type="button" variant="outline" onClick={handleSetTemporaryPassword}>
-                  <KeyRound />
-                  Generar Contraseña Temporal
-                </Button>
                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
@@ -346,5 +319,3 @@ export default function AgentsPage() {
     </>
   );
 }
-
-    

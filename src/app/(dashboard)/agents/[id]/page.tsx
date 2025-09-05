@@ -50,7 +50,6 @@ export default function AgentDetailsPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleDeleteAgent = () => {
     if (agent) {
@@ -90,23 +89,6 @@ export default function AgentDetailsPage() {
         description: `Los datos de ${updatedAgentData.name} han sido actualizados.`
       });
       setIsEditModalOpen(false);
-    }
-  };
-
-  const handleSetTemporaryPassword = () => {
-    if (agent) {
-      const tempPassword = Math.random().toString(36).slice(-8);
-      const agentIndex = agents.findIndex(a => a.id === agent.id);
-      if (agentIndex !== -1) {
-        agents[agentIndex].password = tempPassword;
-        const updatedAgent = { ...agent, password: tempPassword };
-        setAgent(updatedAgent);
-        alert(`La nueva contraseña temporal para ${agent.name} es: ${tempPassword}`);
-        toast({
-          title: "Contraseña Temporal Generada",
-          description: `Se ha establecido una nueva contraseña para ${agent.name}.`,
-        });
-      }
     }
   };
 
@@ -213,10 +195,6 @@ export default function AgentDetailsPage() {
                 </Select>
               </div>
                <div className="flex justify-end pt-4 gap-2">
-                <Button type="button" variant="outline" onClick={handleSetTemporaryPassword}>
-                  <KeyRound />
-                  Generar Contraseña Temporal
-                </Button>
                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
