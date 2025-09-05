@@ -22,6 +22,7 @@ import { Ticket } from "@/lib/data";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Download } from "lucide-react";
+import Image from 'next/image';
 
 interface ReportPreviewDialogProps {
   isOpen: boolean;
@@ -42,11 +43,25 @@ export function ReportPreviewDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Vista Previa del Reporte de Tickets</DialogTitle>
-          <DialogDescription>
-            A continuación se muestra una vista previa de las primeras {previewData.length} filas del reporte.
-            Confirma para exportar el reporte completo de {data.length} tickets.
-          </DialogDescription>
+            <div className="flex items-center gap-4 mb-4">
+                 <Image 
+                    src="https://i.imgur.com/3z22Z3A.png" 
+                    alt="UnoTI Logo"
+                    width={150}
+                    height={50}
+                    className="object-contain"
+                 />
+                 <div>
+                    <DialogTitle className="text-2xl">UTI CONSULTORES PROFESIONALES SA DE CV</DialogTitle>
+                    <DialogDescription>
+                        Vista Previa del Reporte de Tickets
+                    </DialogDescription>
+                 </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+                A continuación se muestra una vista previa de las primeras {previewData.length} filas del reporte.
+                Confirma para exportar el reporte completo de {data.length} tickets.
+            </p>
         </DialogHeader>
         <div className="py-4">
           <ScrollArea className="h-[400px] rounded-md border">
