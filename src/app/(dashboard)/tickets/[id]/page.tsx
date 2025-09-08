@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Ticket } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
@@ -59,7 +59,7 @@ export default function TicketDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
-  const fetchTicket = async () => {
+  const fetchTicket = useCallback(async () => {
     if (typeof id !== 'string') return;
     setIsLoading(true);
     try {
@@ -67,6 +67,9 @@ export default function TicketDetailsPage() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setTicket({ id: docSnap.id, ...docSnap.data() } as Ticket);
+      } else {
+        toast({ title: "Error", description: "El ticket no fue encontrado.", variant: "destructive" });
+        setTicket(null);
       }
     } catch (error) {
       console.error("Error fetching ticket:", error);
@@ -74,11 +77,11 @@ export default function TicketDetailsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id, toast]);
 
   useEffect(() => {
     fetchTicket();
-  }, [id]);
+  }, [fetchTicket]);
 
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
     if (ticket) {
@@ -96,11 +99,11 @@ export default function TicketDetailsPage() {
           status: newStatus,
           updates: arrayUnion(ticketUpdate)
         });
-        setTicket(prev => prev ? { ...prev, status: newStatus, updates: [...(prev.updates || []), ticketUpdate] } : null);
         toast({
           title: "Estado Actualizado",
           description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
         });
+        fetchTicket(); // Re-fetch data to show the latest changes
       } catch (error) {
         toast({ title: "Error", description: "No se pudo actualizar el estado.", variant: "destructive" });
       }
@@ -120,12 +123,12 @@ export default function TicketDetailsPage() {
         await updateDoc(ticketRef, {
           updates: arrayUnion(ticketUpdate)
         });
-        setTicket(prev => prev ? { ...prev, updates: [...(prev.updates || []), ticketUpdate] } : null);
         setNewComment("");
         toast({
           title: "Comentario Añadido",
           description: "Tu comentario ha sido añadido al historial del ticket."
         });
+        fetchTicket(); // Re-fetch data to show the latest changes
       } catch (error) {
          toast({ title: "Error", description: "No se pudo añadir el comentario.", variant: "destructive" });
       }
@@ -134,7 +137,7 @@ export default function TicketDetailsPage() {
 
   if (isLoading) {
     return (
-       <div className="p-6 flex justify-center items-center">
+       <div className="p-6 flex justify-center items-center h-full">
           <Loader2 className="h-8 w-8 animate-spin" />
        </div>
     );
@@ -143,7 +146,7 @@ export default function TicketDetailsPage() {
   if (!ticket) {
     return (
       <div className="p-6">
-        <PageHeader title="Ticket no encontrado" description="El ticket que buscas no existe."/>
+        <PageHeader title="Ticket no encontrado" description="El ticket que buscas no existe o ha sido eliminado."/>
         <Button onClick={() => router.push('/tickets')}>
           <ArrowLeft className="mr-2" />
           Volver a Tickets
@@ -152,11 +155,11 @@ export default function TicketDetailsPage() {
     );
   }
 
-  const createdAtDate = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : ticket.createdAt;
+  const createdAtDate = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : new Date();
 
   return (
     <>
-      <PageHeader title={`Ticket #${ticket.id}`} description={ticket.title}>
+      <PageHeader title={`Ticket #${ticket.id.substring(0, 7)}...`} description={ticket.title}>
         <Button onClick={() => router.push('/tickets')}>
           <ArrowLeft className="mr-2" />
           Volver a Tickets
@@ -212,7 +215,7 @@ export default function TicketDetailsPage() {
               </div>
               <div className="pt-4">
                  <h3 className="text-lg font-semibold mb-2">Descripción</h3>
-                 <p className="text-muted-foreground bg-slate-50 p-4 rounded-md border">{ticket.title}</p>
+                 <p className="text-muted-foreground bg-slate-50 dark:bg-slate-800 p-4 rounded-md border">{ticket.title}</p>
               </div>
                {ticket.imageUrl && (
                 <div className="pt-4">
@@ -267,10 +270,10 @@ export default function TicketDetailsPage() {
                         <div className="flex items-center justify-between">
                             <p className="font-semibold">{update.author}</p>
                             <p className="text-xs text-muted-foreground">
-                              {format((update.timestamp as Timestamp).toDate(), "d MMM, yyyy 'a las' h:mm a", { locale: es })}
+                              {update.timestamp && format((update.timestamp as Timestamp).toDate(), "d MMM, yyyy 'a las' h:mm a", { locale: es })}
                             </p>
                         </div>
-                        <p className="mt-1 text-sm text-muted-foreground bg-slate-50 p-3 rounded-md border">{update.update}</p>
+                        <p className="mt-1 text-sm text-muted-foreground bg-slate-50 dark:bg-slate-800 p-3 rounded-md border">{update.update}</p>
                      </div>
                    </div>
                 ))}
@@ -322,3 +325,5 @@ export default function TicketDetailsPage() {
     </>
   );
 }
+
+    
