@@ -61,7 +61,8 @@ export default function TicketDetailsPage() {
 
   const fetchTicket = useCallback(async () => {
     if (typeof id !== 'string') return;
-    setIsLoading(true);
+    // Don't set loading to true on re-fetches to avoid UI flicker
+    // setIsLoading(true); 
     try {
       const docRef = doc(db, "tickets", id);
       const docSnap = await getDoc(docRef);
@@ -73,15 +74,18 @@ export default function TicketDetailsPage() {
       }
     } catch (error) {
       console.error("Error fetching ticket:", error);
-      toast({ title: "Error", description: "No se pudo cargar el ticket.", variant: "destructive" });
+      toast({ title: "Error", description: "No se pudo cargar el ticket desde Firestore.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   }, [id, toast]);
 
   useEffect(() => {
-    fetchTicket();
-  }, [fetchTicket]);
+    if (id) {
+        setIsLoading(true);
+        fetchTicket();
+    }
+  }, [id, fetchTicket]);
 
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
     if (ticket) {
@@ -105,7 +109,8 @@ export default function TicketDetailsPage() {
         });
         fetchTicket(); // Re-fetch data to show the latest changes
       } catch (error) {
-        toast({ title: "Error", description: "No se pudo actualizar el estado.", variant: "destructive" });
+        console.error("Error updating status:", error);
+        toast({ title: "Error al Actualizar", description: "No se pudo actualizar el estado. Revisa los permisos de Firestore.", variant: "destructive" });
       }
     }
   };
@@ -130,7 +135,8 @@ export default function TicketDetailsPage() {
         });
         fetchTicket(); // Re-fetch data to show the latest changes
       } catch (error) {
-         toast({ title: "Error", description: "No se pudo añadir el comentario.", variant: "destructive" });
+         console.error("Error adding comment:", error);
+         toast({ title: "Error al Comentar", description: "No se pudo añadir el comentario. Revisa los permisos de Firestore.", variant: "destructive" });
       }
     }
   };
@@ -325,5 +331,3 @@ export default function TicketDetailsPage() {
     </>
   );
 }
-
-    

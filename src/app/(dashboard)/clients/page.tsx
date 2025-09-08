@@ -70,8 +70,8 @@ export default function ClientsPage() {
     } catch (error) {
       console.error("Error fetching clients: ", error);
       toast({
-        title: "Error",
-        description: "No se pudieron cargar los clientes.",
+        title: "Error al Cargar Clientes",
+        description: "No se pudieron cargar los datos desde Firestore. Revisa las reglas de seguridad.",
         variant: "destructive",
       });
     } finally {
@@ -104,8 +104,8 @@ export default function ClientsPage() {
         fetchClients(); // Refresh list
       } catch (error) {
          toast({
-          title: "Error",
-          description: "No se pudo eliminar el cliente.",
+          title: "Error al Eliminar",
+          description: "No se pudo eliminar el cliente. Revisa los permisos de Firestore.",
           variant: "destructive",
         });
       } finally {
@@ -141,8 +141,8 @@ export default function ClientsPage() {
         fetchClients(); // Refresh list
       } catch (error) {
         toast({
-          title: "Error",
-          description: "No se pudo actualizar el cliente.",
+          title: "Error al Actualizar",
+          description: "No se pudo actualizar el cliente. Revisa los permisos de Firestore.",
           variant: "destructive",
         });
       } finally {
@@ -172,8 +172,8 @@ export default function ClientsPage() {
       fetchClients(); // Refresh list
     } catch (error) {
        toast({
-        title: "Error",
-        description: "No se pudo añadir el cliente.",
+        title: "Error al Añadir",
+        description: "No se pudo añadir el cliente. Revisa los permisos de Firestore.",
         variant: "destructive",
       });
     } finally {

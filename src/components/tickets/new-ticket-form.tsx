@@ -137,9 +137,10 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       });
       onFormSubmit();
     } catch (error) {
+      console.error("Error creating ticket:", error);
       toast({
-        title: "Error",
-        description: "No se pudo crear el ticket.",
+        title: "Error al Crear Ticket",
+        description: "No se pudo crear el ticket. Revisa los permisos de Firestore.",
         variant: "destructive",
       });
     } finally {
