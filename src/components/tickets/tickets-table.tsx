@@ -20,9 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Ticket as TicketIcon, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Ticket as TicketIcon, MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { tickets as initialTickets, Ticket } from "@/lib/data";
+import { Ticket } from "@/lib/data";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +30,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
@@ -57,12 +60,40 @@ const categoryTranslations: { [key: string]: string } = {
 };
 
 function TicketsTableContent() {
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      setIsLoading(true);
+      try {
+        const ticketsCollection = collection(db, "tickets");
+        const q = query(ticketsCollection, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const ticketList: Ticket[] = [];
+        querySnapshot.forEach((doc) => {
+          ticketList.push({ id: doc.id, ...doc.data() } as Ticket);
+        });
+        setTickets(ticketList);
+      } catch (error) {
+        console.error("Error fetching tickets: ", error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los tickets.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTickets();
+  }, []);
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -81,8 +112,7 @@ function TicketsTableContent() {
       );
     })
     .filter((ticket) => statusFilter === "All" || ticket.status === statusFilter)
-    .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter)
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter);
   
   const handleRowClick = (ticketId: string) => {
     router.push(`/tickets/${ticketId}`);
@@ -136,10 +166,17 @@ function TicketsTableContent() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTickets.length > 0 ? (
+             {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">Cargando tickets...</p>
+                  </TableCell>
+                </TableRow>
+              ) : filteredTickets.length > 0 ? (
               filteredTickets.map((ticket) => (
                 <TableRow key={ticket.id} onClick={() => handleRowClick(ticket.id)} className="cursor-pointer">
-                  <TableCell className="font-medium">{ticket.id}</TableCell>
+                  <TableCell className="font-medium">{ticket.id.substring(0, 7)}...</TableCell>
                   <TableCell>{ticket.title}</TableCell>
                   <TableCell>{ticket.client}</TableCell>
                   <TableCell>
@@ -156,7 +193,7 @@ function TicketsTableContent() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {format(ticket.createdAt, "PPP")}
+                    {format((ticket.createdAt as Timestamp).toDate(), "PPP")}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -182,6 +219,9 @@ function TicketsTableContent() {
                 <TableCell colSpan={8} className="h-24 text-center">
                   <TicketIcon className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-2 text-muted-foreground">No se encontraron tickets.</p>
+                   <p className="text-sm text-muted-foreground">
+                        Empieza por crear tu primer ticket.
+                    </p>
                 </TableCell>
               </TableRow>
             )}

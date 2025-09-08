@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, PlusCircle, Bell, Send } from "lucide-react";
+import { Download, Trash2, PlusCircle, Bell, Send, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { tickets, ticketsByCategory, clients, reportAutomations as initialAutomations, ReportAutomation, Ticket } from "@/lib/data";
+import { reportAutomations as initialAutomations, ReportAutomation, Ticket, Client } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -34,7 +34,13 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
-import { format } from "date-fns";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+
+type CategoryCount = {
+  category: string;
+  count: number;
+};
 
 export default function ReportsPage() {
   const [automations, setAutomations] = useState<ReportAutomation[]>(initialAutomations || []);
@@ -42,8 +48,50 @@ export default function ReportsPage() {
   const [manualRecipientEmail, setManualRecipientEmail] = useState("");
   const [selectedManualClient, setSelectedManualClient] = useState("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [allTickets, setAllTickets] = useState<Ticket[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [ticketsByCategory, setTicketsByCategory] = useState<CategoryCount[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch tickets
+        const ticketsCollection = collection(db, "tickets");
+        const ticketsQuery = query(ticketsCollection, orderBy("createdAt", "desc"));
+        const ticketsSnapshot = await getDocs(ticketsQuery);
+        const ticketList: Ticket[] = ticketsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
+        setAllTickets(ticketList);
+        
+        // Calculate tickets by category
+        const categoryCounts: { [key: string]: number } = { Support: 0, Hosting: 0, Oportuno: 0, Other: 0 };
+        ticketList.forEach(ticket => {
+          if (ticket.category in categoryCounts) {
+            categoryCounts[ticket.category]++;
+          }
+        });
+        setTicketsByCategory(Object.entries(categoryCounts).map(([key, value]) => ({ category: key, count: value })));
+
+        // Fetch clients
+        const clientsCollection = collection(db, "clients");
+        const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
+        const clientsSnapshot = await getDocs(clientsQuery);
+        const clientList: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+        setClients(clientList);
+
+      } catch (error) {
+        console.error("Error fetching report data:", error);
+        toast({ title: "Error", description: "No se pudieron cargar los datos para los reportes.", variant: "destructive" });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
   
   const handleClientChange = (clientName: string) => {
     const client = clients.find(c => c.name === clientName);
@@ -102,18 +150,24 @@ export default function ReportsPage() {
   };
 
   const handleExport = (data: Ticket[]) => {
-    const dataToExport = data.map(ticket => ({
-      ID: ticket.id,
-      Titulo: ticket.title,
-      Cliente: ticket.client,
-      Categoria: ticket.category,
-      Prioridad_SLA: ticket.sla,
-      Estado: ticket.status,
-      "Fecha de Creacion": ticket.createdAt.toISOString(),
-      "Ultima Actualizacion": ticket.updates && ticket.updates.length > 0
-        ? ticket.updates[ticket.updates.length - 1].timestamp.toISOString()
-        : ticket.createdAt.toISOString(),
-    }));
+    const dataToExport = data.map(ticket => {
+      const createdAt = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : ticket.createdAt;
+      let lastUpdate = createdAt;
+      if (ticket.updates && ticket.updates.length > 0) {
+        const lastUpdateTimestamp = ticket.updates[ticket.updates.length - 1].timestamp;
+        lastUpdate = lastUpdateTimestamp instanceof Timestamp ? lastUpdateTimestamp.toDate() : lastUpdateTimestamp;
+      }
+      return {
+        ID: ticket.id,
+        Titulo: ticket.title,
+        Cliente: ticket.client,
+        Categoria: ticket.category,
+        Prioridad_SLA: ticket.sla,
+        Estado: ticket.status,
+        "Fecha de Creacion": createdAt.toISOString(),
+        "Ultima Actualizacion": lastUpdate.toISOString(),
+      };
+    });
 
     const csv = Papa.unparse(dataToExport);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -155,7 +209,7 @@ export default function ReportsPage() {
         title="Reportes"
         description="Genera y exporta reportes de datos de tickets."
       >
-        <Button onClick={() => setIsPreviewOpen(true)}>
+        <Button onClick={() => setIsPreviewOpen(true)} disabled={isLoading || allTickets.length === 0}>
           <Download />
           Exportar Reporte
         </Button>
@@ -329,26 +383,32 @@ export default function ReportsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead className="text-right">Cantidad de Tickets</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ticketsByCategory.map((item) => (
-                    <TableRow key={item.category} onClick={() => handleCategoryClick(item.category)} className="cursor-pointer">
-                      <TableCell className="font-medium">
-                        {item.category}
-                      </TableCell>
-                      <TableCell className="text-right">{item.count}</TableCell>
+             {isLoading ? (
+                <div className="flex justify-center items-center h-24">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+             ) : (
+                <div className="rounded-lg border">
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Categoría</TableHead>
+                        <TableHead className="text-right">Cantidad de Tickets</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                    </TableHeader>
+                    <TableBody>
+                    {ticketsByCategory.map((item) => (
+                        <TableRow key={item.category} onClick={() => handleCategoryClick(item.category)} className="cursor-pointer">
+                        <TableCell className="font-medium">
+                            {item.category}
+                        </TableCell>
+                        <TableCell className="text-right">{item.count}</TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+                </div>
+             )}
           </CardContent>
         </Card>
       </div>
@@ -356,7 +416,7 @@ export default function ReportsPage() {
       <ReportPreviewDialog 
         isOpen={isPreviewOpen} 
         onOpenChange={setIsPreviewOpen} 
-        data={tickets} 
+        data={allTickets} 
         onConfirmExport={handleExport}
       />
     </>

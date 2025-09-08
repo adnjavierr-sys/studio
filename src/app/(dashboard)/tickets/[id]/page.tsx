@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { tickets, Ticket } from '@/lib/data';
+import { Ticket } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History, ShieldAlert, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Tag, Info, MessageSquare, History, ShieldAlert, ImageIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,6 +21,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { db } from '@/lib/firebase';
+import { doc, getDoc, updateDoc, Timestamp, arrayUnion } from "firebase/firestore";
 
 const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
@@ -53,65 +55,90 @@ export default function TicketDetailsPage() {
   const { id } = params;
   const { toast } = useToast();
   
-  const [ticket, setTicket] = useState<Ticket | undefined>(
-    tickets.find((t) => t.id === id)
-  );
+  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
-  const handleStatusChange = (newStatus: 'Open' | 'In Progress' | 'Closed') => {
+  const fetchTicket = async () => {
+    if (typeof id !== 'string') return;
+    setIsLoading(true);
+    try {
+      const docRef = doc(db, "tickets", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setTicket({ id: docSnap.id, ...docSnap.data() } as Ticket);
+      }
+    } catch (error) {
+      console.error("Error fetching ticket:", error);
+      toast({ title: "Error", description: "No se pudo cargar el ticket.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTicket();
+  }, [id]);
+
+  const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
     if (ticket) {
       const oldStatus = ticket.status;
-      const updatedTicket = { 
-        ...ticket, 
-        status: newStatus,
-        updates: [
-          ...(ticket.updates || []),
-          {
-            timestamp: new Date(),
-            author: 'Admin User', // Replace with actual user later
-            update: `Estado cambiado de ${statusTranslations[oldStatus]} a ${statusTranslations[newStatus]}.`
-          }
-        ]
+      const updateText = `Estado cambiado de ${statusTranslations[oldStatus]} a ${statusTranslations[newStatus]}.`;
+      const ticketUpdate = {
+        timestamp: Timestamp.now(),
+        author: 'Admin User', // Replace with actual user later
+        update: updateText,
       };
-      setTicket(updatedTicket);
-      // Here you would also update the central data source
-      const ticketIndex = tickets.findIndex(t => t.id === ticket.id);
-      if (ticketIndex !== -1) {
-        tickets[ticketIndex] = updatedTicket;
+
+      try {
+        const ticketRef = doc(db, "tickets", ticket.id);
+        await updateDoc(ticketRef, {
+          status: newStatus,
+          updates: arrayUnion(ticketUpdate)
+        });
+        setTicket(prev => prev ? { ...prev, status: newStatus, updates: [...(prev.updates || []), ticketUpdate] } : null);
+        toast({
+          title: "Estado Actualizado",
+          description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
+        });
+      } catch (error) {
+        toast({ title: "Error", description: "No se pudo actualizar el estado.", variant: "destructive" });
       }
-      toast({
-        title: "Estado Actualizado",
-        description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
-      });
     }
   };
   
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (ticket && newComment.trim()) {
-       const updatedTicket = { 
-        ...ticket, 
-        updates: [
-          ...(ticket.updates || []),
-          {
-            timestamp: new Date(),
-            author: 'Admin User', // Replace with actual user later
-            update: newComment
-          }
-        ]
+      const ticketUpdate = {
+        timestamp: Timestamp.now(),
+        author: 'Admin User', // Replace with actual user later
+        update: newComment.trim(),
       };
-      setTicket(updatedTicket);
-      // Here you would also update the central data source
-      const ticketIndex = tickets.findIndex(t => t.id === ticket.id);
-      if (ticketIndex !== -1) {
-        tickets[ticketIndex] = updatedTicket;
+
+      try {
+        const ticketRef = doc(db, "tickets", ticket.id);
+        await updateDoc(ticketRef, {
+          updates: arrayUnion(ticketUpdate)
+        });
+        setTicket(prev => prev ? { ...prev, updates: [...(prev.updates || []), ticketUpdate] } : null);
+        setNewComment("");
+        toast({
+          title: "Comentario Añadido",
+          description: "Tu comentario ha sido añadido al historial del ticket."
+        });
+      } catch (error) {
+         toast({ title: "Error", description: "No se pudo añadir el comentario.", variant: "destructive" });
       }
-      setNewComment("");
-      toast({
-        title: "Comentario Añadido",
-        description: "Tu comentario ha sido añadido al historial del ticket."
-      });
     }
   };
+
+  if (isLoading) {
+    return (
+       <div className="p-6 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+       </div>
+    );
+  }
 
   if (!ticket) {
     return (
@@ -124,6 +151,8 @@ export default function TicketDetailsPage() {
       </div>
     );
   }
+
+  const createdAtDate = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : ticket.createdAt;
 
   return (
     <>
@@ -152,7 +181,7 @@ export default function TicketDetailsPage() {
                   <Calendar className="text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Fecha de Creación</p>
-                    <p className="text-muted-foreground">{format(ticket.createdAt, 'PPP')}</p>
+                    <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -238,7 +267,7 @@ export default function TicketDetailsPage() {
                         <div className="flex items-center justify-between">
                             <p className="font-semibold">{update.author}</p>
                             <p className="text-xs text-muted-foreground">
-                              {format(update.timestamp, "d MMM, yyyy 'a las' h:mm a", { locale: es })}
+                              {format((update.timestamp as Timestamp).toDate(), "d MMM, yyyy 'a las' h:mm a", { locale: es })}
                             </p>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground bg-slate-50 p-3 rounded-md border">{update.update}</p>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,8 +26,10 @@ import {
 import { Wand2, Loader2, Mail, Upload, X } from "lucide-react";
 import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { clients, tickets, Ticket } from "@/lib/data";
+import { Client, Ticket } from "@/lib/data";
 import Image from 'next/image';
+import { db } from "@/lib/firebase";
+import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -54,8 +56,27 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const clientsCollection = collection(db, "clients");
+        const q = query(clientsCollection, orderBy("name", "asc"));
+        const querySnapshot = await getDocs(q);
+        const clientList: Client[] = [];
+        querySnapshot.forEach((doc) => {
+          clientList.push({ id: doc.id, ...doc.data() } as Client);
+        });
+        setClients(clientList);
+      } catch (error) {
+        console.error("Error fetching clients for form: ", error);
+      }
+    };
+    fetchClients();
+  }, []);
 
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
@@ -83,37 +104,47 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     let imageUrl: string | undefined = undefined;
 
     if (data.image) {
-      // In a real app, you'd upload the file to a storage service (e.g., Firebase Storage)
-      // and get a URL back. For this demo, we'll use a local object URL.
-      imageUrl = URL.createObjectURL(data.image);
+      // In a real app, upload to Firebase Storage. For now, use a placeholder.
+      // This part requires setting up Firebase Storage, which is a separate step.
+      // For demonstration, we'll use a placeholder image.
+      imageUrl = 'https://picsum.photos/seed/newticket/1200/800';
+      toast({
+        title: "Nota sobre la imagen",
+        description: "La subida de archivos real requiere Firebase Storage. Se usó una imagen de marcador de posición.",
+      });
     }
 
-    const newTicket: Ticket = {
-      id: `TKT-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
-      title: data.title,
+    const newTicketData = {
+      title: data.description, // Using description as title for more detail
       client: data.client,
       category: data.category,
-      status: 'Open',
+      status: 'Open' as 'Open' | 'In Progress' | 'Closed',
       sla: data.sla,
-      createdAt: new Date(),
+      createdAt: Timestamp.now(),
       imageUrl: imageUrl,
       updates: [{
-        timestamp: new Date(),
+        timestamp: Timestamp.now(),
         author: 'System',
-        update: 'Ticket Creado.'
+        update: `Ticket Creado: ${data.title}`
       }]
     };
 
-    tickets.unshift(newTicket);
-
-    console.log(newTicket);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    toast({
-      title: "Ticket Enviado",
-      description: "Tu nuevo ticket ha sido creado exitosamente.",
-    });
-    onFormSubmit();
+    try {
+      await addDoc(collection(db, "tickets"), newTicketData);
+      toast({
+        title: "Ticket Enviado",
+        description: "Tu nuevo ticket ha sido creado exitosamente.",
+      });
+      onFormSubmit();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo crear el ticket.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSuggestCategory = async () => {
