@@ -91,7 +91,7 @@ export default function ReportsPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [toast]);
   
   const handleClientChange = (clientName: string) => {
     const client = clients.find(c => c.name === clientName);
@@ -154,8 +154,11 @@ export default function ReportsPage() {
       const createdAt = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : ticket.createdAt;
       let lastUpdate = createdAt;
       if (ticket.updates && ticket.updates.length > 0) {
-        const lastUpdateTimestamp = ticket.updates[ticket.updates.length - 1].timestamp;
-        lastUpdate = lastUpdateTimestamp instanceof Timestamp ? lastUpdateTimestamp.toDate() : lastUpdateTimestamp;
+        const lastUpdateItem = ticket.updates[ticket.updates.length - 1];
+        const lastUpdateTimestamp = lastUpdateItem?.timestamp;
+        if (lastUpdateTimestamp) {
+          lastUpdate = lastUpdateTimestamp instanceof Timestamp ? lastUpdateTimestamp.toDate() : lastUpdateTimestamp;
+        }
       }
       return {
         ID: ticket.id,
