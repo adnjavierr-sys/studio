@@ -45,8 +45,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar>
         <SidebarHeader>
             <div className="flex items-center gap-2">
-                <Logo className="w-8 h-8"/>
-                <span className="font-semibold text-lg">UnoTI-Ticket</span>
+                <div className="w-32 h-12 relative">
+                  <Logo />
+                </div>
             </div>
         </SidebarHeader>
         <SidebarContent>
