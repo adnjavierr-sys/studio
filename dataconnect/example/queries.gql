@@ -1,0 +1,50 @@
+mutation CreateUser @auth(level: USER) {
+  user_insert(data: {
+    displayName: "New User",
+    email: "newuser@example.com",
+    createdAt_expr: "request.time"
+  })
+}
+
+query ListPublicEvents @auth(level: PUBLIC) {
+  events(where: {isPublic: {eq: true}}) {
+    id
+    title
+    description
+    eventDate
+    eventTime
+    location
+    capacity
+  }
+}
+
+mutation PurchaseTicket($eventId: UUID!, $ticketTypeId: UUID!) @auth(level: USER) {
+  ticket_insert(data: {
+    eventId: $eventId,
+    purchaserId_expr: "auth.uid",
+    ticketTypeId: $ticketTypeId,
+    purchaseDate_expr: "request.time",
+    priceAtPurchase: 20.0,
+    qrCode: "someQRCode",
+    status: "valid"
+  })
+}
+
+query ListMyTickets @auth(level: USER) {
+  tickets(where: {purchaserId_expr: "auth.uid"}) {
+    id
+    event {
+      title
+      description
+      eventDate
+      eventTime
+      location
+    }
+    ticketType {
+      name
+      price
+    }
+    purchaseDate
+    status
+  }
+}

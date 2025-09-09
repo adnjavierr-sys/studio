@@ -1,0 +1,48 @@
+mutation SeedData @auth(level: USER) {
+  user_insertMany(data: [
+    {
+      displayName: "Bob User",
+      email: "bob@example.com"
+    },
+    {
+      displayName: "Alice User",
+      email: "alice@example.com"
+    }
+  ])
+  event_insertMany(data: [
+    {
+      title: "Sample Event",
+      description: "A sample event for testing",
+      location: "Online",
+      capacity: 100,
+      eventDate: "2024-01-01",
+      eventTime: "10:00",
+      isPublic: true
+    },
+    {
+      title: "Another Event",
+      description: "Another event for testing",
+      location: "In-Person",
+      capacity: 50,
+      eventDate: "2024-02-15",
+      eventTime: "14:00",
+      isPublic: false
+    }
+  ])
+  ticketType_insertMany(data: [
+    {
+      name: "Regular",
+      price: 25.0,
+      quantityAvailable: 50,
+      salesStartTime: "2023-12-01T00:00:00Z",
+      salesEndTime: "2023-12-31T23:59:59Z"
+    },
+    {
+      name: "VIP",
+      price: 50.0,
+      quantityAvailable: 25,
+      salesStartTime: "2023-12-01T00:00:00Z",
+      salesEndTime: "2023-12-31T23:59:59Z"
+    }
+  ])
+}
