@@ -1,4 +1,8 @@
 {
+  "dataconnect": {
+    "location": "us-central1",
+    "source": "dataconnect"
+  },
   "firestore": {
     "database": "(default)",
     "location": "northamerica-south1",
