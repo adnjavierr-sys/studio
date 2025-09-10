@@ -1,0 +1,32 @@
+I0910 23:41:59.603388   80265 load.go:31] Reloading schema and connectors...
+W0910 23:41:59.695329   80265 control.go:68] [/emulator/studio 1fcd] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
+
+sources: example/queries.gql [942B] 
+I0910 23:41:59.695390   80265 control.go:94] [/emulator/studio 1fcd] UpdateResources(): done
+Schema: sources: schema/schema.gql [746B] 
+Connector "example": sources: example/queries.gql [942B] 
+E0910 23:41:59.697039   80265 load.go:73] Could not load sources: 
+Errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
+I0910 23:41:59.698208   80265 collector.go:107] schema extensions wrote into "/home/user/studio/dataconnect/.dataconnect/schema"
+Generated sources: main/mutation.gql [13430B] prelude.gql [73251B] main/implicit.gql [2246B] main/input.gql [48994B] main/relation.gql [24776B] main/query.gql [5003B] 
+I0910 23:41:59.698246   80265 load.go:74] Finished reloading
+I0910 23:41:59.788334   80265 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+I0910 23:42:10.316142   80265 migrate.go:24] Running migration SQL:
+Step 1: CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+Step 2: CREATE TABLE "public"."user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "created_at" timestamptz NOT NULL, "display_name" text NOT NULL, "email" text NOT NULL, "photo_url" text NULL, PRIMARY KEY ("id"))
+Step 3: CREATE TABLE "public"."event" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "organizer_id" uuid NOT NULL, "capacity" integer NOT NULL, "category" text NULL, "created_at" timestamptz NOT NULL, "description" text NOT NULL, "event_date" date NOT NULL, "event_time" text NOT NULL, "image_url" text NULL, "is_public" boolean NULL, "location" text NOT NULL, "title" text NOT NULL, PRIMARY KEY ("id"), CONSTRAINT "event_organizer_id_fkey" FOREIGN KEY ("organizer_id") REFERENCES "public"."user" ("id") ON DELETE CASCADE)
+Step 4: CREATE INDEX "event_organizerId_idx" ON "public"."event" ("organizer_id")
+Step 5: CREATE TABLE "public"."ticket_type" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "event_id" uuid NOT NULL, "created_at" timestamptz NOT NULL, "description" text NULL, "name" text NOT NULL, "price" double precision NOT NULL, "quantity_available" integer NOT NULL, "sales_end_time" timestamptz NOT NULL, "sales_start_time" timestamptz NOT NULL, PRIMARY KEY ("id"), CONSTRAINT "ticket_type_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "public"."event" ("id") ON DELETE CASCADE)
+Step 6: CREATE INDEX "ticket_type_eventId_idx" ON "public"."ticket_type" ("event_id")
+Step 7: CREATE TABLE "public"."ticket" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "event_id" uuid NOT NULL, "purchaser_id" uuid NOT NULL, "ticket_type_id" uuid NOT NULL, "checked_in_at" timestamptz NULL, "price_at_purchase" double precision NULL, "purchase_date" timestamptz NOT NULL, "qr_code" text NOT NULL, "status" text NOT NULL, PRIMARY KEY ("id"), CONSTRAINT "ticket_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "public"."event" ("id") ON DELETE CASCADE, CONSTRAINT "ticket_purchaser_id_fkey" FOREIGN KEY ("purchaser_id") REFERENCES "public"."user" ("id") ON DELETE CASCADE, CONSTRAINT "ticket_ticket_type_id_fkey" FOREIGN KEY ("ticket_type_id") REFERENCES "public"."ticket_type" ("id") ON DELETE CASCADE)
+Step 8: CREATE INDEX "ticket_eventId_idx" ON "public"."ticket" ("event_id")
+Step 9: CREATE INDEX "ticket_purchaserId_idx" ON "public"."ticket" ("purchaser_id")
+Step 10: CREATE INDEX "ticket_ticketTypeId_idx" ON "public"."ticket" ("ticket_type_id")
+W0910 23:42:11.612368   80265 control.go:68] [/emulator/studio 3f23] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
+
+sources: example/queries.gql [942B] 
+I0910 23:42:11.612432   80265 control.go:94] [/emulator/studio 3f23] UpdateResources(): done
+Schema: sources: schema/schema.gql [746B] 
+Connector "example": sources: example/queries.gql [942B] 
+I0910 23:42:11.612460   80265 service.go:147] [/emulator/studio 3f23] while configuring to server.Settings{ConnectionString:"dbname='fdcdb' host='127.0.0.1' port='5432' sslmode='disable' dbname='fdcdb'", MaxOpenConnection:1, UseDummy:false, EnableGoogleMLIntegration:false, SchemaValidationMode:""}, failed to reload last live sources: 
+Errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?

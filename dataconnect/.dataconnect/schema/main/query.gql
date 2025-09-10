@@ -1,0 +1,214 @@
+extend type Query {
+  """
+  ✨ Look up a single `Event` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  event(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Event_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Event_FirstRow
+  ): Event @fdc_generated(from: "Event", purpose: QUERY_SINGLE)
+  """
+  ✨ Look up a single `Ticket` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  ticket(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Ticket_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Ticket_FirstRow
+  ): Ticket @fdc_generated(from: "Ticket", purpose: QUERY_SINGLE)
+  """
+  ✨ Look up a single `TicketType` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  ticketType(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: TicketType_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: TicketType_FirstRow
+  ): TicketType @fdc_generated(from: "TicketType", purpose: QUERY_SINGLE)
+  """
+  ✨ Look up a single `User` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  user(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: User_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: User_FirstRow
+  ): User @fdc_generated(from: "User", purpose: QUERY_SINGLE)
+  """
+  ✨ List `Event` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  events(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Event_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Event_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: Event_Having
+  ): [Event!]! @fdc_generated(from: "Event", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `Ticket` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  tickets(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Ticket_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Ticket_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: Ticket_Having
+  ): [Ticket!]! @fdc_generated(from: "Ticket", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `TicketType` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  ticketTypes(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: TicketType_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [TicketType_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: TicketType_Having
+  ): [TicketType!]! @fdc_generated(from: "TicketType", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `User` objects in the table and return selected fields, optionally filtered by `where` conditions
+  """
+  users(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: User_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [User_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: User_Having
+  ): [User!]! @fdc_generated(from: "User", purpose: QUERY_MULTIPLE)
+}
