@@ -5,11 +5,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="relative flex min-h-screen items-center justify-center p-4">
       <div className="absolute inset-0 -z-10">
         <Image
-          src="https://picsum.photos/seed/auth-bg/1920/1080"
-          alt="Imagen de fondo de un espacio de trabajo moderno"
+          src="https://picsum.photos/seed/technology/1920/1080"
+          alt="Imagen de fondo tecnológica abstracta"
           fill
           className="object-cover"
-          data-ai-hint="office workspace"
+          data-ai-hint="technology abstract"
         />
         <div className="absolute inset-0 bg-black/60" />
       </div>
