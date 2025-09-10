@@ -22,20 +22,18 @@
       ]
     }
   ],
-  "apphosting": [
-    {
-      "backendId": "studio",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ],
-      "alwaysDeployFromSource": false
-    }
-  ],
+  "apphosting": {
+    "backendId": "studio",
+    "rootDir": "/",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "functions"
+    ],
+    "alwaysDeployFromSource": true
+  },
   "remoteconfig": {
     "template": "remoteconfig.template.json"
   },
@@ -52,7 +50,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "apphosting": "studio"
       }
     ]
   },
