@@ -1,13 +1,4 @@
 import Image from 'next/image';
 
-export function Logo() {
-  return (
-    <Image
-      src="https://i.imgur.com/gC2nZf6.png"
-      alt="UnoTI Logo"
-      fill
-      className="object-contain"
-      priority
-    />
-  );
-}
+// The Logo component has been removed as requested.
+// If you need other global icons, you can add them here.

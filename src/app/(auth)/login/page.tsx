@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/icons";
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { agents } from '@/lib/data';
@@ -42,9 +41,6 @@ export default function LoginPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-40 h-16 relative">
-          <Logo />
-        </div>
         <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
         <CardDescription>Ingresa tus credenciales para acceder a tu cuenta.</CardDescription>
       </CardHeader>

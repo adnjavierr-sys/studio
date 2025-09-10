@@ -14,7 +14,6 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Logo } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -45,9 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar>
         <SidebarHeader>
             <div className="flex items-center gap-2">
-                <div className="w-32 h-12 relative">
-                  <Logo />
-                </div>
+                <h1 className="font-semibold text-lg">Ticket System</h1>
             </div>
         </SidebarHeader>
         <SidebarContent>
