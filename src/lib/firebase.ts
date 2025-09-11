@@ -1,8 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, connectFirestoreEmulator, Firestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
@@ -14,20 +12,32 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
 
-// Connect to Firestore emulator if running in development mode
-if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-    try {
+let db: Firestore;
+
+// This function ensures we initialize the emulator connection only once.
+const getDb = () => {
+  if (!db) {
+    db = getFirestore(app);
+    if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
+      try {
         connectFirestoreEmulator(db, 'localhost', 8080);
         console.log("Connected to Firestore Emulator");
-    } catch (e) {
-        console.error("Error connecting to Firestore emulator", e);
+      } catch (e) {
+        // The error "Firestore has already been started" can be safely ignored.
+        // It happens on hot reloads in development.
+        if (e instanceof Error && !e.message.includes('already been started')) {
+          console.error("Error connecting to Firestore emulator", e);
+        }
+      }
     }
-}
+  }
+  return db;
+};
 
+// Use the function to get the db instance
+db = getDb();
 
 export { app, db };
