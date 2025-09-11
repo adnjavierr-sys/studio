@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
-import { policies as initialPolicies, Policy, clients } from "@/lib/data";
+import { Policy, Client } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, PlusCircle, Shield } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, PlusCircle, Shield, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -50,6 +50,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
+import { db } from "@/lib/firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const typeColors: { [key: string]: string } = {
   Mensual: "bg-blue-200 text-blue-800",
@@ -58,31 +61,72 @@ const typeColors: { [key: string]: string } = {
 };
 
 export default function PoliciesPage() {
-  const [policyList, setPolicyList] = useState<Policy[]>(initialPolicies);
+  const [policyList, setPolicyList] = useState<Policy[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
 
-  const handleAddPolicy = (event: React.FormEvent<HTMLFormElement>) => {
+  // EJEMPLO DE LECTURA DE DATOS: Lee las pólizas y los clientes desde Firestore.
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Paso 2: Leer la colección "policies".
+      const policiesCollection = collection(db, "policies");
+      const policiesQuery = query(policiesCollection, orderBy("createdAt", "desc"));
+      const policiesSnapshot = await getDocs(policiesQuery);
+      const policies: Policy[] = policiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Policy));
+      setPolicyList(policies);
+
+      // Paso 3: Leer la colección "clients" para usarla en el formulario.
+      const clientsCollection = collection(db, "clients");
+      const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
+      const clientsSnapshot = await getDocs(clientsQuery);
+      const clientList: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+      setClients(clientList);
+      
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast({ title: "Error", description: "No se pudieron cargar los datos.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  // EJEMPLO DE ESCRITURA DE DATOS: Añade una nueva póliza a Firestore.
+  const handleAddPolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const newPolicy: Policy = {
-      id: `POL-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+    // Paso 2: Preparar el nuevo objeto de póliza.
+    const newPolicy = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
       type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
       clientName: formData.get('clientName') as string,
-      createdAt: new Date(),
+      createdAt: Timestamp.now(), // Usar Timestamp de Firestore.
     };
-    initialPolicies.unshift(newPolicy);
-    setPolicyList([...initialPolicies]);
-    toast({
-      title: "Póliza añadida",
-      description: `La póliza "${newPolicy.title}" ha sido añadida.`,
-    });
-    setIsAddModalOpen(false);
+    
+    try {
+      // Paso 3: Añadir el nuevo documento a la colección "policies".
+      await addDoc(collection(db, "policies"), newPolicy);
+      toast({
+        title: "Póliza añadida",
+        description: `La póliza "${newPolicy.title}" ha sido añadida.`,
+      });
+      fetchData(); // Volver a cargar los datos para reflejar el cambio.
+    } catch (error) {
+       toast({ title: "Error al Añadir", description: "No se pudo añadir la póliza.", variant: "destructive" });
+    } finally {
+      setIsAddModalOpen(false);
+    }
   };
 
   const openEditModal = (policy: Policy) => {
@@ -90,26 +134,33 @@ export default function PoliciesPage() {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdatePolicy = (event: React.FormEvent<HTMLFormElement>) => {
+  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza una póliza existente.
+  const handleUpdatePolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedPolicy) {
       const formData = new FormData(event.currentTarget);
-      const updatedPolicy = {
-        ...selectedPolicy,
+      const updatedData = {
         title: formData.get('title') as string,
         description: formData.get('description') as string,
         type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
         clientName: formData.get('clientName') as string,
       };
-      const newPolicyList = policyList.map(p => p.id === updatedPolicy.id ? updatedPolicy : p);
-      setPolicyList(newPolicyList);
-      initialPolicies.splice(initialPolicies.findIndex(p => p.id === updatedPolicy.id), 1, updatedPolicy);
-      toast({
-        title: "Póliza actualizada",
-        description: `La póliza "${updatedPolicy.title}" ha sido actualizada.`
-      });
-      setIsEditModalOpen(false);
-      setSelectedPolicy(null);
+      
+      try {
+        // Paso 2: Crear una referencia al documento y actualizarlo.
+        const policyRef = doc(db, "policies", selectedPolicy.id);
+        await updateDoc(policyRef, updatedData);
+        toast({
+          title: "Póliza actualizada",
+          description: `La póliza "${updatedData.title}" ha sido actualizada.`
+        });
+        fetchData();
+      } catch (error) {
+        toast({ title: "Error al Actualizar", description: "No se pudo actualizar la póliza.", variant: "destructive" });
+      } finally {
+        setIsEditModalOpen(false);
+        setSelectedPolicy(null);
+      }
     }
   };
   
@@ -118,19 +169,23 @@ export default function PoliciesPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleDeletePolicy = () => {
+  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina una póliza de Firestore.
+  const handleDeletePolicy = async () => {
     if (selectedPolicy) {
-      const indexToDelete = initialPolicies.findIndex(p => p.id === selectedPolicy.id);
-      if (indexToDelete > -1) {
-        initialPolicies.splice(indexToDelete, 1);
+      try {
+        // Paso 2: Crear una referencia al documento y eliminarlo.
+        await deleteDoc(doc(db, "policies", selectedPolicy.id));
+        toast({
+          title: "Póliza eliminada",
+          description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,
+        });
+        fetchData();
+      } catch (error) {
+         toast({ title: "Error al Eliminar", description: "No se pudo eliminar la póliza.", variant: "destructive" });
+      } finally {
+        setIsDeleteDialogOpen(false);
+        setSelectedPolicy(null);
       }
-      setPolicyList([...initialPolicies]);
-      toast({
-        title: "Póliza eliminada",
-        description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,
-      });
-      setIsDeleteDialogOpen(false);
-      setSelectedPolicy(null);
     }
   };
 
@@ -158,7 +213,14 @@ export default function PoliciesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {policyList.length > 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="mt-2 text-muted-foreground">Cargando pólizas...</p>
+                  </TableCell>
+                </TableRow>
+              ) : policyList.length > 0 ? (
                 policyList.map((policy) => (
                   <TableRow key={policy.id}>
                     <TableCell className="font-medium">{policy.title}</TableCell>
@@ -166,7 +228,7 @@ export default function PoliciesPage() {
                     <TableCell>
                       <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
                     </TableCell>
-                    <TableCell>{format(policy.createdAt, "PPP")}</TableCell>
+                    <TableCell>{policy.createdAt && format((policy.createdAt as Timestamp).toDate(), "PPP")}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
