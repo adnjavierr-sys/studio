@@ -18,20 +18,11 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Connect to Firestore Emulator if in development
-// This check ensures that the emulator is only used in development environments.
+// Connect to Firestore Emulator only when in development/emulator mode.
+// This is the crucial part that ensures the app talks to the local emulator.
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-  // Check to make sure we don't connect to the emulator multiple times.
-  // This is a safeguard for Next.js hot-reloading.
-  // @ts-ignore - _settings is a private property but necessary for this check
-  if (!db._settings.host) {
-    try {
-      connectFirestoreEmulator(db, 'localhost', 8080);
-      console.log("Successfully connected to Firestore Emulator.");
-    } catch (e) {
-      console.error("Error connecting to Firestore emulator", e);
-    }
-  }
+  console.log("Connecting to Firestore Emulator...");
+  connectFirestoreEmulator(db, 'localhost', 8080);
 }
 
 export { app, db };
