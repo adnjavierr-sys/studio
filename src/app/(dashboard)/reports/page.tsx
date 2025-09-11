@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
+// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 
@@ -57,17 +58,18 @@ export default function ReportsPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // EJEMPLO DE LECTURA DE MÚLTIPLES COLECCIONES
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch tickets
+        // Paso 2: Leer la colección de "tickets".
         const ticketsCollection = collection(db, "tickets");
         const ticketsQuery = query(ticketsCollection, orderBy("createdAt", "desc"));
         const ticketsSnapshot = await getDocs(ticketsQuery);
         const ticketList: Ticket[] = ticketsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
         setAllTickets(ticketList);
         
-        // Calculate tickets by category
+        // Paso 3: Procesar los datos de los tickets para generar estadísticas.
         const categoryCounts: { [key: string]: number } = { Support: 0, Hosting: 0, Oportuno: 0, Other: 0 };
         ticketList.forEach(ticket => {
           if (ticket.category in categoryCounts) {
@@ -76,7 +78,7 @@ export default function ReportsPage() {
         });
         setTicketsByCategory(Object.entries(categoryCounts).map(([key, value]) => ({ category: key, count: value })));
 
-        // Fetch clients
+        // Paso 4: Leer la colección de "clients".
         const clientsCollection = collection(db, "clients");
         const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
         const clientsSnapshot = await getDocs(clientsQuery);

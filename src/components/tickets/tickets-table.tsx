@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -70,16 +71,25 @@ function TicketsTableContent() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // EJEMPLO DE LECTURA DE UNA COLECCIÓN COMPLETA
     const fetchTickets = async () => {
       setIsLoading(true);
       try {
+        // Paso 2: Crear una referencia a la colección "tickets".
         const ticketsCollection = collection(db, "tickets");
+        // Opcional: Crear una consulta para ordenar los tickets, en este caso por fecha de creación descendente.
         const q = query(ticketsCollection, orderBy("createdAt", "desc"));
+        
+        // Paso 3: Usar `getDocs` con la consulta para obtener los documentos.
         const querySnapshot = await getDocs(q);
         const ticketList: Ticket[] = [];
+        
+        // Paso 4: Recorrer el resultado (querySnapshot) y transformar cada documento en un objeto.
         querySnapshot.forEach((doc) => {
           ticketList.push({ id: doc.id, ...doc.data() } as Ticket);
         });
+        
+        // Paso 5: Actualizar el estado del componente con la lista de tickets.
         setTickets(ticketList);
       } catch (error) {
         console.error("Error fetching tickets: ", error);

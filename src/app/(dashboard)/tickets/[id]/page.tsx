@@ -21,6 +21,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
+// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
 import { db } from '@/lib/firebase';
 import { doc, getDoc, updateDoc, Timestamp, arrayUnion } from "firebase/firestore";
 
@@ -59,13 +60,15 @@ export default function TicketDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
+  // EJEMPLO DE LECTURA DE UN DOCUMENTO ESPECÍFICO
   const fetchTicket = useCallback(async () => {
     if (typeof id !== 'string') return;
-    // Don't set loading to true on re-fetches to avoid UI flicker
-    // setIsLoading(true); 
     try {
+      // Paso 2: Crear una referencia al documento del ticket usando su ID.
       const docRef = doc(db, "tickets", id);
+      // Paso 3: Usar `getDoc` para obtener el documento.
       const docSnap = await getDoc(docRef);
+      // Paso 4: Validar si el documento existe y actualizar el estado.
       if (docSnap.exists()) {
         setTicket({ id: docSnap.id, ...docSnap.data() } as Ticket);
       } else {
@@ -87,44 +90,52 @@ export default function TicketDetailsPage() {
     }
   }, [id, fetchTicket]);
 
+  // EJEMPLO DE ACTUALIZACIÓN DE UN DOCUMENTO (CAMBIAR ESTADO)
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
     if (ticket) {
       const oldStatus = ticket.status;
       const updateText = `Estado cambiado de ${statusTranslations[oldStatus]} a ${statusTranslations[newStatus]}.`;
       const ticketUpdate = {
         timestamp: Timestamp.now(),
-        author: 'Admin User', // Replace with actual user later
+        author: 'Admin User', // En una app real, aquí iría el usuario autenticado.
         update: updateText,
       };
 
       try {
+        // Paso 2: Crear una referencia al documento que se va a actualizar.
         const ticketRef = doc(db, "tickets", ticket.id);
+        // Paso 3: Usar `updateDoc` para modificar campos existentes.
+        // `arrayUnion` es útil para añadir elementos a un array sin duplicados.
         await updateDoc(ticketRef, {
           status: newStatus,
-          updates: arrayUnion(ticketUpdate)
+          updates: arrayUnion(ticketUpdate) // Agrega la nueva actualización al historial.
         });
         toast({
           title: "Estado Actualizado",
           description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
         });
-        fetchTicket(); // Re-fetch data to show the latest changes
+        fetchTicket(); // Volver a cargar los datos para reflejar el cambio en la UI.
       } catch (error) {
         console.error("Error updating status:", error);
-        toast({ title: "Error al Actualizar", description: "No se pudo actualizar el estado. Revisa los permisos de Firestore.", variant: "destructive" });
+        toast({ title: "Error al Actualizar", description: "No se pudo actualizar el estado.", variant: "destructive" });
       }
     }
   };
   
+  // EJEMPLO DE ACTUALIZACIÓN DE UN DOCUMENTO (AÑADIR COMENTARIO)
   const handleAddComment = async () => {
     if (ticket && newComment.trim()) {
+      // Paso 2: Preparar el objeto de actualización que se añadirá al array "updates".
       const ticketUpdate = {
         timestamp: Timestamp.now(),
-        author: 'Admin User', // Replace with actual user later
+        author: 'Admin User', // Reemplazar con el usuario actual.
         update: newComment.trim(),
       };
 
       try {
+        // Paso 3: Crear la referencia al documento.
         const ticketRef = doc(db, "tickets", ticket.id);
+        // Paso 4: Usar `updateDoc` y `arrayUnion` para añadir el nuevo comentario al historial.
         await updateDoc(ticketRef, {
           updates: arrayUnion(ticketUpdate)
         });
@@ -133,10 +144,10 @@ export default function TicketDetailsPage() {
           title: "Comentario Añadido",
           description: "Tu comentario ha sido añadido al historial del ticket."
         });
-        fetchTicket(); // Re-fetch data to show the latest changes
+        fetchTicket(); // Volver a cargar los datos.
       } catch (error) {
          console.error("Error adding comment:", error);
-         toast({ title: "Error al Comentar", description: "No se pudo añadir el comentario. Revisa los permisos de Firestore.", variant: "destructive" });
+         toast({ title: "Error al Comentar", description: "No se pudo añadir el comentario.", variant: "destructive" });
       }
     }
   };

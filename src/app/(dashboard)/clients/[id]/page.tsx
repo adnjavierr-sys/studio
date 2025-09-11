@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, Mail, Building, MapPin, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
 import { db } from '@/lib/firebase';
 import { doc, getDoc, Timestamp } from "firebase/firestore";
 
@@ -22,16 +23,24 @@ export default function ClientDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // EJEMPLO DE LECTURA DE UN ÚNICO DOCUMENTO
     const fetchClient = async () => {
       if (typeof id !== 'string') return;
       setIsLoading(true);
       try {
+        // Paso 2: Crear una referencia al documento específico usando su ID.
+        // La función `doc` necesita la instancia de la base de datos, el nombre de la colección y el ID del documento.
         const docRef = doc(db, "clients", id);
+        
+        // Paso 3: Usar `getDoc` para obtener el documento.
         const docSnap = await getDoc(docRef);
 
+        // Paso 4: Comprobar si el documento existe.
         if (docSnap.exists()) {
+          // Si existe, se combinan el ID y los datos del documento para actualizar el estado.
           setClient({ id: docSnap.id, ...docSnap.data() } as Client);
         } else {
+          // Si no existe, se muestra un mensaje en la consola.
           console.log("No such document!");
         }
       } catch (error) {
