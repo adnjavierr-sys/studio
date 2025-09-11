@@ -20,10 +20,14 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Connect to Firestore Emulator only when in development/emulator mode.
-// This is the crucial part that ensures the app talks to the local emulator.
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-  console.log("Connecting to Firestore Emulator...");
-  connectFirestoreEmulator(db, 'localhost', 8080);
+  console.log("Connecting to Firestore Emulator at localhost:8080...");
+  try {
+     connectFirestoreEmulator(db, 'localhost', 8080);
+     console.log("Successfully connected to Firestore Emulator.");
+  } catch (e) {
+     console.error("Error connecting to Firestore emulator", e);
+  }
 }
 
 export { app, db };
