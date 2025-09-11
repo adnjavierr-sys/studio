@@ -19,8 +19,8 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 
-// Connect to Firestore emulator if running in development
-if (process.env.NODE_ENV === 'development') {
+// Connect to Firestore emulator if running in development mode
+if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
     try {
         connectFirestoreEmulator(db, 'localhost', 8080);
         console.log("Connected to Firestore Emulator");
@@ -28,5 +28,6 @@ if (process.env.NODE_ENV === 'development') {
         console.error("Error connecting to Firestore emulator", e);
     }
 }
+
 
 export { app, db };
