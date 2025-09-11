@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { agents, Agent } from '@/lib/data';
+import { Agent } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Mail, Shield, Pencil, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Calendar, Mail, Shield, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
@@ -37,6 +37,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
+import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 
 export default function AgentDetailsPage() {
   const router = useRouter();
@@ -44,53 +47,95 @@ export default function AgentDetailsPage() {
   const { id } = params;
   const { toast } = useToast();
 
-  const [agent, setAgent] = useState<Agent | undefined>(
-    agents.find((a) => a.id === id)
-  );
-
+  const [agent, setAgent] = useState<Agent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
-  const handleDeleteAgent = () => {
-    if (agent) {
-      const indexToDelete = agents.findIndex(a => a.id === agent.id);
-      if (indexToDelete > -1) {
-        agents.splice(indexToDelete, 1);
+  useEffect(() => {
+    // EJEMPLO DE LECTURA DE UN DOCUMENTO: Lee los datos de un agente específico.
+    const fetchAgent = async () => {
+      if (typeof id !== 'string') return;
+      setIsLoading(true);
+      try {
+        // Paso 2: Crear una referencia al documento usando su ID.
+        const docRef = doc(db, "agents", id);
+        // Paso 3: Obtener el documento.
+        const docSnap = await getDoc(docRef);
+
+        // Paso 4: Comprobar si existe y actualizar el estado.
+        if (docSnap.exists()) {
+          setAgent({ id: docSnap.id, ...docSnap.data() } as Agent);
+        } else {
+          toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
+        }
+      } catch (error) {
+        console.error("Error fetching agent:", error);
+        toast({ title: "Error", description: "No se pudo cargar el agente.", variant: "destructive" });
+      } finally {
+        setIsLoading(false);
       }
-      toast({
-        title: "Agente Eliminado",
-        description: `El agente ${agent.name} ha sido eliminado.`,
-      });
-      setIsDeleteConfirmationOpen(false);
-      router.push('/agents');
+    };
+
+    fetchAgent();
+  }, [id, toast]);
+  
+
+  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina el agente actual de Firestore.
+  const handleDeleteAgent = async () => {
+    if (agent) {
+      try {
+        // Paso 2: Crear una referencia al documento y eliminarlo.
+        await deleteDoc(doc(db, "agents", agent.id));
+        toast({
+          title: "Agente Eliminado",
+          description: `El agente ${agent.name} ha sido eliminado.`,
+        });
+        setIsDeleteConfirmationOpen(false);
+        router.push('/agents');
+      } catch (error) {
+        toast({ title: "Error al Eliminar", description: "No se pudo eliminar el agente.", variant: "destructive" });
+      }
     }
   };
 
-  const handleUpdateAgent = (event: React.FormEvent<HTMLFormElement>) => {
+  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza el agente actual.
+  const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (agent) {
       const formData = new FormData(event.currentTarget);
-      const updatedAgentData = {
-        ...agent,
+      const updatedData = {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
         role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
       };
       
-      const agentIndex = agents.findIndex(a => a.id === agent.id);
-      if (agentIndex !== -1) {
-        agents[agentIndex] = updatedAgentData;
+      try {
+        // Paso 2: Crear una referencia al documento y actualizarlo.
+        const agentRef = doc(db, "agents", agent.id);
+        await updateDoc(agentRef, updatedData);
+        
+        setAgent(prev => prev ? { ...prev, ...updatedData } : null);
+        
+        toast({
+          title: "Agente actualizado",
+          description: `Los datos de ${updatedData.name} han sido actualizados.`
+        });
+      } catch (error) {
+         toast({ title: "Error al Actualizar", description: "No se pudo actualizar el agente.", variant: "destructive" });
+      } finally {
+        setIsEditModalOpen(false);
       }
-
-      setAgent(updatedAgentData);
-      
-      toast({
-        title: "Agente actualizado",
-        description: `Los datos de ${updatedAgentData.name} han sido actualizados.`
-      });
-      setIsEditModalOpen(false);
     }
   };
+
+  if (isLoading) {
+    return (
+       <div className="p-6 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+       </div>
+    );
+  }
 
   if (!agent) {
     return (
@@ -103,6 +148,8 @@ export default function AgentDetailsPage() {
       </div>
     );
   }
+
+  const createdAtDate = agent.createdAt instanceof Timestamp ? agent.createdAt.toDate() : new Date();
 
   return (
     <>
@@ -154,7 +201,7 @@ export default function AgentDetailsPage() {
                     <Calendar className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Miembro Desde</p>
-                        <p className="text-muted-foreground">{format(agent.createdAt, 'PPP')}</p>
+                        <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
                     </div>
                 </div>
              </div>

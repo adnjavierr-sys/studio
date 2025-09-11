@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound, Eye, EyeOff } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound, Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { agents as initialAgents, Agent } from "@/lib/data";
+import { Agent } from "@/lib/data";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -50,9 +50,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
+import { db } from "@/lib/firebase";
+import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
+
 
 export default function AgentsPage() {
-  const [agentList, setAgentList] = useState<Agent[]>(initialAgents);
+  const [agentList, setAgentList] = useState<Agent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
@@ -60,6 +65,33 @@ export default function AgentsPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  // EJEMPLO DE LECTURA DE DATOS: Esta función lee todos los agentes de Firestore.
+  const fetchAgents = async () => {
+    setIsLoading(true);
+    try {
+      // Paso 2: Crear una referencia a la colección "agents" y ordenarla.
+      const agentsCollection = collection(db, "agents");
+      const q = query(agentsCollection, orderBy("createdAt", "desc"));
+      
+      // Paso 3: Obtener los documentos de la colección.
+      const querySnapshot = await getDocs(q);
+      const agents: Agent[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
+      
+      // Paso 4: Actualizar el estado con los datos leídos.
+      setAgentList(agents);
+    } catch (error) {
+      console.error("Error fetching agents: ", error);
+      toast({ title: "Error", description: "No se pudieron cargar los agentes.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
+
 
   const handleRowClick = (agentId: string) => {
     router.push(`/agents/${agentId}`);
@@ -75,63 +107,83 @@ export default function AgentsPage() {
     setIsDeleteConfirmationOpen(true);
   }
 
-  const handleDeleteAgent = () => {
+  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina un agente de Firestore.
+  const handleDeleteAgent = async () => {
     if (selectedAgent) {
-      const indexToDelete = initialAgents.findIndex(a => a.id === selectedAgent.id);
-      if (indexToDelete > -1) {
-        initialAgents.splice(indexToDelete, 1);
+      try {
+        // Paso 2: Crear una referencia al documento y eliminarlo.
+        await deleteDoc(doc(db, "agents", selectedAgent.id));
+        toast({
+          title: "Agente Eliminado",
+          description: `El agente ${selectedAgent.name} ha sido eliminado.`,
+        });
+        fetchAgents(); // Volver a cargar la lista para reflejar el cambio.
+      } catch (error) {
+        toast({ title: "Error al Eliminar", description: "No se pudo eliminar el agente.", variant: "destructive" });
+      } finally {
+        setIsDeleteConfirmationOpen(false);
+        setSelectedAgent(null);
       }
-      setAgentList([...initialAgents]);
-      toast({
-        title: "Agente Eliminado",
-        description: `El agente ${selectedAgent.name} ha sido eliminado.`,
-      });
-      setIsDeleteConfirmationOpen(false);
-      setSelectedAgent(null);
     }
   };
 
-  const handleAddAgent = (event: React.FormEvent<HTMLFormElement>) => {
+  // EJEMPLO DE ESCRITURA DE DATOS: Añade un nuevo agente a Firestore.
+  const handleAddAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const newAgent: Agent = {
-      id: `AGT-${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
+    // Paso 2: Preparar el objeto con los datos del nuevo agente.
+    const newAgent = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
-      password: formData.get('password') as string,
-      createdAt: new Date(),
+      password: formData.get('password') as string, // NOTA: En una app real, la contraseña debe ser encriptada (hashed).
+      createdAt: Timestamp.now(), // Usar Timestamp de Firestore.
     };
-    initialAgents.unshift(newAgent);
-    setAgentList([...initialAgents]);
-    toast({
-      title: "Agente añadido",
-      description: `El agente ${newAgent.name} ha sido añadido.`,
-    });
-    setIsAddModalOpen(false);
+    
+    try {
+      // Paso 3: Añadir el nuevo documento a la colección "agents".
+      await addDoc(collection(db, "agents"), newAgent);
+      toast({
+        title: "Agente añadido",
+        description: `El agente ${newAgent.name} ha sido añadido.`,
+      });
+      fetchAgents(); // Volver a cargar los datos.
+    } catch (error) {
+      toast({ title: "Error al Añadir", description: "No se pudo añadir el agente.", variant: "destructive" });
+    } finally {
+      setIsAddModalOpen(false);
+    }
   };
-
-  const handleUpdateAgent = (event: React.FormEvent<HTMLFormElement>) => {
+  
+  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza un agente existente.
+  const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedAgent) {
       const formData = new FormData(event.currentTarget);
-      const updatedAgent = {
-        ...selectedAgent,
+      const updatedData = {
         name: formData.get('name') as string,
         email: formData.get('email') as string,
         role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
       };
-      const newAgentList = agentList.map(a => a.id === updatedAgent.id ? updatedAgent : a);
-      setAgentList(newAgentList);
-      initialAgents.splice(initialAgents.findIndex(a => a.id === updatedAgent.id), 1, updatedAgent);
-      toast({
-        title: "Agente actualizado",
-        description: `Los datos de ${updatedAgent.name} han sido actualizados.`
-      });
-      setIsEditModalOpen(false);
-      setSelectedAgent(null);
+      
+      try {
+        // Paso 2: Crear una referencia al documento y actualizarlo.
+        const agentRef = doc(db, "agents", selectedAgent.id);
+        await updateDoc(agentRef, updatedData);
+        toast({
+          title: "Agente actualizado",
+          description: `Los datos de ${updatedData.name} han sido actualizados.`
+        });
+        fetchAgents(); // Volver a cargar los datos.
+      } catch (error) {
+        toast({ title: "Error al Actualizar", description: "No se pudo actualizar el agente.", variant: "destructive" });
+      } finally {
+        setIsEditModalOpen(false);
+        setSelectedAgent(null);
+      }
     }
   };
+
 
   return (
     <>
@@ -156,7 +208,14 @@ export default function AgentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {agentList.length > 0 ? (
+              {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                        <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                        <p className="mt-2 text-muted-foreground">Cargando agentes...</p>
+                    </TableCell>
+                  </TableRow>
+              ) : agentList.length > 0 ? (
                 agentList.map((agent) => (
                   <TableRow key={agent.id} >
                     <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(agent.id)}>
@@ -172,19 +231,21 @@ export default function AgentsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{agent.role}</TableCell>
-                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{format(agent.createdAt, "PPP")}</TableCell>
+                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>
+                      {agent.createdAt && format((agent.createdAt as Timestamp).toDate(), "PPP")}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => openEditModal(agent)}>
+                          <DropdownMenuItem onClick={(e) => {e.stopPropagation(); openEditModal(agent)}}>
                             <Pencil className="mr-2" /> Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={() => openDeleteModal(agent)}>
+                          <DropdownMenuItem className="text-destructive" onClick={(e) => {e.stopPropagation(); openDeleteModal(agent)}}>
                             <Trash2 className="mr-2" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
