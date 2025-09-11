@@ -24,7 +24,7 @@ if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
   console.log("Connecting to Firestore Emulator...");
   try {
      // The host and port must match the configuration in firebase.json
-     connectFirestoreEmulator(db, 'localhost', 8080);
+     connectFirestoreEmulator(db, '127.0.0.1', 8080);
      console.log("Successfully connected to Firestore Emulator.");
   } catch (e) {
      console.error("Error connecting to Firestore emulator", e);
