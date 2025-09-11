@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, connectFirestoreEmulator, Firestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
@@ -12,32 +12,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase App
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-let db: Firestore;
+// Initialize Firestore
+const db = getFirestore(app);
 
-// This function ensures we initialize the emulator connection only once.
-const getDb = () => {
-  if (!db) {
-    db = getFirestore(app);
-    if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-      try {
-        connectFirestoreEmulator(db, 'localhost', 8080);
-        console.log("Connected to Firestore Emulator");
-      } catch (e) {
-        // The error "Firestore has already been started" can be safely ignored.
-        // It happens on hot reloads in development.
-        if (e instanceof Error && !e.message.includes('already been started')) {
-          console.error("Error connecting to Firestore emulator", e);
-        }
-      }
+// Connect to Firestore Emulator if in development
+// This check ensures that the emulator is only used in development environments.
+if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
+  // Check to make sure we don't connect to the emulator multiple times.
+  // This is a safeguard for Next.js hot-reloading.
+  // @ts-ignore - _settings is a private property but necessary for this check
+  if (!db._settings.host) {
+    try {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      console.log("Successfully connected to Firestore Emulator.");
+    } catch (e) {
+      console.error("Error connecting to Firestore emulator", e);
     }
   }
-  return db;
-};
-
-// Use the function to get the db instance
-db = getDb();
+}
 
 export { app, db };
