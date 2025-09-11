@@ -20,7 +20,6 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Connect to Firestore Emulator only when in development/emulator mode.
-// This check is crucial for Next.js to work correctly with emulators.
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
   console.log("Connecting to Firestore Emulator...");
   try {
