@@ -20,8 +20,9 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Connect to Firestore Emulator only when in development/emulator mode.
+// This check ensures that the emulator is only used in development.
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-  console.log("Connecting to Firestore Emulator...");
+  console.log("Connecting to Firestore Emulator at 127.0.0.1:8080");
   try {
      // The host and port must match the configuration in firebase.json
      connectFirestoreEmulator(db, '127.0.0.1', 8080);
