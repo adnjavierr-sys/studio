@@ -34,8 +34,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
-// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 
 type CategoryCount = {
@@ -56,20 +56,21 @@ export default function ReportsPage() {
 
   const { toast } = useToast();
   const router = useRouter();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
   useEffect(() => {
-    // EJEMPLO DE LECTURA DE MÚLTIPLES COLECCIONES
     const fetchData = async () => {
+      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+      if (!firebase) return;
       setIsLoading(true);
       try {
-        // Paso 2: Leer la colección de "tickets".
-        const ticketsCollection = collection(db, "tickets");
+        const ticketsCollection = collection(firebase.db, "tickets");
         const ticketsQuery = query(ticketsCollection, orderBy("createdAt", "desc"));
         const ticketsSnapshot = await getDocs(ticketsQuery);
         const ticketList: Ticket[] = ticketsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
         setAllTickets(ticketList);
         
-        // Paso 3: Procesar los datos de los tickets para generar estadísticas.
         const categoryCounts: { [key: string]: number } = { Support: 0, Hosting: 0, Oportuno: 0, Other: 0 };
         ticketList.forEach(ticket => {
           if (ticket.category in categoryCounts) {
@@ -78,8 +79,7 @@ export default function ReportsPage() {
         });
         setTicketsByCategory(Object.entries(categoryCounts).map(([key, value]) => ({ category: key, count: value })));
 
-        // Paso 4: Leer la colección de "clients".
-        const clientsCollection = collection(db, "clients");
+        const clientsCollection = collection(firebase.db, "clients");
         const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
         const clientsSnapshot = await getDocs(clientsQuery);
         const clientList: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
@@ -93,7 +93,7 @@ export default function ReportsPage() {
       }
     };
     fetchData();
-  }, [toast]);
+  }, [toast, firebase]);
   
   const handleClientChange = (clientName: string) => {
     const client = clients.find(c => c.name === clientName);
@@ -388,7 +388,7 @@ export default function ReportsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-             {isLoading ? (
+             {isLoading || !firebase ? (
                 <div className="flex justify-center items-center h-24">
                     <Loader2 className="h-8 w-8 animate-spin" />
                 </div>

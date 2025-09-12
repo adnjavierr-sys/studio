@@ -37,8 +37,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { doc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
 
 export default function AgentDetailsPage() {
@@ -46,6 +46,8 @@ export default function AgentDetailsPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,17 +55,15 @@ export default function AgentDetailsPage() {
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
   useEffect(() => {
-    // EJEMPLO DE LECTURA DE UN DOCUMENTO: Lee los datos de un agente específico.
     const fetchAgent = async () => {
+      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+      if (!firebase) return;
       if (typeof id !== 'string') return;
       setIsLoading(true);
       try {
-        // Paso 2: Crear una referencia al documento usando su ID.
-        const docRef = doc(db, "agents", id);
-        // Paso 3: Obtener el documento.
+        const docRef = doc(firebase.db, "agents", id);
         const docSnap = await getDoc(docRef);
 
-        // Paso 4: Comprobar si existe y actualizar el estado.
         if (docSnap.exists()) {
           setAgent({ id: docSnap.id, ...docSnap.data() } as Agent);
         } else {
@@ -78,15 +78,13 @@ export default function AgentDetailsPage() {
     };
 
     fetchAgent();
-  }, [id, toast]);
+  }, [id, toast, firebase]);
   
 
-  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina el agente actual de Firestore.
   const handleDeleteAgent = async () => {
-    if (agent) {
+    if (agent && firebase) {
       try {
-        // Paso 2: Crear una referencia al documento y eliminarlo.
-        await deleteDoc(doc(db, "agents", agent.id));
+        await deleteDoc(doc(firebase.db, "agents", agent.id));
         toast({
           title: "Agente Eliminado",
           description: `El agente ${agent.name} ha sido eliminado.`,
@@ -99,10 +97,9 @@ export default function AgentDetailsPage() {
     }
   };
 
-  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza el agente actual.
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (agent) {
+    if (agent && firebase) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -111,8 +108,7 @@ export default function AgentDetailsPage() {
       };
       
       try {
-        // Paso 2: Crear una referencia al documento y actualizarlo.
-        const agentRef = doc(db, "agents", agent.id);
+        const agentRef = doc(firebase.db, "agents", agent.id);
         await updateDoc(agentRef, updatedData);
         
         setAgent(prev => prev ? { ...prev, ...updatedData } : null);
@@ -129,7 +125,7 @@ export default function AgentDetailsPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !firebase) {
     return (
        <div className="p-6 flex justify-center items-center">
           <Loader2 className="h-8 w-8 animate-spin" />

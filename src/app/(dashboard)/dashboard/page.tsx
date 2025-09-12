@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Ticket, Clock, CheckCircle, Loader2 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart, Cell } from 'recharts';
-// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
-import { db } from '@/lib/firebase';
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from '@/hooks/use-firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Ticket as TicketType } from '@/lib/data';
 
@@ -24,31 +24,28 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ total: 0, open: 0, inProgress: 0, closed: 0 });
   const [categoryData, setCategoryData] = useState<{ category: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
   useEffect(() => {
-    // EJEMPLO DE LECTURA DE UNA COLECCIÓN COMPLETA
     const fetchData = async () => {
+      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+      if (!firebase) return;
       setIsLoading(true);
       try {
-        // Paso 2: Obtener una referencia a la colección "tickets".
-        const ticketsCollection = collection(db, "tickets");
-        
-        // Paso 3: Usar `getDocs` para obtener todos los documentos de la colección.
+        const ticketsCollection = collection(firebase.db, "tickets");
         const querySnapshot = await getDocs(ticketsCollection);
         const tickets: TicketType[] = [];
         querySnapshot.forEach((doc) => {
           tickets.push({ id: doc.id, ...doc.data() } as TicketType);
         });
 
-        // Paso 4: Procesar los datos leídos para calcular estadísticas.
-        // Se calcula el total de tickets y se filtra por estado para obtener los contadores.
         const total = tickets.length;
         const open = tickets.filter(t => t.status === 'Open').length;
         const inProgress = tickets.filter(t => t.status === 'In Progress').length;
         const closed = tickets.filter(t => t.status === 'Closed').length;
         setStats({ total, open, inProgress, closed });
         
-        // Se calculan los tickets por categoría para la gráfica.
         const categoryCounts: { [key: string]: number } = { Support: 0, Hosting: 0, Oportuno: 0, Other: 0 };
         tickets.forEach(ticket => {
           if (ticket.category in categoryCounts) {
@@ -64,7 +61,7 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
 
   const chartConfig = {
     count: {
@@ -83,7 +80,7 @@ export default function DashboardPage() {
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {isLoading || !firebase ? (
           <Loader2 className="h-6 w-6 animate-spin" />
         ) : (
           <div className="text-2xl font-bold">{value}</div>
@@ -112,7 +109,7 @@ export default function DashboardPage() {
             <CardTitle>Tickets por Categoría</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isLoading || !firebase ? (
               <div className="flex justify-center items-center h-[300px]">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>

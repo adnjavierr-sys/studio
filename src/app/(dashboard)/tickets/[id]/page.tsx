@@ -21,8 +21,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
-import { db } from '@/lib/firebase';
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { doc, getDoc, updateDoc, Timestamp, arrayUnion } from "firebase/firestore";
 
 const statusColors: { [key: string]: string } = {
@@ -55,20 +55,19 @@ export default function TicketDetailsPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
   
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
-  // EJEMPLO DE LECTURA DE UN DOCUMENTO ESPECÍFICO
   const fetchTicket = useCallback(async () => {
-    if (typeof id !== 'string') return;
+    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+    if (!firebase || typeof id !== 'string') return;
     try {
-      // Paso 2: Crear una referencia al documento del ticket usando su ID.
-      const docRef = doc(db, "tickets", id);
-      // Paso 3: Usar `getDoc` para obtener el documento.
+      const docRef = doc(firebase.db, "tickets", id);
       const docSnap = await getDoc(docRef);
-      // Paso 4: Validar si el documento existe y actualizar el estado.
       if (docSnap.exists()) {
         setTicket({ id: docSnap.id, ...docSnap.data() } as Ticket);
       } else {
@@ -81,7 +80,7 @@ export default function TicketDetailsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id, toast]);
+  }, [id, toast, firebase]);
 
   useEffect(() => {
     if (id) {
@@ -90,31 +89,27 @@ export default function TicketDetailsPage() {
     }
   }, [id, fetchTicket]);
 
-  // EJEMPLO DE ACTUALIZACIÓN DE UN DOCUMENTO (CAMBIAR ESTADO)
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
-    if (ticket) {
+    if (ticket && firebase) {
       const oldStatus = ticket.status;
       const updateText = `Estado cambiado de ${statusTranslations[oldStatus]} a ${statusTranslations[newStatus]}.`;
       const ticketUpdate = {
         timestamp: Timestamp.now(),
-        author: 'Admin User', // En una app real, aquí iría el usuario autenticado.
+        author: 'Admin User',
         update: updateText,
       };
 
       try {
-        // Paso 2: Crear una referencia al documento que se va a actualizar.
-        const ticketRef = doc(db, "tickets", ticket.id);
-        // Paso 3: Usar `updateDoc` para modificar campos existentes.
-        // `arrayUnion` es útil para añadir elementos a un array sin duplicados.
+        const ticketRef = doc(firebase.db, "tickets", ticket.id);
         await updateDoc(ticketRef, {
           status: newStatus,
-          updates: arrayUnion(ticketUpdate) // Agrega la nueva actualización al historial.
+          updates: arrayUnion(ticketUpdate)
         });
         toast({
           title: "Estado Actualizado",
           description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
         });
-        fetchTicket(); // Volver a cargar los datos para reflejar el cambio en la UI.
+        fetchTicket();
       } catch (error) {
         console.error("Error updating status:", error);
         toast({ title: "Error al Actualizar", description: "No se pudo actualizar el estado.", variant: "destructive" });
@@ -122,20 +117,16 @@ export default function TicketDetailsPage() {
     }
   };
   
-  // EJEMPLO DE ACTUALIZACIÓN DE UN DOCUMENTO (AÑADIR COMENTARIO)
   const handleAddComment = async () => {
-    if (ticket && newComment.trim()) {
-      // Paso 2: Preparar el objeto de actualización que se añadirá al array "updates".
+    if (ticket && newComment.trim() && firebase) {
       const ticketUpdate = {
         timestamp: Timestamp.now(),
-        author: 'Admin User', // Reemplazar con el usuario actual.
+        author: 'Admin User',
         update: newComment.trim(),
       };
 
       try {
-        // Paso 3: Crear la referencia al documento.
-        const ticketRef = doc(db, "tickets", ticket.id);
-        // Paso 4: Usar `updateDoc` y `arrayUnion` para añadir el nuevo comentario al historial.
+        const ticketRef = doc(firebase.db, "tickets", ticket.id);
         await updateDoc(ticketRef, {
           updates: arrayUnion(ticketUpdate)
         });
@@ -144,7 +135,7 @@ export default function TicketDetailsPage() {
           title: "Comentario Añadido",
           description: "Tu comentario ha sido añadido al historial del ticket."
         });
-        fetchTicket(); // Volver a cargar los datos.
+        fetchTicket();
       } catch (error) {
          console.error("Error adding comment:", error);
          toast({ title: "Error al Comentar", description: "No se pudo añadir el comentario.", variant: "destructive" });
@@ -152,7 +143,7 @@ export default function TicketDetailsPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !firebase) {
     return (
        <div className="p-6 flex justify-center items-center h-full">
           <Loader2 className="h-8 w-8 animate-spin" />

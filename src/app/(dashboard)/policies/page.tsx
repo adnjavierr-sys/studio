@@ -50,8 +50,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const typeColors: { [key: string]: string } = {
@@ -69,20 +69,21 @@ export default function PoliciesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
-  // EJEMPLO DE LECTURA DE DATOS: Lee las pólizas y los clientes desde Firestore.
   const fetchData = async () => {
+    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+    if (!firebase) return;
     setIsLoading(true);
     try {
-      // Paso 2: Leer la colección "policies".
-      const policiesCollection = collection(db, "policies");
+      const policiesCollection = collection(firebase.db, "policies");
       const policiesQuery = query(policiesCollection, orderBy("createdAt", "desc"));
       const policiesSnapshot = await getDocs(policiesQuery);
       const policies: Policy[] = policiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Policy));
       setPolicyList(policies);
 
-      // Paso 3: Leer la colección "clients" para usarla en el formulario.
-      const clientsCollection = collection(db, "clients");
+      const clientsCollection = collection(firebase.db, "clients");
       const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
       const clientsSnapshot = await getDocs(clientsQuery);
       const clientList: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
@@ -98,30 +99,28 @@ export default function PoliciesPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
 
 
-  // EJEMPLO DE ESCRITURA DE DATOS: Añade una nueva póliza a Firestore.
   const handleAddPolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
-    // Paso 2: Preparar el nuevo objeto de póliza.
     const newPolicy = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
       type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
       clientName: formData.get('clientName') as string,
-      createdAt: Timestamp.now(), // Usar Timestamp de Firestore.
+      createdAt: Timestamp.now(),
     };
     
     try {
-      // Paso 3: Añadir el nuevo documento a la colección "policies".
-      await addDoc(collection(db, "policies"), newPolicy);
+      await addDoc(collection(firebase.db, "policies"), newPolicy);
       toast({
         title: "Póliza añadida",
         description: `La póliza "${newPolicy.title}" ha sido añadida.`,
       });
-      fetchData(); // Volver a cargar los datos para reflejar el cambio.
+      fetchData();
     } catch (error) {
        toast({ title: "Error al Añadir", description: "No se pudo añadir la póliza.", variant: "destructive" });
     } finally {
@@ -134,10 +133,9 @@ export default function PoliciesPage() {
     setIsEditModalOpen(true);
   };
 
-  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza una póliza existente.
   const handleUpdatePolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedPolicy) {
+    if (selectedPolicy && firebase) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         title: formData.get('title') as string,
@@ -147,8 +145,7 @@ export default function PoliciesPage() {
       };
       
       try {
-        // Paso 2: Crear una referencia al documento y actualizarlo.
-        const policyRef = doc(db, "policies", selectedPolicy.id);
+        const policyRef = doc(firebase.db, "policies", selectedPolicy.id);
         await updateDoc(policyRef, updatedData);
         toast({
           title: "Póliza actualizada",
@@ -169,12 +166,10 @@ export default function PoliciesPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina una póliza de Firestore.
   const handleDeletePolicy = async () => {
-    if (selectedPolicy) {
+    if (selectedPolicy && firebase) {
       try {
-        // Paso 2: Crear una referencia al documento y eliminarlo.
-        await deleteDoc(doc(db, "policies", selectedPolicy.id));
+        await deleteDoc(doc(firebase.db, "policies", selectedPolicy.id));
         toast({
           title: "Póliza eliminada",
           description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,
@@ -213,7 +208,7 @@ export default function PoliciesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {isLoading || !firebase ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />

@@ -43,8 +43,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-// Paso 1: Importar las funciones necesarias de Firestore y la configuración de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
 
 export default function ClientsPage() {
@@ -56,28 +56,24 @@ export default function ClientsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
-  // EJEMPLO DE LECTURA DE DATOS: Esta función lee todos los documentos de la colección "clients".
   const fetchClients = async () => {
+    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+    if (!firebase) return;
     setIsLoading(true);
     try {
-      // Paso 2: Obtener una referencia a la colección "clients" en Firestore.
-      const clientsCollection = collection(db, "clients");
-      // Opcional: Crear una consulta para ordenar los clientes por fecha de creación.
+      const clientsCollection = collection(firebase.db, "clients");
       const q = query(clientsCollection, orderBy("createdAt", "desc"));
       
-      // Paso 3: Ejecutar la consulta para obtener una "instantánea" (snapshot) de la colección.
       const querySnapshot = await getDocs(q);
       
-      // Paso 4: Recorrer cada documento en la instantánea y formatear los datos.
       const clients: Client[] = [];
       querySnapshot.forEach((doc) => {
-        // doc.id es el ID único del documento.
-        // doc.data() contiene todos los campos del documento.
         clients.push({ id: doc.id, ...doc.data() } as Client);
       });
       
-      // Paso 5: Actualizar el estado del componente con los datos leídos.
       setClientList(clients);
     } catch (error) {
       console.error("Error fetching clients: ", error);
@@ -93,7 +89,7 @@ export default function ClientsPage() {
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
 
 
   const handleRowClick = (clientId: string) => {
@@ -105,21 +101,17 @@ export default function ClientsPage() {
     setIsDeleteDialogOpen(true);
   };
 
-  // EJEMPLO DE ELIMINACIÓN DE DATOS: Esta función elimina un documento específico.
   const handleDeleteClient = async () => {
-    if (selectedClient) {
+    if (selectedClient && firebase) {
       try {
-        // Paso 2: Crear una referencia al documento específico usando su ID.
-        const clientDocRef = doc(db, "clients", selectedClient.id);
-        
-        // Paso 3: Llamar a deleteDoc para eliminar el documento de Firestore.
+        const clientDocRef = doc(firebase.db, "clients", selectedClient.id);
         await deleteDoc(clientDocRef);
         
         toast({
           title: "Cliente eliminado",
           description: `El cliente ${selectedClient.name} ha sido eliminado.`,
         });
-        fetchClients(); // Volver a cargar la lista para reflejar el cambio.
+        fetchClients();
       } catch (error) {
          toast({
           title: "Error al Eliminar",
@@ -138,10 +130,9 @@ export default function ClientsPage() {
     setIsEditModalOpen(true);
   };
 
-  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Esta función actualiza un documento existente.
   const handleUpdateClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedClient) {
+    if (selectedClient && firebase) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -151,17 +142,14 @@ export default function ClientsPage() {
       };
       
       try {
-        // Paso 2: Crear una referencia al documento que se va a actualizar.
-        const clientRef = doc(db, "clients", selectedClient.id);
-        
-        // Paso 3: Llamar a updateDoc con la referencia y los nuevos datos.
+        const clientRef = doc(firebase.db, "clients", selectedClient.id);
         await updateDoc(clientRef, updatedData);
         
         toast({
           title: "Cliente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
         });
-        fetchClients(); // Volver a cargar la lista para reflejar el cambio.
+        fetchClients();
       } catch (error) {
         toast({
           title: "Error al Actualizar",
@@ -175,29 +163,26 @@ export default function ClientsPage() {
     }
   };
 
-  // EJEMPLO DE ESCRITURA DE DATOS: Esta función crea un nuevo documento.
   const handleAddClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
-    // Paso 2: Preparar el objeto con los datos que se guardarán.
     const newClient = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       company: formData.get('company') as string,
       address: formData.get('address') as string,
-      createdAt: Timestamp.now(), // Usar Timestamp de Firestore para la fecha.
+      createdAt: Timestamp.now(),
     };
     
     try {
-      // Paso 3: Llamar a addDoc, pasándole la referencia a la colección y los nuevos datos.
-      // Firestore generará automáticamente un ID único para el nuevo documento.
-      await addDoc(collection(db, "clients"), newClient);
+      await addDoc(collection(firebase.db, "clients"), newClient);
       
       toast({
         title: "Cliente añadido",
         description: `El cliente ${newClient.name} ha sido añadido.`,
       });
-      fetchClients(); // Volver a cargar la lista para incluir el nuevo cliente.
+      fetchClients();
     } catch (error) {
        toast({
         title: "Error al Añadir",
@@ -233,7 +218,7 @@ export default function ClientsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {isLoading || !firebase ? (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />

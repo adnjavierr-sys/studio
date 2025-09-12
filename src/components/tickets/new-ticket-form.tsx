@@ -28,8 +28,8 @@ import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Client, Ticket } from "@/lib/data";
 import Image from 'next/image';
-// Paso 1: Importar las funciones necesarias y la instancia de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -60,12 +60,15 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
   useEffect(() => {
-    // Se leen los clientes de Firestore para rellenar el selector del formulario.
     const fetchClients = async () => {
+      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+      if (!firebase) return;
       try {
-        const clientsCollection = collection(db, "clients");
+        const clientsCollection = collection(firebase.db, "clients");
         const q = query(clientsCollection, orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
         const clientList: Client[] = [];
@@ -78,7 +81,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       }
     };
     fetchClients();
-  }, []);
+  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
 
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
@@ -101,14 +104,12 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     }
   };
 
-  // EJEMPLO DE ESCRITURA DE UN NUEVO DOCUMENTO
   const onSubmit = async (data: TicketFormValues) => {
+    if (!firebase) return;
     setIsSubmitting(true);
     let imageUrl: string | undefined = undefined;
 
     if (data.image) {
-      // NOTA: Para subir archivos, necesitarías integrar Firebase Storage.
-      // Aquí se simula la subida con una imagen de marcador de posición.
       imageUrl = 'https://picsum.photos/seed/newticket/1200/800';
       toast({
         title: "Nota sobre la imagen",
@@ -116,31 +117,28 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       });
     }
 
-    // Paso 2: Preparar el objeto con los datos del nuevo ticket.
     const newTicketData = {
-      title: data.description, // Se usa la descripción detallada como título principal.
+      title: data.description,
       client: data.client,
       category: data.category,
       status: 'Open' as 'Open' | 'In Progress' | 'Closed',
       sla: data.sla,
-      createdAt: Timestamp.now(), // Usar Timestamp de Firestore para la fecha.
+      createdAt: Timestamp.now(),
       imageUrl: imageUrl,
       updates: [{
         timestamp: Timestamp.now(),
-        author: 'System', // Podría ser el nombre del cliente o un usuario del sistema.
+        author: 'System',
         update: `Ticket Creado: ${data.title}`
       }]
     };
 
     try {
-      // Paso 3: Usar `addDoc` para añadir el nuevo documento a la colección "tickets".
-      // Firestore generará automáticamente un ID único.
-      await addDoc(collection(db, "tickets"), newTicketData);
+      await addDoc(collection(firebase.db, "tickets"), newTicketData);
       toast({
         title: "Ticket Enviado",
         description: "Tu nuevo ticket ha sido creado exitosamente.",
       });
-      onFormSubmit(); // Cierra el modal y refresca la tabla.
+      onFormSubmit();
     } catch (error) {
       console.error("Error creating ticket:", error);
       toast({
@@ -375,8 +373,8 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             />
         </div>
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 animate-spin" />}
+          <Button type="submit" disabled={isSubmitting || !firebase}>
+            {(isSubmitting || !firebase) && <Loader2 className="mr-2 animate-spin" />}
             Enviar Ticket
           </Button>
         </div>

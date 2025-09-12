@@ -50,8 +50,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-// Paso 1: Importar funciones de Firestore y la instancia de la base de datos.
-import { db } from "@/lib/firebase";
+// Paso 1: Importar el nuevo hook `useFirebase`.
+import { useFirebase } from "@/hooks/use-firebase";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 
@@ -65,20 +65,21 @@ export default function AgentsPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  // Paso 2: Usar el hook para obtener los servicios de Firebase.
+  const firebase = useFirebase();
 
   // EJEMPLO DE LECTURA DE DATOS: Esta función lee todos los agentes de Firestore.
   const fetchAgents = async () => {
+    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
+    if (!firebase) return;
     setIsLoading(true);
     try {
-      // Paso 2: Crear una referencia a la colección "agents" y ordenarla.
-      const agentsCollection = collection(db, "agents");
+      const agentsCollection = collection(firebase.db, "agents");
       const q = query(agentsCollection, orderBy("createdAt", "desc"));
       
-      // Paso 3: Obtener los documentos de la colección.
       const querySnapshot = await getDocs(q);
       const agents: Agent[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
       
-      // Paso 4: Actualizar el estado con los datos leídos.
       setAgentList(agents);
     } catch (error) {
       console.error("Error fetching agents: ", error);
@@ -90,7 +91,7 @@ export default function AgentsPage() {
 
   useEffect(() => {
     fetchAgents();
-  }, []);
+  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
 
 
   const handleRowClick = (agentId: string) => {
@@ -107,17 +108,15 @@ export default function AgentsPage() {
     setIsDeleteConfirmationOpen(true);
   }
 
-  // EJEMPLO DE ELIMINACIÓN DE DATOS: Elimina un agente de Firestore.
   const handleDeleteAgent = async () => {
-    if (selectedAgent) {
+    if (selectedAgent && firebase) {
       try {
-        // Paso 2: Crear una referencia al documento y eliminarlo.
-        await deleteDoc(doc(db, "agents", selectedAgent.id));
+        await deleteDoc(doc(firebase.db, "agents", selectedAgent.id));
         toast({
           title: "Agente Eliminado",
           description: `El agente ${selectedAgent.name} ha sido eliminado.`,
         });
-        fetchAgents(); // Volver a cargar la lista para reflejar el cambio.
+        fetchAgents();
       } catch (error) {
         toast({ title: "Error al Eliminar", description: "No se pudo eliminar el agente.", variant: "destructive" });
       } finally {
@@ -127,27 +126,25 @@ export default function AgentsPage() {
     }
   };
 
-  // EJEMPLO DE ESCRITURA DE DATOS: Añade un nuevo agente a Firestore.
   const handleAddAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
-    // Paso 2: Preparar el objeto con los datos del nuevo agente.
     const newAgent = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
-      password: formData.get('password') as string, // NOTA: En una app real, la contraseña debe ser encriptada (hashed).
-      createdAt: Timestamp.now(), // Usar Timestamp de Firestore.
+      password: formData.get('password') as string,
+      createdAt: Timestamp.now(),
     };
     
     try {
-      // Paso 3: Añadir el nuevo documento a la colección "agents".
-      await addDoc(collection(db, "agents"), newAgent);
+      await addDoc(collection(firebase.db, "agents"), newAgent);
       toast({
         title: "Agente añadido",
         description: `El agente ${newAgent.name} ha sido añadido.`,
       });
-      fetchAgents(); // Volver a cargar los datos.
+      fetchAgents();
     } catch (error) {
       toast({ title: "Error al Añadir", description: "No se pudo añadir el agente.", variant: "destructive" });
     } finally {
@@ -155,10 +152,9 @@ export default function AgentsPage() {
     }
   };
   
-  // EJEMPLO DE ACTUALIZACIÓN DE DATOS: Actualiza un agente existente.
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedAgent) {
+    if (selectedAgent && firebase) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -167,14 +163,13 @@ export default function AgentsPage() {
       };
       
       try {
-        // Paso 2: Crear una referencia al documento y actualizarlo.
-        const agentRef = doc(db, "agents", selectedAgent.id);
+        const agentRef = doc(firebase.db, "agents", selectedAgent.id);
         await updateDoc(agentRef, updatedData);
         toast({
           title: "Agente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
         });
-        fetchAgents(); // Volver a cargar los datos.
+        fetchAgents();
       } catch (error) {
         toast({ title: "Error al Actualizar", description: "No se pudo actualizar el agente.", variant: "destructive" });
       } finally {
@@ -208,7 +203,7 @@ export default function AgentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
+              {isLoading || !firebase ? (
                   <TableRow>
                     <TableCell colSpan={4} className="h-24 text-center">
                         <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
