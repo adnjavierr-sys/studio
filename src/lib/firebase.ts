@@ -24,7 +24,7 @@ const storage = getStorage(app);
 const auth = getAuth(app);
 
 // Connect to Emulators if in development mode
-if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
+if (typeof window !== 'undefined' && window.location.hostname === "localhost" && process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
   console.log("Connecting to Firebase Emulators...");
   try {
     // Check to make sure emulators are not already connected
@@ -32,7 +32,7 @@ if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
     if (!db._settings.host) {
       connectFirestoreEmulator(db, 'localhost', 8080);
       connectStorageEmulator(storage, "localhost", 9199);
-      connectAuthEmulator(auth, "http://localhost:9099");
+      connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
       console.log("Successfully connected to Firebase Emulators.");
     }
   } catch (e) {
