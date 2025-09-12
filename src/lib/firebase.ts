@@ -1,6 +1,7 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, connectFirestoreEmulator, CACHE_SIZE_UNLIMITED } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 
@@ -24,18 +25,18 @@ const auth = getAuth(app);
 
 // Connect to Emulators if in development mode
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
-  // Check to make sure emulators are not already connected
-  // @ts-ignore
-  if (!db._settings.host) {
-    console.log("Connecting to Firebase Emulators...");
-    try {
+  console.log("Connecting to Firebase Emulators...");
+  try {
+    // Check to make sure emulators are not already connected
+    // @ts-ignore
+    if (!db._settings.host) {
       connectFirestoreEmulator(db, 'localhost', 8080);
       connectStorageEmulator(storage, "localhost", 9199);
       connectAuthEmulator(auth, "http://localhost:9099");
       console.log("Successfully connected to Firebase Emulators.");
-    } catch (e) {
-      console.error("Error connecting to Firebase emulators", e);
     }
+  } catch (e) {
+    console.error("Error connecting to Firebase emulators", e);
   }
 }
 
