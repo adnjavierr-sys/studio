@@ -6,6 +6,7 @@ import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
+// La configuración se leerá desde las variables de entorno
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -27,7 +28,6 @@ export function useFirebase() {
   const [services, setServices] = useState<FirebaseServices | null>(null);
 
   useEffect(() => {
-    // Esta función asegura que Firebase se inicialice solo una vez.
     const initializeFirebase = () => {
       // Verifica si las variables de entorno están presentes
       if (
@@ -51,7 +51,10 @@ export function useFirebase() {
     
     // Solo ejecutamos esto en el lado del cliente.
     if (typeof window !== 'undefined') {
-      setServices(initializeFirebase());
+      const firebaseServices = initializeFirebase();
+      if (firebaseServices) {
+        setServices(firebaseServices);
+      }
     }
   }, []);
 
