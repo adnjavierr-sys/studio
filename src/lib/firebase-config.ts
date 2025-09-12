@@ -15,6 +15,16 @@ export interface FirebaseServices {
 // Singleton de servicios de Firebase para evitar reinicializaciones.
 let firebaseServices: FirebaseServices | null = null;
 
+// Configuración de Firebase obtenida directamente del servicio.
+const firebaseConfig = {
+  "projectId": "unoti-ticket-i9spt",
+  "appId": "1:529378070793:web:4b753d9444c7dfbc50c3d8",
+  "storageBucket": "unoti-ticket-i9spt.appspot.com",
+  "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
+  "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
+  "messagingSenderId": "529378070793"
+};
+
 export function initializeFirebase(): FirebaseServices | null {
   // Solo ejecutar en el lado del cliente.
   if (typeof window === 'undefined') {
@@ -26,18 +36,9 @@ export function initializeFirebase(): FirebaseServices | null {
     return firebaseServices;
   }
   
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-
   // Validar que la configuración esté presente
   if (!firebaseConfig.projectId) {
-    console.error("Firebase config is not set. Please check your .env.local file.");
+    console.error("Firebase config is not available.");
     return null;
   }
   
