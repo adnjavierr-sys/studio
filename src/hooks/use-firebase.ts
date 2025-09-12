@@ -1,3 +1,4 @@
+
 // src/hooks/use-firebase.ts
 import { useState, useEffect } from 'react';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
@@ -28,6 +29,19 @@ export function useFirebase() {
   useEffect(() => {
     // Esta función asegura que Firebase se inicialice solo una vez.
     const initializeFirebase = () => {
+      // Verifica si las variables de entorno están presentes
+      if (
+        !firebaseConfig.apiKey ||
+        !firebaseConfig.authDomain ||
+        !firebaseConfig.projectId ||
+        !firebaseConfig.storageBucket ||
+        !firebaseConfig.messagingSenderId ||
+        !firebaseConfig.appId
+      ) {
+        console.error("Firebase config is not set. Please check your .env.local file.");
+        return null; // No inicializar si falta la configuración
+      }
+      
       const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
       const db = getFirestore(app);
       const auth = getAuth(app);
