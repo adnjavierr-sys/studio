@@ -1,9 +1,9 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 
 // Your web app's Firebase configuration using environment variables
 const firebaseConfig = {
@@ -22,5 +22,15 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
+
+// Connect to emulators if in a development environment
+if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
+  console.log("Connecting to Firebase emulators");
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+} else {
+    console.log("Connecting to Firebase production");
+}
 
 export { app, db, storage, auth };
