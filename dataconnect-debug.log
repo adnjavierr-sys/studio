@@ -1,21 +1,21 @@
-I0911 20:30:39.062110   23695 load.go:31] Reloading schema and connectors...
-W0911 20:30:39.191226   23695 control.go:68] [/emulator/studio b783] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
+I0912 18:53:57.197261    7059 load.go:31] Reloading schema and connectors...
+W0912 18:53:57.319693    7059 control.go:68] [/emulator/studio 3310] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
 
 sources: example/queries.gql [942B] 
-I0911 20:30:39.192069   23695 control.go:94] [/emulator/studio b783] UpdateResources(): done
+I0912 18:53:57.319762    7059 control.go:94] [/emulator/studio 3310] UpdateResources(): done
 Schema: sources: schema/schema.gql [746B] 
 Connector "example": sources: example/queries.gql [942B] 
-E0911 20:30:39.227044   23695 load.go:73] Could not load sources: 
+E0912 18:53:57.328130    7059 load.go:73] Could not load sources: 
 Errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
-I0911 20:30:39.234349   23695 collector.go:107] schema extensions wrote into "/home/user/studio/dataconnect/.dataconnect/schema"
-Generated sources: main/query.gql [5003B] main/mutation.gql [13430B] prelude.gql [73251B] main/implicit.gql [2246B] main/input.gql [48994B] main/relation.gql [24776B] 
-I0911 20:30:39.234414   23695 load.go:74] Finished reloading
-I0911 20:30:39.247184   23695 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:9399
-W0911 20:30:46.159182   23695 control.go:68] [/emulator/studio bd84] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
+I0912 18:53:57.332073    7059 collector.go:107] schema extensions wrote into "/home/user/studio/dataconnect/.dataconnect/schema"
+Generated sources: main/mutation.gql [13430B] prelude.gql [73251B] main/implicit.gql [2246B] main/input.gql [48994B] main/relation.gql [24776B] main/query.gql [5003B] 
+I0912 18:53:57.332189    7059 load.go:74] Finished reloading
+I0912 18:53:57.378286    7059 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+W0912 18:54:04.138362    7059 control.go:68] [/emulator/studio 5ea5] connector "example" has errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
 
 sources: example/queries.gql [942B] 
-I0911 20:30:46.159244   23695 control.go:94] [/emulator/studio bd84] UpdateResources(): done
+I0912 18:54:04.138455    7059 control.go:94] [/emulator/studio 5ea5] UpdateResources(): done
 Schema: sources: schema/schema.gql [746B] 
 Connector "example": sources: example/queries.gql [942B] 
-I0911 20:30:46.159341   23695 service.go:147] [/emulator/studio bd84] while configuring to server.Settings{ConnectionString:"dbname='fdcdb' host='127.0.0.1' port='5432' sslmode='disable' dbname='fdcdb'", MaxOpenConnection:1, UseDummy:false, EnableGoogleMLIntegration:false, SchemaValidationMode:""}, failed to reload last live sources: 
+I0912 18:54:04.138500    7059 service.go:147] [/emulator/studio 5ea5] while configuring to server.Settings{ConnectionString:"dbname='fdcdb' host='127.0.0.1' port='5432' sslmode='disable' dbname='fdcdb'", MaxOpenConnection:1, UseDummy:false, EnableGoogleMLIntegration:false, SchemaValidationMode:""}, failed to reload last live sources: 
 Errors: example/queries.gql:34:19: Field "purchaserId_expr" is not defined by type "Ticket_Filter". Did you mean "purchaserId", "purchaser", or "purchaseDate"?
