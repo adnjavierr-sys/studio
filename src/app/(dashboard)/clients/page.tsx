@@ -43,8 +43,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
 
 export default function ClientsPage() {
@@ -56,11 +56,16 @@ export default function ClientsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   const fetchClients = async () => {
-    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
     if (!firebase) return;
     setIsLoading(true);
     try {
@@ -96,8 +101,10 @@ export default function ClientsPage() {
   };
 
   useEffect(() => {
-    fetchClients();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchClients();
+    }
+  }, [firebase]);
 
 
   const handleRowClick = (clientId: string) => {

@@ -50,8 +50,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 
@@ -65,12 +65,16 @@ export default function AgentsPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
 
-  // EJEMPLO DE LECTURA DE DATOS: Esta función lee todos los agentes de Firestore.
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
+
   const fetchAgents = async () => {
-    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
     if (!firebase) return;
     setIsLoading(true);
     try {
@@ -99,8 +103,10 @@ export default function AgentsPage() {
   };
 
   useEffect(() => {
-    fetchAgents();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchAgents();
+    }
+  }, [firebase]);
 
 
   const handleRowClick = (agentId: string) => {

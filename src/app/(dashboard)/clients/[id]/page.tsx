@@ -10,23 +10,28 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, Mail, Building, MapPin, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from '@/hooks/use-firebase';
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
-
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+  
   const [client, setClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchClient = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       if (typeof id !== 'string') return;
       setIsLoading(true);
@@ -55,7 +60,9 @@ export default function ClientDetailsPage() {
       }
     };
 
-    fetchClient();
+    if (firebase) {
+      fetchClient();
+    }
   }, [id, firebase]);
   
   if (isLoading || !firebase) {

@@ -30,9 +30,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
-import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 const statusColors: { [key: string]: string } = {
@@ -69,12 +69,17 @@ function TicketsTableContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchTickets = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       setIsLoading(true);
       try {
@@ -111,8 +116,10 @@ function TicketsTableContent() {
         setIsLoading(false);
       }
     };
-    fetchTickets();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchTickets();
+    }
+  }, [firebase]);
 
   useEffect(() => {
     const category = searchParams.get('category');

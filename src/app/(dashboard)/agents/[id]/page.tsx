@@ -37,17 +37,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
-import { doc, getDoc, updateDoc, deleteDoc, Timestamp } from "firebase/firestore";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default function AgentDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,8 +54,14 @@ export default function AgentDetailsPage() {
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
   useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchAgent = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       if (typeof id !== 'string') return;
       setIsLoading(true);
@@ -85,7 +90,9 @@ export default function AgentDetailsPage() {
       }
     };
 
-    fetchAgent();
+    if (firebase) {
+      fetchAgent();
+    }
   }, [id, toast, firebase]);
   
 

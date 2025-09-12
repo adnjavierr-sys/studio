@@ -26,10 +26,10 @@ import {
 import { Wand2, Loader2, Mail, Upload, X } from "lucide-react";
 import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { Client, Ticket } from "@/lib/data";
+import { Client } from "@/lib/data";
 import Image from 'next/image';
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -60,12 +60,17 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchClients = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       try {
         const clientsCollection = collection(firebase.db, "clients");
@@ -80,8 +85,10 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
         console.error("Error fetching clients for form: ", error);
       }
     };
-    fetchClients();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchClients();
+    }
+  }, [firebase]);
 
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),

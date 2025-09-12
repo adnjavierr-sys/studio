@@ -34,8 +34,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 
 type CategoryCount = {
@@ -56,12 +56,17 @@ export default function ReportsPage() {
 
   const { toast } = useToast();
   const router = useRouter();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       setIsLoading(true);
       try {
@@ -105,7 +110,9 @@ export default function ReportsPage() {
         setIsLoading(false);
       }
     };
-    fetchData();
+    if (firebase) {
+      fetchData();
+    }
   }, [toast, firebase]);
   
   const handleClientChange = (clientName: string) => {

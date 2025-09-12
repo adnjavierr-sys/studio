@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Ticket, Clock, CheckCircle, Loader2 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart, Cell } from 'recharts';
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from '@/hooks/use-firebase';
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs } from 'firebase/firestore';
 import { Ticket as TicketType } from '@/lib/data';
 
@@ -24,12 +24,17 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ total: 0, open: 0, inProgress: 0, closed: 0 });
   const [categoryData, setCategoryData] = useState<{ category: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
       if (!firebase) return;
       setIsLoading(true);
       try {
@@ -71,8 +76,10 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     };
-    fetchData();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchData();
+    }
+  }, [firebase]);
 
   const chartConfig = {
     count: {

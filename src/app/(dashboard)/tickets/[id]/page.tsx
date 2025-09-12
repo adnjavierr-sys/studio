@@ -21,8 +21,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { doc, getDoc, updateDoc, Timestamp, arrayUnion } from "firebase/firestore";
 
 const statusColors: { [key: string]: string } = {
@@ -55,15 +55,20 @@ export default function TicketDetailsPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
   
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
+
   const fetchTicket = useCallback(async () => {
-    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
     if (!firebase || typeof id !== 'string') return;
     try {
       const docRef = doc(firebase.db, "tickets", id);
@@ -98,11 +103,11 @@ export default function TicketDetailsPage() {
   }, [id, toast, firebase]);
 
   useEffect(() => {
-    if (id) {
+    if (id && firebase) {
         setIsLoading(true);
         fetchTicket();
     }
-  }, [id, fetchTicket]);
+  }, [id, fetchTicket, firebase]);
 
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
     if (ticket && firebase) {

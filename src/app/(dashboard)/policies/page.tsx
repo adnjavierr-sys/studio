@@ -50,8 +50,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// Paso 1: Importar el nuevo hook `useFirebase`.
-import { useFirebase } from "@/hooks/use-firebase";
+import { initializeFirebase } from "@/lib/firebase-config";
+import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const typeColors: { [key: string]: string } = {
@@ -69,11 +69,16 @@ export default function PoliciesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
-  // Paso 2: Usar el hook para obtener los servicios de Firebase.
-  const firebase = useFirebase();
+  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+
+  useEffect(() => {
+    const firebaseServices = initializeFirebase();
+    if (firebaseServices) {
+      setFirebase(firebaseServices);
+    }
+  }, []);
 
   const fetchData = async () => {
-    // Paso 3: Asegurarse de que Firebase esté inicializado antes de usar `db`.
     if (!firebase) return;
     setIsLoading(true);
     try {
@@ -108,8 +113,10 @@ export default function PoliciesPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [firebase]); // Re-ejecutar cuando firebase esté disponible.
+    if (firebase) {
+      fetchData();
+    }
+  }, [firebase]);
 
 
   const handleAddPolicy = async (event: React.FormEvent<HTMLFormElement>) => {
