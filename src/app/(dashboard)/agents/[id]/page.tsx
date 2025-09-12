@@ -65,7 +65,15 @@ export default function AgentDetailsPage() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setAgent({ id: docSnap.id, ...docSnap.data() } as Agent);
+          const data = docSnap.data();
+          const agentData: Agent = {
+            id: docSnap.id,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            createdAt: data.createdAt.toDate(),
+          };
+          setAgent(agentData);
         } else {
           toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
         }
@@ -144,9 +152,7 @@ export default function AgentDetailsPage() {
       </div>
     );
   }
-
-  const createdAtDate = agent.createdAt instanceof Timestamp ? agent.createdAt.toDate() : new Date();
-
+  
   return (
     <>
       <PageHeader title="Detalles del Agente">
@@ -197,7 +203,7 @@ export default function AgentDetailsPage() {
                     <Calendar className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Miembro Desde</p>
-                        <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
+                        <p className="text-muted-foreground">{format(agent.createdAt, 'PPP')}</p>
                     </div>
                 </div>
              </div>

@@ -78,7 +78,16 @@ export default function AgentsPage() {
       const q = query(agentsCollection, orderBy("createdAt", "desc"));
       
       const querySnapshot = await getDocs(q);
-      const agents: Agent[] = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
+      const agents = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          createdAt: data.createdAt.toDate(),
+        } as Agent;
+      });
       
       setAgentList(agents);
     } catch (error) {
@@ -226,7 +235,7 @@ export default function AgentsPage() {
                     </TableCell>
                     <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{agent.role}</TableCell>
                     <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>
-                      {agent.createdAt && format((agent.createdAt as Timestamp).toDate(), "PPP")}
+                      {agent.createdAt && format(agent.createdAt, "PPP")}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

@@ -85,7 +85,18 @@ function TicketsTableContent() {
         const ticketList: Ticket[] = [];
         
         querySnapshot.forEach((doc) => {
-          ticketList.push({ id: doc.id, ...doc.data() } as Ticket);
+          const data = doc.data();
+          ticketList.push({
+            id: doc.id,
+            title: data.title,
+            client: data.client,
+            category: data.category,
+            status: data.status,
+            sla: data.sla,
+            createdAt: data.createdAt.toDate(),
+            updates: data.updates,
+            imageUrl: data.imageUrl,
+          });
         });
         
         setTickets(ticketList);
@@ -201,7 +212,7 @@ function TicketsTableContent() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {format((ticket.createdAt as Timestamp).toDate(), "PPP")}
+                    {format(ticket.createdAt, "PPP")}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

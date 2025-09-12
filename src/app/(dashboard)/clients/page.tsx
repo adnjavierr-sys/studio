@@ -71,7 +71,15 @@ export default function ClientsPage() {
       
       const clients: Client[] = [];
       querySnapshot.forEach((doc) => {
-        clients.push({ id: doc.id, ...doc.data() } as Client);
+        const data = doc.data();
+        clients.push({
+          id: doc.id,
+          name: data.name,
+          email: data.email,
+          company: data.company,
+          address: data.address,
+          createdAt: data.createdAt.toDate(),
+        });
       });
       
       setClientList(clients);
@@ -242,7 +250,7 @@ export default function ClientsPage() {
                     </TableCell>
                     <TableCell>{client.company}</TableCell>
                     <TableCell>
-                      {client.createdAt && format((client.createdAt as Timestamp).toDate(), "PPP")}
+                      {client.createdAt && format(client.createdAt, "PPP")}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

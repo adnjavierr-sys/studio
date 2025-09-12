@@ -80,7 +80,17 @@ export default function PoliciesPage() {
       const policiesCollection = collection(firebase.db, "policies");
       const policiesQuery = query(policiesCollection, orderBy("createdAt", "desc"));
       const policiesSnapshot = await getDocs(policiesQuery);
-      const policies: Policy[] = policiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Policy));
+      const policies = policiesSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          description: data.description,
+          type: data.type,
+          clientName: data.clientName,
+          createdAt: data.createdAt.toDate(),
+        } as Policy;
+      });
       setPolicyList(policies);
 
       const clientsCollection = collection(firebase.db, "clients");
@@ -223,7 +233,7 @@ export default function PoliciesPage() {
                     <TableCell>
                       <Badge className={typeColors[policy.type]}>{policy.type}</Badge>
                     </TableCell>
-                    <TableCell>{policy.createdAt && format((policy.createdAt as Timestamp).toDate(), "PPP")}</TableCell>
+                    <TableCell>{policy.createdAt && format(policy.createdAt, "PPP")}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

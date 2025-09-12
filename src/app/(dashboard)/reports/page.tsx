@@ -68,7 +68,20 @@ export default function ReportsPage() {
         const ticketsCollection = collection(firebase.db, "tickets");
         const ticketsQuery = query(ticketsCollection, orderBy("createdAt", "desc"));
         const ticketsSnapshot = await getDocs(ticketsQuery);
-        const ticketList: Ticket[] = ticketsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
+        const ticketList: Ticket[] = ticketsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title,
+            client: data.client,
+            category: data.category,
+            status: data.status,
+            sla: data.sla,
+            createdAt: data.createdAt.toDate(),
+            updates: data.updates,
+            imageUrl: data.imageUrl,
+          } as Ticket;
+        });
         setAllTickets(ticketList);
         
         const categoryCounts: { [key: string]: number } = { Support: 0, Hosting: 0, Oportuno: 0, Other: 0 };
@@ -153,13 +166,15 @@ export default function ReportsPage() {
 
   const handleExport = (data: Ticket[]) => {
     const dataToExport = data.map(ticket => {
-      const createdAt = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : ticket.createdAt;
+      const createdAt = ticket.createdAt;
       let lastUpdate = createdAt;
       if (ticket.updates && ticket.updates.length > 0) {
         const lastUpdateItem = ticket.updates[ticket.updates.length - 1];
         const lastUpdateTimestamp = lastUpdateItem?.timestamp;
-        if (lastUpdateTimestamp) {
-          lastUpdate = lastUpdateTimestamp instanceof Timestamp ? lastUpdateTimestamp.toDate() : lastUpdateTimestamp;
+        if (lastUpdateTimestamp instanceof Timestamp) {
+          lastUpdate = lastUpdateTimestamp.toDate();
+        } else if (lastUpdateTimestamp instanceof Date) {
+          lastUpdate = lastUpdateTimestamp;
         }
       }
       return {

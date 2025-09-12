@@ -37,7 +37,18 @@ export default function DashboardPage() {
         const querySnapshot = await getDocs(ticketsCollection);
         const tickets: TicketType[] = [];
         querySnapshot.forEach((doc) => {
-          tickets.push({ id: doc.id, ...doc.data() } as TicketType);
+          const data = doc.data();
+          tickets.push({
+            id: doc.id,
+            title: data.title,
+            client: data.client,
+            category: data.category,
+            status: data.status,
+            sla: data.sla,
+            createdAt: data.createdAt.toDate(),
+            updates: data.updates,
+            imageUrl: data.imageUrl,
+          });
         });
 
         const total = tickets.length;

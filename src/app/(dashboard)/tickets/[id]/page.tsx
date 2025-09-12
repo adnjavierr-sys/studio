@@ -69,7 +69,22 @@ export default function TicketDetailsPage() {
       const docRef = doc(firebase.db, "tickets", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setTicket({ id: docSnap.id, ...docSnap.data() } as Ticket);
+        const data = docSnap.data();
+        const ticketData: Ticket = {
+          id: docSnap.id,
+          title: data.title,
+          client: data.client,
+          category: data.category,
+          status: data.status,
+          sla: data.sla,
+          createdAt: data.createdAt.toDate(),
+          updates: data.updates?.map((update: any) => ({
+            ...update,
+            timestamp: update.timestamp.toDate(),
+          })),
+          imageUrl: data.imageUrl,
+        };
+        setTicket(ticketData);
       } else {
         toast({ title: "Error", description: "El ticket no fue encontrado.", variant: "destructive" });
         setTicket(null);
@@ -163,8 +178,6 @@ export default function TicketDetailsPage() {
     );
   }
 
-  const createdAtDate = ticket.createdAt instanceof Timestamp ? ticket.createdAt.toDate() : new Date();
-
   return (
     <>
       <PageHeader title={`Ticket #${ticket.id.substring(0, 7)}...`} description={ticket.title}>
@@ -192,7 +205,7 @@ export default function TicketDetailsPage() {
                   <Calendar className="text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Fecha de Creación</p>
-                    <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
+                    <p className="text-muted-foreground">{format(ticket.createdAt, 'PPP')}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -278,7 +291,7 @@ export default function TicketDetailsPage() {
                         <div className="flex items-center justify-between">
                             <p className="font-semibold">{update.author}</p>
                             <p className="text-xs text-muted-foreground">
-                              {update.timestamp && format((update.timestamp as Timestamp).toDate(), "d MMM, yyyy 'a las' h:mm a", { locale: es })}
+                              {update.timestamp && format(update.timestamp, "d MMM, yyyy 'a las' h:mm a", { locale: es })}
                             </p>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground bg-slate-50 dark:bg-slate-800 p-3 rounded-md border">{update.update}</p>

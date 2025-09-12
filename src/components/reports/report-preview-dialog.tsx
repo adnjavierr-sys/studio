@@ -18,11 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Ticket } from "@/lib/data";
+import { Ticket, TicketUpdate } from "@/lib/data";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Download } from "lucide-react";
 import Image from 'next/image';
+import { Timestamp } from "firebase/firestore";
 
 interface ReportPreviewDialogProps {
   isOpen: boolean;
@@ -38,6 +39,17 @@ export function ReportPreviewDialog({
   onConfirmExport,
 }: ReportPreviewDialogProps) {
   const previewData = data.slice(0, 10); // Show first 10 rows for preview
+
+  const getLastUpdateDate = (updates: TicketUpdate[] | undefined, createdAt: Date): Date => {
+    if (updates && updates.length > 0) {
+      const lastUpdate = updates[updates.length - 1];
+      if (lastUpdate.timestamp instanceof Timestamp) {
+        return lastUpdate.timestamp.toDate();
+      }
+      return lastUpdate.timestamp;
+    }
+    return createdAt;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -89,9 +101,7 @@ export function ReportPreviewDialog({
                     <TableCell>{ticket.status}</TableCell>
                     <TableCell>{format(ticket.createdAt, "PPP")}</TableCell>
                     <TableCell>
-                      {ticket.updates && ticket.updates.length > 0
-                        ? format(ticket.updates[ticket.updates.length - 1].timestamp, "PPP")
-                        : format(ticket.createdAt, "PPP")}
+                      {format(getLastUpdateDate(ticket.updates, ticket.createdAt), "PPP")}
                     </TableCell>
                   </TableRow>
                 ))}

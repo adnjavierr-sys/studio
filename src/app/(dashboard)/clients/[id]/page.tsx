@@ -35,7 +35,16 @@ export default function ClientDetailsPage() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setClient({ id: docSnap.id, ...docSnap.data() } as Client);
+          const data = docSnap.data();
+          const clientData: Client = {
+            id: docSnap.id,
+            name: data.name,
+            email: data.email,
+            company: data.company,
+            address: data.address,
+            createdAt: data.createdAt.toDate(),
+          };
+          setClient(clientData);
         } else {
           console.log("No such document!");
         }
@@ -70,8 +79,7 @@ export default function ClientDetailsPage() {
   }
   
   const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(client.address)}&output=embed`;
-  const createdAtDate = client.createdAt instanceof Timestamp ? client.createdAt.toDate() : new Date();
-
+  
   return (
     <>
       <PageHeader title="Detalles del Cliente">
@@ -114,7 +122,7 @@ export default function ClientDetailsPage() {
                     <Calendar className="text-muted-foreground mt-1" />
                     <div>
                         <p className="text-sm font-medium">Miembro Desde</p>
-                        <p className="text-muted-foreground">{format(createdAtDate, 'PPP')}</p>
+                        <p className="text-muted-foreground">{format(client.createdAt, 'PPP')}</p>
                     </div>
                 </div>
                 <div className="flex items-start space-x-3">

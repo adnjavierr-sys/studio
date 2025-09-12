@@ -14,7 +14,7 @@ export type Ticket = {
   category: 'Support' | 'Hosting' | 'Oportuno' | 'Other';
   status: 'Open' | 'In Progress' | 'Closed';
   sla: 'Normal' | 'Alta' | 'Baja';
-  createdAt: Date | Timestamp;
+  createdAt: Date;
   updates?: TicketUpdate[];
   imageUrl?: string;
 };
@@ -25,7 +25,7 @@ export type Client = {
   email: string;
   company: string;
   address: string;
-  createdAt: Date | Timestamp;
+  createdAt: Date;
 };
 
 export type Policy = {
