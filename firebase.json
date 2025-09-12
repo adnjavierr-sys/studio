@@ -1,3 +1,4 @@
+
 {
   "dataconnect": {
     "location": "us-central1",
@@ -91,11 +92,6 @@
     "ui": {
       "enabled": true,
       "host": "127.0.0.1"
-    },
-    "apphosting": {
-      "port": 5002,
-      "rootDirectory": "./",
-      "startCommand": "npm run dev"
     },
     "pubsub": {
       "port": 8085
