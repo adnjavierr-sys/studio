@@ -60,52 +60,5 @@
         "apphosting": "studio"
       }
     ]
-  },
-  "emulators": {
-    "auth": {
-      "host": "127.0.0.1",
-      "port": 9099
-    },
-    "functions": {
-      "host": "127.0.0.1",
-      "port": 5001
-    },
-    "firestore": {
-      "host": "127.0.0.1",
-      "port": 8080
-    },
-    "database": {
-      "host": "127.0.0.1",
-      "port": 9100
-    },
-    "hosting": {
-      "host": "127.0.0.1",
-      "port": 5000
-    },
-    "storage": {
-      "host": "127.0.0.1",
-      "port": 9199
-    },
-    "hub": {
-      "host": "127.0.0.1"
-    },
-    "ui": {
-      "enabled": true,
-      "host": "127.0.0.1"
-    },
-    "pubsub": {
-      "port": 8085
-    },
-    "eventarc": {
-      "port": 9299
-    },
-    "dataconnect": {
-      "port": 9399,
-      "dataDir": "dataconnect/.dataconnect/pgliteData"
-    },
-    "tasks": {
-      "port": 9499
-    },
-    "singleProjectMode": true
   }
 }
