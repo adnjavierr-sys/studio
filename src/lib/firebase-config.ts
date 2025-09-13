@@ -1,7 +1,7 @@
 
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, CACHE_SIZE_UNLIMITED, type Firestore } from 'firebase/firestore';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -33,7 +33,13 @@ export function initializeFirebase(): FirebaseServices | null {
   }
   
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  const db = getFirestore(app);
+  
+  // Inicializa Firestore con forceLongPolling habilitado
+  const db = initializeFirestore(app, {
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    experimentalForceLongPolling: true,
+  });
+
   const auth = getAuth(app);
   const storage = getStorage(app);
 
