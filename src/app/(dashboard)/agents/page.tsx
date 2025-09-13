@@ -93,6 +93,7 @@ export default function AgentsPage() {
           email: data.email,
           role: data.role,
           createdAt: data.createdAt.toDate(),
+          password: data.password,
         } as Agent;
       });
       
@@ -109,7 +110,7 @@ export default function AgentsPage() {
     if (firebase) {
       fetchAgents();
     }
-  }, [firebase]);
+  }, [firebase, toast]);
   
   const filteredAgents = useMemo(() => {
     return agentList
@@ -173,6 +174,12 @@ export default function AgentsPage() {
       createdAt: Timestamp.now(),
     };
     
+    // Simple validation
+    if (!newAgent.name || !newAgent.email || !newAgent.role || !newAgent.password) {
+        toast({ title: "Error", description: "Todos los campos son obligatorios.", variant: "destructive" });
+        return;
+    }
+
     try {
       await addDoc(collection(firebase.db, "agents"), newAgent);
       toast({
@@ -180,10 +187,10 @@ export default function AgentsPage() {
         description: `El agente ${newAgent.name} ha sido añadido.`,
       });
       fetchAgents();
-    } catch (error) {
-      toast({ title: "Error al Añadir", description: "No se pudo añadir el agente.", variant: "destructive" });
-    } finally {
       setIsAddModalOpen(false);
+    } catch (error) {
+      console.error("Error adding agent:", error);
+      toast({ title: "Error al Añadir", description: "No se pudo añadir el agente.", variant: "destructive" });
     }
   };
   
@@ -459,7 +466,3 @@ export default function AgentsPage() {
     </>
   );
 }
-
-    
-
-    
