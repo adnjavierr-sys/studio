@@ -1,9 +1,9 @@
 
 // src/lib/firebase-config.ts
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getAuth, Auth } from 'firebase/auth';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 export interface FirebaseServices {
   app: FirebaseApp;
@@ -12,10 +12,8 @@ export interface FirebaseServices {
   storage: FirebaseStorage;
 }
 
-// Singleton de servicios de Firebase para evitar reinicializaciones.
 let firebaseServices: FirebaseServices | null = null;
 
-// Configuración de Firebase obtenida directamente del servicio.
 const firebaseConfig = {
   "projectId": "unoti-ticket-i9spt",
   "appId": "1:529378070793:web:4b753d9444c7dfbc50c3d8",
@@ -26,23 +24,15 @@ const firebaseConfig = {
 };
 
 export function initializeFirebase(): FirebaseServices | null {
-  // Solo ejecutar en el lado del cliente.
   if (typeof window === 'undefined') {
     return null;
   }
 
-  // Si ya está inicializado, devolver la instancia existente.
   if (firebaseServices) {
     return firebaseServices;
   }
   
-  // Validar que la configuración esté presente
-  if (!firebaseConfig.projectId) {
-    console.error("Firebase config is not set. Please check your project configuration.");
-    return null;
-  }
-  
-  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   const db = getFirestore(app);
   const auth = getAuth(app);
   const storage = getStorage(app);
