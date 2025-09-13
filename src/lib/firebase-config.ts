@@ -38,7 +38,7 @@ export function initializeFirebase(): FirebaseServices | null {
   
   // Validar que la configuración esté presente
   if (!firebaseConfig.projectId) {
-    console.error("Firebase config is not available.");
+    console.error("Firebase config is not set. Please check your project configuration.");
     return null;
   }
   
