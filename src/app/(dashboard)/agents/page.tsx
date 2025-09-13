@@ -174,7 +174,6 @@ export default function AgentsPage() {
       createdAt: Timestamp.now(),
     };
     
-    // Simple validation
     if (!newAgent.name || !newAgent.email || !newAgent.role || !newAgent.password) {
         toast({ title: "Error", description: "Todos los campos son obligatorios.", variant: "destructive" });
         return;
