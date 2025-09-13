@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound, Eye, EyeOff, Loader2 } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Pencil, Trash2, Contact, KeyRound, Eye, EyeOff, Loader2, Users, Shield, UserCheck } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -53,6 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 import { initializeFirebase } from "@/lib/firebase-config";
 import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 export default function AgentsPage() {
@@ -66,6 +67,8 @@ export default function AgentsPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All");
 
   useEffect(() => {
     const firebaseServices = initializeFirebase();
@@ -107,6 +110,23 @@ export default function AgentsPage() {
       fetchAgents();
     }
   }, [firebase]);
+  
+  const filteredAgents = useMemo(() => {
+    return agentList
+      .filter(agent => roleFilter === "All" || agent.role === roleFilter)
+      .filter(agent => 
+        agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        agent.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+  }, [agentList, roleFilter, searchTerm]);
+
+  const agentStats = useMemo(() => {
+    const total = agentList.length;
+    const admins = agentList.filter(a => a.role === 'Admin').length;
+    const level1 = agentList.filter(a => a.role === 'Support Level 1').length;
+    const level2 = agentList.filter(a => a.role === 'Support Level 2').length;
+    return { total, admins, level1, level2 };
+  }, [agentList]);
 
 
   const handleRowClick = (agentId: string) => {
@@ -194,6 +214,22 @@ export default function AgentsPage() {
     }
   };
 
+  const StatCard = ({ title, value, icon: Icon }: { title: string; value: number; icon: React.ElementType; }) => (
+    <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            <Icon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+            {isLoading ? (
+                <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+                <div className="text-2xl font-bold">{value}</div>
+            )}
+        </CardContent>
+    </Card>
+);
+
   return (
     <>
       <PageHeader
@@ -205,74 +241,108 @@ export default function AgentsPage() {
           Añadir Agente
         </Button>
       </PageHeader>
-      <div className="p-6 pt-0">
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Agente</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead>Miembro Desde</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading || !firebase ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                        <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-                        <p className="mt-2 text-muted-foreground">Cargando agentes...</p>
-                    </TableCell>
-                  </TableRow>
-              ) : agentList.length > 0 ? (
-                agentList.map((agent) => (
-                  <TableRow key={agent.id} >
-                    <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(agent.id)}>
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={`https://picsum.photos/seed/${agent.id}/100`} />
-                          <AvatarFallback>{agent.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p>{agent.name}</p>
-                          <p className="text-sm text-muted-foreground">{agent.email}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{agent.role}</TableCell>
-                    <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>
-                      {agent.createdAt && format(agent.createdAt, "PPP")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={(e) => {e.stopPropagation(); openEditModal(agent)}}>
-                            <Pencil className="mr-2" /> Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={(e) => {e.stopPropagation(); openDeleteModal(agent)}}>
-                            <Trash2 className="mr-2" /> Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    <Contact className="mx-auto h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-muted-foreground">No se encontraron agentes.</p>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+      <div className="p-6 pt-0 space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard title="Total de Agentes" value={agentStats.total} icon={Users} />
+            <StatCard title="Administradores" value={agentStats.admins} icon={Shield} />
+            <StatCard title="Soporte Nivel 1" value={agentStats.level1} icon={UserCheck} />
+            <StatCard title="Soporte Nivel 2" value={agentStats.level2} icon={Contact} />
         </div>
+        
+        <Card>
+            <CardHeader>
+                 <CardTitle>Lista de Agentes</CardTitle>
+                 <CardDescription>Busca, filtra y gestiona los agentes de tu equipo.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <Input
+                        placeholder="Buscar por nombre o email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-grow"
+                    />
+                    <Select value={roleFilter} onValueChange={setRoleFilter}>
+                        <SelectTrigger className="w-full md:w-[200px]">
+                            <SelectValue placeholder="Filtrar por rol" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="All">Todos los Roles</SelectItem>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="Support Level 1">Soporte Nivel 1</SelectItem>
+                            <SelectItem value="Support Level 2">Soporte Nivel 2</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="rounded-lg border">
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Agente</TableHead>
+                        <TableHead>Rol</TableHead>
+                        <TableHead>Miembro Desde</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {isLoading || !firebase ? (
+                        <TableRow>
+                            <TableCell colSpan={4} className="h-24 text-center">
+                                <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                                <p className="mt-2 text-muted-foreground">Cargando agentes...</p>
+                            </TableCell>
+                        </TableRow>
+                    ) : filteredAgents.length > 0 ? (
+                        filteredAgents.map((agent) => (
+                        <TableRow key={agent.id} >
+                            <TableCell className="font-medium cursor-pointer" onClick={() => handleRowClick(agent.id)}>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                <AvatarImage src={`https://picsum.photos/seed/${agent.id}/100`} />
+                                <AvatarFallback>{agent.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                <p>{agent.name}</p>
+                                <p className="text-sm text-muted-foreground">{agent.email}</p>
+                                </div>
+                            </div>
+                            </TableCell>
+                            <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>{agent.role}</TableCell>
+                            <TableCell className="cursor-pointer" onClick={() => handleRowClick(agent.id)}>
+                            {agent.createdAt && format(agent.createdAt, "PPP")}
+                            </TableCell>
+                            <TableCell className="text-right">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon">
+                                    <MoreHorizontal />
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                <DropdownMenuItem onClick={(e) => {e.stopPropagation(); openEditModal(agent)}}>
+                                    <Pencil className="mr-2" /> Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive" onClick={(e) => {e.stopPropagation(); openDeleteModal(agent)}}>
+                                    <Trash2 className="mr-2" /> Eliminar
+                                </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                            <Contact className="mx-auto h-8 w-8 text-muted-foreground" />
+                            <p className="mt-2 text-muted-foreground">No se encontraron agentes que coincidan con tu búsqueda.</p>
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </div>
+            </CardContent>
+        </Card>
       </div>
       
       {/* Add Agent Modal */}
@@ -389,3 +459,5 @@ export default function AgentsPage() {
     </>
   );
 }
+
+    
