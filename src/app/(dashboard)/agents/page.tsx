@@ -152,7 +152,7 @@ export default function AgentsPage() {
           title: "Agente Eliminado",
           description: `El agente ${selectedAgent.name} ha sido eliminado.`,
         });
-        fetchAgents();
+        await fetchAgents();
       } catch (error) {
         toast({ title: "Error al Eliminar", description: "No se pudo eliminar el agente.", variant: "destructive" });
       } finally {
@@ -185,7 +185,7 @@ export default function AgentsPage() {
         title: "Agente añadido",
         description: `El agente ${newAgent.name} ha sido añadido.`,
       });
-      fetchAgents();
+      await fetchAgents();
       setIsAddModalOpen(false);
     } catch (error) {
       console.error("Error adding agent:", error);
@@ -210,7 +210,7 @@ export default function AgentsPage() {
           title: "Agente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
         });
-        fetchAgents();
+        await fetchAgents();
       } catch (error) {
         toast({ title: "Error al Actualizar", description: "No se pudo actualizar el agente.", variant: "destructive" });
       } finally {
@@ -466,5 +466,3 @@ export default function AgentsPage() {
     </>
   );
 }
-
-    

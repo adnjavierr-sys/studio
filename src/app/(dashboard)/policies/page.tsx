@@ -137,7 +137,7 @@ export default function PoliciesPage() {
         title: "Póliza añadida",
         description: `La póliza "${newPolicy.title}" ha sido añadida.`,
       });
-      fetchData();
+      await fetchData();
     } catch (error) {
        toast({ title: "Error al Añadir", description: "No se pudo añadir la póliza.", variant: "destructive" });
     } finally {
@@ -168,7 +168,7 @@ export default function PoliciesPage() {
           title: "Póliza actualizada",
           description: `La póliza "${updatedData.title}" ha sido actualizada.`
         });
-        fetchData();
+        await fetchData();
       } catch (error) {
         toast({ title: "Error al Actualizar", description: "No se pudo actualizar la póliza.", variant: "destructive" });
       } finally {
@@ -191,7 +191,7 @@ export default function PoliciesPage() {
           title: "Póliza eliminada",
           description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,
         });
-        fetchData();
+        await fetchData();
       } catch (error) {
          toast({ title: "Error al Eliminar", description: "No se pudo eliminar la póliza.", variant: "destructive" });
       } finally {
@@ -398,5 +398,3 @@ export default function PoliciesPage() {
     </>
   );
 }
-
-    

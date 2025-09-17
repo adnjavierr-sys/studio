@@ -126,7 +126,7 @@ export default function ClientsPage() {
           title: "Cliente eliminado",
           description: `El cliente ${selectedClient.name} ha sido eliminado.`,
         });
-        fetchClients();
+        await fetchClients();
       } catch (error) {
          toast({
           title: "Error al Eliminar",
@@ -164,7 +164,7 @@ export default function ClientsPage() {
           title: "Cliente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
         });
-        fetchClients();
+        await fetchClients();
       } catch (error) {
         toast({
           title: "Error al Actualizar",
@@ -197,7 +197,7 @@ export default function ClientsPage() {
         title: "Cliente añadido",
         description: `El cliente ${newClient.name} ha sido añadido.`,
       });
-      fetchClients();
+      await fetchClients();
     } catch (error) {
        toast({
         title: "Error al Añadir",
@@ -385,5 +385,3 @@ export default function ClientsPage() {
     </>
   );
 }
-
-    

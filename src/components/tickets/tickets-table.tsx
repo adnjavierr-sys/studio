@@ -190,13 +190,12 @@ export function TicketsTable() {
               <TableHead>Prioridad</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Creado en</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
              {isLoading || !firebase ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
                     <p className="mt-2 text-muted-foreground">Cargando tickets...</p>
                   </TableCell>
@@ -223,28 +222,11 @@ export function TicketsTable() {
                   <TableCell>
                     {format(ticket.createdAt, "PPP")}
                   </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2" /> Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="mr-2" /> Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={7} className="h-24 text-center">
                   <TicketIcon className="mx-auto h-8 w-8 text-muted-foreground" />
                   <p className="mt-2 text-muted-foreground">No se encontraron tickets.</p>
                    <p className="text-sm text-muted-foreground">

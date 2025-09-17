@@ -129,7 +129,7 @@ export default function TicketDetailsPage() {
           title: "Estado Actualizado",
           description: `El ticket ha sido actualizado a "${statusTranslations[newStatus]}".`
         });
-        fetchTicket();
+        await fetchTicket();
       } catch (error) {
         console.error("Error updating status:", error);
         toast({ title: "Error al Actualizar", description: "No se pudo actualizar el estado.", variant: "destructive" });
@@ -155,7 +155,7 @@ export default function TicketDetailsPage() {
           title: "Comentario Añadido",
           description: "Tu comentario ha sido añadido al historial del ticket."
         });
-        fetchTicket();
+        await fetchTicket();
       } catch (error) {
          console.error("Error adding comment:", error);
          toast({ title: "Error al Comentar", description: "No se pudo añadir el comentario.", variant: "destructive" });
