@@ -116,7 +116,7 @@ export default function PoliciesPage() {
     if (firebase) {
       fetchData();
     }
-  }, [firebase]);
+  }, [firebase, toast]);
 
 
   const handleAddPolicy = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -317,7 +317,8 @@ export default function PoliciesPage() {
               <Label htmlFor="add-description">Descripción</Label>
               <Textarea id="add-description" name="description" placeholder="Describe la póliza..." required rows={5} />
             </div>
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end pt-4 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancelar</Button>
               <Button type="submit">Añadir Póliza</Button>
             </div>
           </form>
@@ -369,7 +370,8 @@ export default function PoliciesPage() {
                 <Label htmlFor="edit-description">Descripción</Label>
                 <Textarea id="edit-description" name="description" defaultValue={selectedPolicy.description} required rows={5} />
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex justify-end pt-4 gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
@@ -396,5 +398,3 @@ export default function PoliciesPage() {
     </>
   );
 }
-
-    

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Agent } from '@/lib/data';
 import { PageHeader } from '@/components/page-header';
@@ -59,41 +59,40 @@ export default function AgentDetailsPage() {
       setFirebase(firebaseServices);
     }
   }, []);
+  
+  const fetchAgent = useCallback(async () => {
+    if (!firebase || typeof id !== 'string') return;
+    setIsLoading(true);
+    try {
+      const docRef = doc(firebase.db, "agents", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const agentData: Agent = {
+          id: docSnap.id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          createdAt: data.createdAt.toDate(),
+        };
+        setAgent(agentData);
+      } else {
+        toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Error fetching agent:", error);
+      toast({ title: "Error", description: "No se pudo cargar el agente.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, toast, firebase]);
 
   useEffect(() => {
-    const fetchAgent = async () => {
-      if (!firebase) return;
-      if (typeof id !== 'string') return;
-      setIsLoading(true);
-      try {
-        const docRef = doc(firebase.db, "agents", id);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const agentData: Agent = {
-            id: docSnap.id,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            createdAt: data.createdAt.toDate(),
-          };
-          setAgent(agentData);
-        } else {
-          toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
-        }
-      } catch (error) {
-        console.error("Error fetching agent:", error);
-        toast({ title: "Error", description: "No se pudo cargar el agente.", variant: "destructive" });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (firebase) {
       fetchAgent();
     }
-  }, [id, toast, firebase]);
+  }, [firebase, fetchAgent]);
   
 
   const handleDeleteAgent = async () => {
@@ -126,12 +125,11 @@ export default function AgentDetailsPage() {
         const agentRef = doc(firebase.db, "agents", agent.id);
         await updateDoc(agentRef, updatedData);
         
-        setAgent(prev => prev ? { ...prev, ...updatedData } : null);
-        
         toast({
           title: "Agente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
         });
+        await fetchAgent(); // Re-fetch the agent data to show the latest changes
       } catch (error) {
          toast({ title: "Error al Actualizar", description: "No se pudo actualizar el agente.", variant: "destructive" });
       } finally {
@@ -251,6 +249,7 @@ export default function AgentDetailsPage() {
                 </Select>
               </div>
                <div className="flex justify-end pt-4 gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
@@ -279,5 +278,3 @@ export default function AgentDetailsPage() {
     </>
   );
 }
-
-    

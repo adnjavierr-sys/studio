@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { TicketsTable } from "@/components/tickets/tickets-table";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,12 @@ import { NewTicketForm } from "@/components/tickets/new-ticket-form";
 
 export default function TicketsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [version, setVersion] = useState(0);
+  const [tableKey, setTableKey] = useState(0);
   
   const handleFormSubmit = () => {
     setIsModalOpen(false);
-    // Increment version to trigger re-fetch in TicketsTable
-    setVersion(v => v + 1);
+    // Increment key to trigger re-fetch in TicketsTable
+    setTableKey(prevKey => prevKey + 1);
   };
 
   return (
@@ -37,7 +37,7 @@ export default function TicketsPage() {
         </Button>
       </PageHeader>
       <div className="p-6 pt-0">
-        <TicketsTable key={version} />
+        <TicketsTable key={tableKey} />
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

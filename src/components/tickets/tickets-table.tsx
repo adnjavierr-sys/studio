@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
@@ -60,7 +60,7 @@ const categoryTranslations: { [key: string]: string } = {
   Other: "Otro",
 };
 
-function TicketsTableContent() {
+export function TicketsTable() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +119,7 @@ function TicketsTableContent() {
     if (firebase) {
       fetchTickets();
     }
-  }, [firebase]);
+  }, [firebase, toast]);
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -128,17 +128,19 @@ function TicketsTableContent() {
     }
   }, [searchParams]);
 
-  const filteredTickets = tickets
-    .filter((ticket) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        ticket.title.toLowerCase().includes(searchLower) ||
-        ticket.client.toLowerCase().includes(searchLower) ||
-        ticket.id.toLowerCase().includes(searchLower)
-      );
-    })
-    .filter((ticket) => statusFilter === "All" || ticket.status === statusFilter)
-    .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter);
+  const filteredTickets = useMemo(() => {
+    return tickets
+      .filter((ticket) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          ticket.title.toLowerCase().includes(searchLower) ||
+          ticket.client.toLowerCase().includes(searchLower) ||
+          ticket.id.toLowerCase().includes(searchLower)
+        );
+      })
+      .filter((ticket) => statusFilter === "All" || ticket.status === statusFilter)
+      .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter);
+  }, [tickets, searchTerm, statusFilter, categoryFilter]);
   
   const handleRowClick = (ticketId: string) => {
     router.push(`/tickets/${ticketId}`);
@@ -255,13 +257,5 @@ function TicketsTableContent() {
         </Table>
       </div>
     </div>
-  );
-}
-
-export function TicketsTable() {
-  return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <TicketsTableContent />
-    </Suspense>
   );
 }
