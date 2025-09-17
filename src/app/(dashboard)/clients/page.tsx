@@ -341,8 +341,9 @@ export default function ClientsPage() {
                 <Label htmlFor="address">Dirección</Label>
                 <Input id="address" name="address" defaultValue={selectedClient.address} />
               </div>
-              <div className="flex justify-end pt-4">
-                <Button type="submit">Guardar Cambios</Button>
+              <div className="flex justify-end pt-4 gap-2">
+                 <Button type="button" variant="outline" onClick={() => {setIsEditModalOpen(false); setSelectedClient(null)}}>Cancelar</Button>
+                 <Button type="submit">Guardar Cambios</Button>
               </div>
             </form>
           )}
