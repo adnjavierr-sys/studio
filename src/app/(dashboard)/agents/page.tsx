@@ -110,7 +110,7 @@ export default function AgentsPage() {
     if (firebase) {
       fetchAgents();
     }
-  }, [firebase]);
+  }, [firebase, toast]);
   
   const filteredAgents = useMemo(() => {
     return agentList
@@ -465,5 +465,7 @@ export default function AgentsPage() {
     </>
   );
 }
+
+    
 
     
