@@ -2,7 +2,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart, Contact, LayoutDashboard, Ticket, Users, Shield, PanelLeft, Settings, User, LogOut } from 'lucide-react';
+import { BarChart, Contact, LayoutDashboard, Ticket, Users, Shield, PanelLeft, Settings, User, LogOut, HardDrive } from 'lucide-react';
 import {
   SidebarProvider,
   Sidebar,
@@ -33,6 +33,7 @@ const navItems = [
   { href: '/agents', icon: Contact, label: 'Agentes' },
   { href: '/policies', icon: Shield, label: 'Pólizas' },
   { href: '/reports', icon: BarChart, label: 'Reportes' },
+  { href: '/database-test', icon: HardDrive, label: 'Test de DB' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
