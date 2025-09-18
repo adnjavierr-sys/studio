@@ -1,3 +1,4 @@
+
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
@@ -41,3 +42,4 @@ export function initializeFirebase(): FirebaseServices | null {
   
   return firebaseServices;
 }
+
