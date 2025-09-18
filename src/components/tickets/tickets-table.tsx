@@ -20,12 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Ticket as TicketIcon, Loader2 } from "lucide-react";
+import { Ticket as TicketIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Ticket } from "@/lib/data";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase-config";
-import { useToast } from "@/hooks/use-toast";
 
 const statusColors: { [key: string]: string } = {
   Open: "bg-green-200 text-green-800",
@@ -53,14 +50,11 @@ const categoryTranslations: { [key: string]: string } = {
 };
 
 export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
-  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -70,7 +64,7 @@ export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
   }, [searchParams]);
 
   const filteredTickets = useMemo(() => {
-    return tickets
+    return initialTickets
       .filter((ticket) => {
         const searchLower = searchTerm.toLowerCase();
         return (
@@ -81,7 +75,7 @@ export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
       })
       .filter((ticket) => statusFilter === "All" || ticket.status === statusFilter)
       .filter((ticket) => categoryFilter === "All" || ticket.category === categoryFilter);
-  }, [tickets, searchTerm, statusFilter, categoryFilter]);
+  }, [initialTickets, searchTerm, statusFilter, categoryFilter]);
   
   const handleRowClick = (ticketId: string) => {
     router.push(`/tickets/${ticketId}`);
@@ -134,14 +128,7 @@ export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-             {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-                    <p className="mt-2 text-muted-foreground">Cargando tickets...</p>
-                  </TableCell>
-                </TableRow>
-              ) : filteredTickets.length > 0 ? (
+            {filteredTickets.length > 0 ? (
               filteredTickets.map((ticket) => (
                 <TableRow key={ticket.id} onClick={() => handleRowClick(ticket.id)} className="cursor-pointer">
                   <TableCell className="font-medium">{ticket.id.substring(0, 7)}...</TableCell>
