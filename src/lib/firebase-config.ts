@@ -1,7 +1,7 @@
 
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore, initializeFirestore } from 'firebase/firestore';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -23,9 +23,7 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const db = initializeFirestore(app, {
-  databaseId: "unoti-ticket-i9spt"
-});
+export const db = getFirestore();
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
@@ -40,3 +38,4 @@ export function initializeFirebase(): FirebaseServices {
   
   return firebaseServices;
 }
+
