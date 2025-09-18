@@ -11,7 +11,9 @@ const firebaseConfig = {
     "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
     "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
     "measurementId": "",
-    "messagingSenderId": "529378070793"
+    "messagingSenderId": "529378070793",
+    "storageBucket": "unoti-ticket-i9spt.appspot.com",
+    "databaseURL": "https://unoti-ticket-i9spt-default-rtdb.firebaseio.com"
 };
 
 // Initialize Firebase
@@ -22,4 +24,3 @@ const storage = getStorage(app);
 
 
 export { app, db, auth, storage };
-
