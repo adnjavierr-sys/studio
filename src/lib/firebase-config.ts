@@ -38,4 +38,3 @@ export function initializeFirebase(): FirebaseServices {
   
   return firebaseServices;
 }
-
