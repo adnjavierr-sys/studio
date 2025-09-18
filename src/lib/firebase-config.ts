@@ -12,8 +12,7 @@ const firebaseConfig = {
     "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
     "storageBucket": "unoti-ticket-i9spt.appspot.com",
     "messagingSenderId": "529378070793",
-    "measurementId": "G-9T4E21J79L",
-    "databaseURL": "https://unoti-ticket-i9spt-default-rtdb.firebaseio.com"
+    "measurementId": "G-9T4E21J79L"
 };
 
 // Initialize Firebase
