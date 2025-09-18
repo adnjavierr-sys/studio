@@ -10,33 +10,23 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, Mail, Building, MapPin, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 
 export default function ClientDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
   
   const [client, setClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchClient = async () => {
-      if (!firebase) return;
       if (typeof id !== 'string') return;
       setIsLoading(true);
       try {
-        const docRef = doc(firebase.db, "clients", id);
+        const docRef = doc(db, "clients", id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -60,12 +50,10 @@ export default function ClientDetailsPage() {
       }
     };
 
-    if (firebase) {
-      fetchClient();
-    }
-  }, [id, firebase]);
+    fetchClient();
+  }, [id]);
   
-  if (isLoading || !firebase) {
+  if (isLoading) {
     return (
        <div className="flex h-[80vh] w-full items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />

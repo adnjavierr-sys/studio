@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Ticket, Clock, CheckCircle, Loader2 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart as RechartsBarChart, Cell } from 'recharts';
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs } from 'firebase/firestore';
 import { Ticket as TicketType } from '@/lib/data';
 
@@ -24,21 +23,12 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ total: 0, open: 0, inProgress: 0, closed: 0 });
   const [categoryData, setCategoryData] = useState<{ category: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
-
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!firebase) return;
       setIsLoading(true);
       try {
-        const ticketsCollection = collection(firebase.db, "tickets");
+        const ticketsCollection = collection(db, "tickets");
         const querySnapshot = await getDocs(ticketsCollection);
         const tickets: TicketType[] = [];
         querySnapshot.forEach((doc) => {
@@ -76,10 +66,8 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     };
-    if (firebase) {
-      fetchData();
-    }
-  }, [firebase]);
+    fetchData();
+  }, []);
 
   const chartConfig = {
     count: {
@@ -98,7 +86,7 @@ export default function DashboardPage() {
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        {isLoading || !firebase ? (
+        {isLoading ? (
           <Loader2 className="h-6 w-6 animate-spin" />
         ) : (
           <div className="text-2xl font-bold">{value}</div>
@@ -127,7 +115,7 @@ export default function DashboardPage() {
             <CardTitle>Tickets por Categoría</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading || !firebase ? (
+            {isLoading ? (
               <div className="flex justify-center items-center h-[300px]">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>

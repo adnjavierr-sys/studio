@@ -50,8 +50,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const typeColors: { [key: string]: string } = {
@@ -68,20 +67,11 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
 
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-  
   const fetchData = async () => {
-    if (!firebase) return;
     setIsLoading(true);
     try {
-      const policiesCollection = collection(firebase.db, "policies");
+      const policiesCollection = collection(db, "policies");
       const policiesQuery = query(policiesCollection, orderBy("createdAt", "desc"));
       const policiesSnapshot = await getDocs(policiesQuery);
       const policies = policiesSnapshot.docs.map(doc => {
@@ -108,7 +98,6 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
 
   const handleAddPolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
     const newPolicy = {
       title: formData.get('title') as string,
@@ -119,7 +108,7 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
     };
     
     try {
-      await addDoc(collection(firebase.db, "policies"), newPolicy);
+      await addDoc(collection(db, "policies"), newPolicy);
       toast({
         title: "Póliza añadida",
         description: `La póliza "${newPolicy.title}" ha sido añadida.`,
@@ -139,7 +128,7 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
 
   const handleUpdatePolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedPolicy && firebase) {
+    if (selectedPolicy) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         title: formData.get('title') as string,
@@ -149,7 +138,7 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
       };
       
       try {
-        const policyRef = doc(firebase.db, "policies", selectedPolicy.id);
+        const policyRef = doc(db, "policies", selectedPolicy.id);
         await updateDoc(policyRef, updatedData);
         toast({
           title: "Póliza actualizada",
@@ -171,9 +160,9 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
   };
 
   const handleDeletePolicy = async () => {
-    if (selectedPolicy && firebase) {
+    if (selectedPolicy) {
       try {
-        await deleteDoc(doc(firebase.db, "policies", selectedPolicy.id));
+        await deleteDoc(doc(db, "policies", selectedPolicy.id));
         toast({
           title: "Póliza eliminada",
           description: `La póliza "${selectedPolicy.title}" ha sido eliminada.`,

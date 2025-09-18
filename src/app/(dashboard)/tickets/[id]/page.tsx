@@ -21,8 +21,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { doc, getDoc, updateDoc, Timestamp, arrayUnion } from "firebase/firestore";
 
 const statusColors: { [key: string]: string } = {
@@ -55,23 +54,15 @@ export default function TicketDetailsPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
   
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
 
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-
   const fetchTicket = useCallback(async () => {
-    if (!firebase || typeof id !== 'string') return;
+    if (typeof id !== 'string') return;
     try {
-      const docRef = doc(firebase.db, "tickets", id);
+      const docRef = doc(db, "tickets", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
@@ -100,17 +91,17 @@ export default function TicketDetailsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id, toast, firebase]);
+  }, [id, toast]);
 
   useEffect(() => {
-    if (id && firebase) {
+    if (id) {
         setIsLoading(true);
         fetchTicket();
     }
-  }, [id, fetchTicket, firebase]);
+  }, [id, fetchTicket]);
 
   const handleStatusChange = async (newStatus: 'Open' | 'In Progress' | 'Closed') => {
-    if (ticket && firebase) {
+    if (ticket) {
       const oldStatus = ticket.status;
       const updateText = `Estado cambiado de ${statusTranslations[oldStatus]} a ${statusTranslations[newStatus]}.`;
       const ticketUpdate = {
@@ -120,7 +111,7 @@ export default function TicketDetailsPage() {
       };
 
       try {
-        const ticketRef = doc(firebase.db, "tickets", ticket.id);
+        const ticketRef = doc(db, "tickets", ticket.id);
         await updateDoc(ticketRef, {
           status: newStatus,
           updates: arrayUnion(ticketUpdate)
@@ -138,7 +129,7 @@ export default function TicketDetailsPage() {
   };
   
   const handleAddComment = async () => {
-    if (ticket && newComment.trim() && firebase) {
+    if (ticket && newComment.trim()) {
       const ticketUpdate = {
         timestamp: Timestamp.now(),
         author: 'Admin User',
@@ -146,7 +137,7 @@ export default function TicketDetailsPage() {
       };
 
       try {
-        const ticketRef = doc(firebase.db, "tickets", ticket.id);
+        const ticketRef = doc(db, "tickets", ticket.id);
         await updateDoc(ticketRef, {
           updates: arrayUnion(ticketUpdate)
         });
@@ -163,7 +154,7 @@ export default function TicketDetailsPage() {
     }
   };
 
-  if (isLoading || !firebase) {
+  if (isLoading) {
     return (
        <div className="flex h-[80vh] w-full items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />

@@ -28,8 +28,7 @@ import { getTicketCategorySuggestion } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Client } from "@/lib/data";
 import Image from 'next/image';
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, Timestamp, query, orderBy } from "firebase/firestore";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -60,20 +59,11 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
-
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchClients = async () => {
-      if (!firebase) return;
       try {
-        const clientsCollection = collection(firebase.db, "clients");
+        const clientsCollection = collection(db, "clients");
         const q = query(clientsCollection, orderBy("name", "asc"));
         const querySnapshot = await getDocs(q);
         const clientList: Client[] = [];
@@ -85,10 +75,8 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
         console.error("Error fetching clients for form: ", error);
       }
     };
-    if (firebase) {
-      fetchClients();
-    }
-  }, [firebase]);
+    fetchClients();
+  }, []);
 
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
@@ -112,7 +100,6 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   };
 
   const onSubmit = async (data: TicketFormValues) => {
-    if (!firebase) return;
     setIsSubmitting(true);
     let imageUrl: string | undefined = undefined;
 
@@ -140,7 +127,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     };
 
     try {
-      await addDoc(collection(firebase.db, "tickets"), newTicketData);
+      await addDoc(collection(db, "tickets"), newTicketData);
       toast({
         title: "Ticket Enviado",
         description: "Tu nuevo ticket ha sido creado exitosamente.",
@@ -380,8 +367,8 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             />
         </div>
         <div className="flex justify-end">
-          <Button type="submit" disabled={isSubmitting || !firebase}>
-            {(isSubmitting || !firebase) && <Loader2 className="mr-2 animate-spin" />}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 animate-spin" />}
             Enviar Ticket
           </Button>
         </div>

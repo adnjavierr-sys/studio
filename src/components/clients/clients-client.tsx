@@ -43,8 +43,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
 
 export function ClientsClient({ initialClients }: { initialClients: Client[] }) {
@@ -56,20 +55,11 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
 
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-  
   const fetchClients = async () => {
-    if (!firebase) return;
     setIsLoading(true);
     try {
-      const clientsCollection = collection(firebase.db, "clients");
+      const clientsCollection = collection(db, "clients");
       const q = query(clientsCollection, orderBy("createdAt", "desc"));
       
       const querySnapshot = await getDocs(q);
@@ -111,9 +101,9 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   };
 
   const handleDeleteClient = async () => {
-    if (selectedClient && firebase) {
+    if (selectedClient) {
       try {
-        const clientDocRef = doc(firebase.db, "clients", selectedClient.id);
+        const clientDocRef = doc(db, "clients", selectedClient.id);
         await deleteDoc(clientDocRef);
         
         toast({
@@ -141,7 +131,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
 
   const handleUpdateClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedClient && firebase) {
+    if (selectedClient) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -151,7 +141,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       };
       
       try {
-        const clientRef = doc(firebase.db, "clients", selectedClient.id);
+        const clientRef = doc(db, "clients", selectedClient.id);
         await updateDoc(clientRef, updatedData);
         
         toast({
@@ -174,7 +164,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
 
   const handleAddClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
     const newClient = {
       name: formData.get('name') as string,
@@ -185,7 +174,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     };
     
     try {
-      await addDoc(collection(firebase.db, "clients"), newClient);
+      await addDoc(collection(db, "clients"), newClient);
       
       toast({
         title: "Cliente añadido",

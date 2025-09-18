@@ -37,8 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default function AgentDetailsPage() {
@@ -46,25 +45,17 @@ export default function AgentDetailsPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
 
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-  
   const fetchAgent = useCallback(async () => {
-    if (!firebase || typeof id !== 'string') return;
+    if (typeof id !== 'string') return;
     setIsLoading(true);
     try {
-      const docRef = doc(firebase.db, "agents", id);
+      const docRef = doc(db, "agents", id);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -86,19 +77,17 @@ export default function AgentDetailsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id, toast, firebase]);
+  }, [id, toast]);
 
   useEffect(() => {
-    if (firebase) {
-      fetchAgent();
-    }
-  }, [firebase, fetchAgent]);
+    fetchAgent();
+  }, [fetchAgent]);
   
 
   const handleDeleteAgent = async () => {
-    if (agent && firebase) {
+    if (agent) {
       try {
-        await deleteDoc(doc(firebase.db, "agents", agent.id));
+        await deleteDoc(doc(db, "agents", agent.id));
         toast({
           title: "Agente Eliminado",
           description: `El agente ${agent.name} ha sido eliminado.`,
@@ -113,7 +102,7 @@ export default function AgentDetailsPage() {
 
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (agent && firebase) {
+    if (agent) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -122,7 +111,7 @@ export default function AgentDetailsPage() {
       };
       
       try {
-        const agentRef = doc(firebase.db, "agents", agent.id);
+        const agentRef = doc(db, "agents", agent.id);
         await updateDoc(agentRef, updatedData);
         
         toast({
@@ -138,7 +127,7 @@ export default function AgentDetailsPage() {
     }
   };
 
-  if (isLoading || !firebase) {
+  if (isLoading) {
     return (
        <div className="flex h-[80vh] w-full items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />

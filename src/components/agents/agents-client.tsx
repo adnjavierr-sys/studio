@@ -50,8 +50,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, query, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -65,22 +64,13 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
 
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-  
   const fetchAgents = async () => {
-    if (!firebase) return;
     setIsLoading(true);
     try {
-      const agentsCollection = collection(firebase.db, "agents");
+      const agentsCollection = collection(db, "agents");
       const q = query(agentsCollection, orderBy("createdAt", "desc"));
       
       const querySnapshot = await getDocs(q);
@@ -138,9 +128,9 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
   }
 
   const handleDeleteAgent = async () => {
-    if (selectedAgent && firebase) {
+    if (selectedAgent) {
       try {
-        await deleteDoc(doc(firebase.db, "agents", selectedAgent.id));
+        await deleteDoc(doc(db, "agents", selectedAgent.id));
         toast({
           title: "Agente Eliminado",
           description: `El agente ${selectedAgent.name} ha sido eliminado.`,
@@ -157,7 +147,6 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
 
   const handleAddAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!firebase) return;
     const formData = new FormData(event.currentTarget);
     const newAgent = {
       name: formData.get('name') as string,
@@ -173,7 +162,7 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
     }
 
     try {
-      await addDoc(collection(firebase.db, "agents"), newAgent);
+      await addDoc(collection(db, "agents"), newAgent);
       toast({
         title: "Agente añadido",
         description: `El agente ${newAgent.name} ha sido añadido.`,
@@ -188,7 +177,7 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
   
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (selectedAgent && firebase) {
+    if (selectedAgent) {
       const formData = new FormData(event.currentTarget);
       const updatedData = {
         name: formData.get('name') as string,
@@ -197,7 +186,7 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
       };
       
       try {
-        const agentRef = doc(firebase.db, "agents", selectedAgent.id);
+        const agentRef = doc(db, "agents", selectedAgent.id);
         await updateDoc(agentRef, updatedData);
         toast({
           title: "Agente actualizado",

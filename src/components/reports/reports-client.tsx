@@ -34,8 +34,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Papa from "papaparse";
 import { ReportPreviewDialog } from "@/components/reports/report-preview-dialog";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
+import { db } from "@/lib/firebase-config";
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 
 type CategoryCount = {
@@ -56,14 +55,6 @@ export function ReportsClient({ initialTickets, initialClients }: { initialTicke
 
   const { toast } = useToast();
   const router = useRouter();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
-
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
 
   useEffect(() => {
     // Process initial data
@@ -371,7 +362,7 @@ export function ReportsClient({ initialTickets, initialClients }: { initialTicke
             </CardDescription>
           </CardHeader>
           <CardContent>
-             {isLoading || !firebase ? (
+             {isLoading ? (
                 <div className="flex justify-center items-center h-24">
                     <Loader2 className="h-8 w-8 animate-spin" />
                 </div>

@@ -1,15 +1,8 @@
 // src/lib/firebase-config.ts
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import { getAuth, type Auth } from 'firebase/auth';
-import { getStorage, type FirebaseStorage } from 'firebase/storage';
-
-export interface FirebaseServices {
-  app: FirebaseApp;
-  db: Firestore;
-  auth: Auth;
-  storage: FirebaseStorage;
-}
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
     "projectId": "unoti-ticket-i9spt",
@@ -21,16 +14,11 @@ const firebaseConfig = {
     "measurementId": "G-56V52G5Z1R"
 };
 
-
 // Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-// This is a compatibility export for existing components that might use it.
-function initializeFirebase(): FirebaseServices {
-    return { app, db, auth, storage };
-}
 
-export { app, db, auth, storage, initializeFirebase };
+export { app, db, auth, storage };
