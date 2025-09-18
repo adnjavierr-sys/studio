@@ -20,19 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Ticket as TicketIcon, MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Ticket as TicketIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { Ticket } from "@/lib/data";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { initializeFirebase } from "@/lib/firebase-config";
-import type { FirebaseServices } from "@/lib/firebase-config";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase-config";
 import { useToast } from "@/hooks/use-toast";
 
 const statusColors: { [key: string]: string } = {
@@ -60,66 +52,15 @@ const categoryTranslations: { [key: string]: string } = {
   Other: "Otro",
 };
 
-export function TicketsTable() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [firebase, setFirebase] = useState<FirebaseServices | null>(null);
-
-  useEffect(() => {
-    const firebaseServices = initializeFirebase();
-    if (firebaseServices) {
-      setFirebase(firebaseServices);
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchTickets = async () => {
-      if (!firebase) return;
-      setIsLoading(true);
-      try {
-        const ticketsCollection = collection(firebase.db, "tickets");
-        const q = query(ticketsCollection, orderBy("createdAt", "desc"));
-        
-        const querySnapshot = await getDocs(q);
-        const ticketList: Ticket[] = [];
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          ticketList.push({
-            id: doc.id,
-            title: data.title,
-            client: data.client,
-            category: data.category,
-            status: data.status,
-            sla: data.sla,
-            createdAt: data.createdAt.toDate(),
-            updates: data.updates,
-            imageUrl: data.imageUrl,
-          });
-        });
-        
-        setTickets(ticketList);
-      } catch (error) {
-        console.error("Error fetching tickets: ", error);
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los tickets.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (firebase) {
-      fetchTickets();
-    }
-  }, [firebase, toast]);
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -193,7 +134,7 @@ export function TicketsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-             {isLoading || !firebase ? (
+             {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />

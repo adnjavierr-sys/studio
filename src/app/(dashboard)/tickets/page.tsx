@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { TicketsTable } from "@/components/tickets/tickets-table";
 import { Button } from "@/components/ui/button";
@@ -14,14 +14,43 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { NewTicketForm } from "@/components/tickets/new-ticket-form";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase-config";
+import { Ticket } from "@/lib/data";
 
-export default function TicketsPage() {
+
+async function getTickets() {
+  const ticketsCollection = collection(db, "tickets");
+  const q = query(ticketsCollection, orderBy("createdAt", "desc"));
+  
+  const querySnapshot = await getDocs(q);
+  const ticketList: Ticket[] = [];
+  
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    ticketList.push({
+      id: doc.id,
+      title: data.title,
+      client: data.client,
+      category: data.category,
+      status: data.status,
+      sla: data.sla,
+      createdAt: data.createdAt.toDate(),
+      updates: data.updates,
+      imageUrl: data.imageUrl,
+    });
+  });
+  
+  return ticketList;
+}
+
+export default async function TicketsPage() {
+  const initialTickets = await getTickets();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableKey, setTableKey] = useState(0);
-  
+
   const handleFormSubmit = () => {
     setIsModalOpen(false);
-    // Increment key to trigger re-fetch in TicketsTable
     setTableKey(prevKey => prevKey + 1);
   };
 
@@ -37,7 +66,7 @@ export default function TicketsPage() {
         </Button>
       </PageHeader>
       <div className="p-6 pt-0">
-        <TicketsTable key={tableKey} />
+        <TicketsTable key={tableKey} initialTickets={initialTickets} />
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
