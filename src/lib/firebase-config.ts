@@ -21,23 +21,16 @@ const firebaseConfig = {
     "measurementId": "G-56V52G5Z1R"
 };
 
-function initializeFirebaseServices(): FirebaseServices {
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
-  return { app, db, auth, storage };
+
+// Initialize Firebase
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+// This is a compatibility export for existing components that might use it.
+function initializeFirebase(): FirebaseServices {
+    return { app, db, auth, storage };
 }
 
-// Export a function that returns the services
-export const getFirebaseServices = () => initializeFirebaseServices();
-
-// For components that still use the direct 'db' export
-const { db } = initializeFirebaseServices();
-export { db };
-
-// The initializeFirebase function can now simply return the services.
-// This maintains compatibility with existing code that uses it.
-export function initializeFirebase(): FirebaseServices {
-  return getFirebaseServices();
-}
+export { app, db, auth, storage, initializeFirebase };
