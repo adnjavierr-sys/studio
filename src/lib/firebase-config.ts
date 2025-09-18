@@ -1,4 +1,3 @@
-
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
@@ -20,7 +19,8 @@ const firebaseConfig = {
   "storageBucket": "unoti-ticket-i9spt.appspot.com",
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
-  "messagingSenderId": "529378070793"
+  "messagingSenderId": "529378070793",
+  "databaseId": "unoti-ticket-i9spt"
 };
 
 export function initializeFirebase(): FirebaseServices | null {
