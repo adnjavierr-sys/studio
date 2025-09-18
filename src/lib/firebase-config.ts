@@ -10,9 +10,9 @@ const firebaseConfig = {
     "appId": "1:529378070793:web:4b753d9444c7dfbc50c3d8",
     "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
     "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
-    "measurementId": "",
-    "messagingSenderId": "529378070793",
     "storageBucket": "unoti-ticket-i9spt.appspot.com",
+    "messagingSenderId": "529378070793",
+    "measurementId": "G-9T4E21J79L",
     "databaseURL": "https://unoti-ticket-i9spt-default-rtdb.firebaseio.com"
 };
 
