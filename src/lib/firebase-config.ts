@@ -18,25 +18,27 @@ const firebaseConfig = {
   "storageBucket": "unoti-ticket-i9spt.appspot.com",
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
-  "messagingSenderId": "529378070793",
-  "databaseURL": "https://unoti-ticket-i9spt.firebaseio.com",
+  "messagingSenderId": "529378070793"
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
 
+function initializeFirebaseServices(): FirebaseServices {
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+  return { app, db, auth, storage };
+}
+
+// Export a function that returns the services
+export const getFirebaseServices = () => initializeFirebaseServices();
+
+// For components that still use the direct 'db' export
+const { db } = initializeFirebaseServices();
 export { db };
-export const auth = getAuth(app);
-export const storage = getStorage(app);
 
-let firebaseServices: FirebaseServices | null = null;
-
+// The initializeFirebase function can now simply return the services.
+// This maintains compatibility with existing code that uses it.
 export function initializeFirebase(): FirebaseServices {
-  if (firebaseServices) {
-    return firebaseServices;
-  }
-  
-  firebaseServices = { app, db, auth, storage };
-  
-  return firebaseServices;
+  return getFirebaseServices();
 }
