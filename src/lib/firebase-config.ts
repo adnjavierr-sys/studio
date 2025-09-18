@@ -1,7 +1,7 @@
 
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, type Firestore, initializeFirestore } from 'firebase/firestore';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -34,7 +34,7 @@ export function initializeFirebase(): FirebaseServices | null {
   
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   
-  const db = getFirestore(app);
+  const db = initializeFirestore(app, {});
 
   const auth = getAuth(app);
   const storage = getStorage(app);
