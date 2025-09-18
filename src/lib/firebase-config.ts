@@ -33,7 +33,7 @@ export function initializeFirebase(): FirebaseServices | null {
   
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   
-  const db = getFirestore(app, '(default)');
+  const db = getFirestore(app);
   const auth = getAuth(app);
   const storage = getStorage(app);
 
