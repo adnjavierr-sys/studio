@@ -18,11 +18,14 @@ const firebaseConfig = {
   "storageBucket": "unoti-ticket-i9spt.appspot.com",
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
-  "messagingSenderId": "529378070793"
+  "messagingSenderId": "529378070793",
+  "databaseId": "unoti-ticket-i9spt"
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const db = initializeFirestore(app, {});
+export const db = initializeFirestore(app, {
+  databaseId: "unoti-ticket-i9spt"
+});
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
