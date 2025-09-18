@@ -1,9 +1,5 @@
 
 {
-  "dataconnect": {
-    "location": "us-central1",
-    "source": "dataconnect"
-  },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
