@@ -19,10 +19,11 @@ const firebaseConfig = {
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
   "messagingSenderId": "529378070793",
+  "databaseURL": "https://unoti-ticket-i9spt.firebaseio.com",
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore();
+const db = getFirestore(app);
 
 export { db };
 export const auth = getAuth(app);
