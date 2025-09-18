@@ -20,7 +20,6 @@ const firebaseConfig = {
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
   "messagingSenderId": "529378070793",
-  "databaseId": "unoti-ticket-i9spt"
 };
 
 export function initializeFirebase(): FirebaseServices | null {
@@ -34,7 +33,7 @@ export function initializeFirebase(): FirebaseServices | null {
   
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   
-  const db = getFirestore(app);
+  const db = getFirestore(app, '(default)');
   const auth = getAuth(app);
   const storage = getStorage(app);
 
