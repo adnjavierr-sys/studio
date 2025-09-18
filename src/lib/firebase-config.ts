@@ -21,7 +21,8 @@ const firebaseConfig = {
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
   "messagingSenderId": "529378070793",
-  "measurementId": "G-9X53BE2L9B"
+  "measurementId": "G-9X53BE2L9B",
+  "databaseId": "(default)"
 };
 
 export function initializeFirebase(): FirebaseServices | null {
