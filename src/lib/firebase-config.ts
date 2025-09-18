@@ -20,8 +20,7 @@ const firebaseConfig = {
   "storageBucket": "unoti-ticket-i9spt.appspot.com",
   "apiKey": "AIzaSyDyeqPRhp8bdeGnlMayif1kmPnXEJUGR1Y",
   "authDomain": "unoti-ticket-i9spt.firebaseapp.com",
-  "messagingSenderId": "529378070793",
-  "measurementId": "G-9X53BE2L9B"
+  "messagingSenderId": "529378070793"
 };
 
 export function initializeFirebase(): FirebaseServices | null {
@@ -35,7 +34,7 @@ export function initializeFirebase(): FirebaseServices | null {
   
   const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   
-  const db = getFirestore(getApp());
+  const db = getFirestore(app);
 
   const auth = getAuth(app);
   const storage = getStorage(app);
