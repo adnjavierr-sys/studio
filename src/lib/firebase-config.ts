@@ -1,7 +1,7 @@
 
 // src/lib/firebase-config.ts
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { initializeFirestore, getFirestore, type Firestore } from 'firebase/firestore';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
@@ -22,15 +22,7 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-
-let db: Firestore;
-try {
-    db = getFirestore(app);
-} catch (e) {
-    db = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-    });
-}
+const db = getFirestore(app);
 
 export { db };
 export const auth = getAuth(app);
