@@ -1,7 +1,7 @@
 
 import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase-config";
-import type { Ticket } from "@/lib/data";
+import type { Ticket, TicketUpdate } from "@/lib/data";
 import { PageHeader } from "@/components/page-header";
 import { TicketsTable } from "@/components/tickets/tickets-table";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,13 @@ async function getTickets() {
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+      // Convert Timestamps to Dates
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
+      const updates = (data.updates || []).map((update: any) => ({
+        ...update,
+        timestamp: update.timestamp instanceof Timestamp ? update.timestamp.toDate() : new Date(),
+      }));
+
       ticketList.push({
         id: doc.id,
         title: data.title,
@@ -25,8 +32,8 @@ async function getTickets() {
         category: data.category,
         status: data.status,
         sla: data.sla,
-        createdAt: (data.createdAt as Timestamp).toDate(),
-        updates: data.updates,
+        createdAt: createdAt,
+        updates: updates,
         imageUrl: data.imageUrl,
       });
     });

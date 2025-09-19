@@ -1,42 +1,25 @@
-type User @table {
-  displayName: String!
-  email: String!
-  createdAt: Timestamp!
-  photoUrl: String
-}
-
-type Event @table {
-  organizer: User!
-  title: String!
-  description: String!
-  eventDate: Date!
-  eventTime: String!
-  location: String!
-  capacity: Int!
-  createdAt: Timestamp!
-  imageUrl: String
-  category: String
-  isPublic: Boolean
-}
-
-type TicketType @table {
-  event: Event!
+# Products
+type Product @table {
+  id: UUID! @default(expr: "uuidV4()")
+  productID: String!
+  productSlug: String!
   name: String!
+  nameEmbedding: Vector! @col(size: 768)
+  description: String!
+  descriptionEmbedding: Vector! @col(size: 768)
   price: Float!
-  quantityAvailable: Int!
-  salesStartTime: Timestamp!
-  salesEndTime: Timestamp!
-  createdAt: Timestamp!
-  description: String
 }
 
-type Ticket @table {
-  purchaser: User!
-  event: Event!
-  ticketType: TicketType!
-  purchaseDate: Timestamp!
-  status: String!
-  qrCode: String!
-  priceAtPurchase: Float
-  checkedInAt: Timestamp
+# Reviews
+type Review @table {
+  id: UUID! @default(expr: "uuidV4()")
+  productID: String!
+  productSlug: String!
+  productName: String!
+  userID: String!
+  userName: String!
+  rating: Float!
+  content: String!
+  contentEmbedding: Vector! @col(size: 768)
+  createdAt: Date! @default(expr: "request.time")
 }

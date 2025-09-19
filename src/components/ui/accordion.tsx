@@ -1,58 +1,64 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { ChevronDown } from "lucide-react"
+import { cn } from '@/lib/utils'
+import { useState } from 'react'
 
-import { cn } from "@/lib/utils"
+export interface Accordion {
+  label: string
+  children: React.ReactNode
+  open?: boolean
+}
 
-const Accordion = AccordionPrimitive.Root
-
-const AccordionItem = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
->(({ className, ...props }, ref) => (
-  <AccordionPrimitive.Item
-    ref={ref}
-    className={cn("border-b", className)}
-    {...props}
-  />
-))
-AccordionItem.displayName = "AccordionItem"
-
-const AccordionTrigger = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex">
-    <AccordionPrimitive.Trigger
-      ref={ref}
-      className={cn(
-        "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
-        className
-      )}
-      {...props}
+const Chevron = function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 10 10"
+      width="20"
+      className="mt-1 shrink-0 text-gray-500 [&>line]:origin-center [&>line]:transition [&>line]:duration-300 [&>line]:ease-out"
     >
-      {children}
-      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-    </AccordionPrimitive.Trigger>
-  </AccordionPrimitive.Header>
-))
-AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
+      <line
+        x1="2"
+        y1="2"
+        x2="5"
+        y2="5"
+        className={cn({ '-translate-y-[3px] -rotate-90': open })}
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
+      <line
+        x1="8"
+        y1="2"
+        x2="5"
+        y2="5"
+        className={cn({ '-translate-y-[3px] rotate-90': open })}
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
 
-const AccordionContent = React.forwardRef<
-  React.ElementRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Content
-    ref={ref}
-    className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
-    {...props}
-  >
-    <div className={cn("pb-4 pt-0", className)}>{children}</div>
-  </AccordionPrimitive.Content>
-))
+export default function Accordion({ label, children, open = false }: Accordion) {
+  const [expanded, setExpanded] = useState(open)
 
-AccordionContent.displayName = AccordionPrimitive.Content.displayName
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+  return (
+    <div key={label}>
+      <button
+        type="button"
+        className="w-full text-sm flex items-center justify-between cursor-pointer py-3"
+        onClick={() => setExpanded(!expanded)}
+      >
+        {label}
+        <Chevron open={expanded} />
+      </button>
+      <div
+        className={cn(
+          "grid [&>*]:overflow-hidden transition-all duration-500 ease-m-ease text-xl lg:text-2xl [&_li]:before:content-['•_']",
+          expanded ? 'grid-rows-[1fr] opacity-100 my-3' : 'grid-rows-[0fr] opacity-0'
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}

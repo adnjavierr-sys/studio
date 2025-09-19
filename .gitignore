@@ -24,7 +24,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -36,9 +35,9 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# sourcemaps
-*.js.map
-*.css.map
+vsce-debug.log*
 
-# dataconnect
-dataconnect/.dataconnect
+# Firebase
+firebase-debug.log*
+firebase-debug.*
+.firebase

@@ -13,13 +13,15 @@ async function getClients() {
     const clients: Client[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+      // Convert Timestamp to Date
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
       clients.push({
         id: doc.id,
         name: data.name,
         email: data.email,
         company: data.company,
         address: data.address,
-        createdAt: (data.createdAt as Timestamp).toDate(),
+        createdAt: createdAt,
       });
     });
     

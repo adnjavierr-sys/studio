@@ -11,12 +11,14 @@ async function getAgents() {
     const querySnapshot = await getDocs(q);
     const agents = querySnapshot.docs.map(doc => {
       const data = doc.data();
+      // Convert Timestamp to Date
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
       return {
         id: doc.id,
         name: data.name,
         email: data.email,
         role: data.role,
-        createdAt: (data.createdAt as Timestamp).toDate(),
+        createdAt: createdAt,
         password: data.password,
       } as Agent;
     });

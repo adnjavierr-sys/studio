@@ -10,13 +10,15 @@ async function getPolicies() {
     const policiesSnapshot = await getDocs(policiesQuery);
     const policies = policiesSnapshot.docs.map(doc => {
       const data = doc.data();
+      // Convert Timestamp to Date
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
       return {
         id: doc.id,
         title: data.title,
         description: data.description,
         type: data.type,
         clientName: data.clientName,
-        createdAt: (data.createdAt as Timestamp).toDate(),
+        createdAt: createdAt,
       } as Policy;
     });
     return policies;
@@ -26,7 +28,16 @@ async function getClients() {
     const clientsCollection = collection(db, "clients");
     const clientsQuery = query(clientsCollection, orderBy("name", "asc"));
     const clientsSnapshot = await getDocs(clientsQuery);
-    const clientList: Client[] = clientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+    // Convert Timestamp to Date for createdAt field if it exists.
+    const clientList: Client[] = clientsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
+        return { 
+            id: doc.id, 
+            ...data,
+            createdAt: createdAt
+        } as Client
+    });
     return clientList;
 }
 

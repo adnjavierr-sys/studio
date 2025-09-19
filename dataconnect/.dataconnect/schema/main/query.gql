@@ -1,8 +1,8 @@
 extend type Query {
   """
-  ✨ Look up a single `Event` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  ✨ Look up a single `Product` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
   """
-  event(
+  product(
     """
     The unique ID of the object.
     """
@@ -11,17 +11,17 @@ extend type Query {
     """
     The key used to identify the object.
     """
-    key: Event_Key
+    key: Product_Key
 
     """
     Fetch the first row based on the filters and ordering.
     """
-    first: Event_FirstRow
-  ): Event @fdc_generated(from: "Event", purpose: QUERY_SINGLE)
+    first: Product_FirstRow
+  ): Product @fdc_generated(from: "Product", purpose: QUERY_SINGLE)
   """
-  ✨ Look up a single `Ticket` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  ✨ Look up a single `Review` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
   """
-  ticket(
+  review(
     """
     The unique ID of the object.
     """
@@ -30,64 +30,26 @@ extend type Query {
     """
     The key used to identify the object.
     """
-    key: Ticket_Key
+    key: Review_Key
 
     """
     Fetch the first row based on the filters and ordering.
     """
-    first: Ticket_FirstRow
-  ): Ticket @fdc_generated(from: "Ticket", purpose: QUERY_SINGLE)
+    first: Review_FirstRow
+  ): Review @fdc_generated(from: "Review", purpose: QUERY_SINGLE)
   """
-  ✨ Look up a single `TicketType` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  ✨ List `Product` objects in the table, optionally filtered by `where` conditions.
   """
-  ticketType(
-    """
-    The unique ID of the object.
-    """
-    id: UUID
-
-    """
-    The key used to identify the object.
-    """
-    key: TicketType_Key
-
-    """
-    Fetch the first row based on the filters and ordering.
-    """
-    first: TicketType_FirstRow
-  ): TicketType @fdc_generated(from: "TicketType", purpose: QUERY_SINGLE)
-  """
-  ✨ Look up a single `User` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
-  """
-  user(
-    """
-    The unique ID of the object.
-    """
-    id: UUID
-
-    """
-    The key used to identify the object.
-    """
-    key: User_Key
-
-    """
-    Fetch the first row based on the filters and ordering.
-    """
-    first: User_FirstRow
-  ): User @fdc_generated(from: "User", purpose: QUERY_SINGLE)
-  """
-  ✨ List `Event` objects in the table and return selected fields, optionally filtered by `where` conditions
-  """
-  events(
+  products(
     """
     Filter condition to narrow down the query results.
     """
-    where: Event_Filter
+    where: Product_Filter
 
     """
     Order the query results by specific fields.
     """
-    orderBy: [Event_Order!]
+    orderBy: [Product_Order!]
 
     """
     Number of rows to skip before starting to return the results.
@@ -98,30 +60,20 @@ extend type Query {
     Maximum number of rows to return (defaults to 100 rows).
     """
     limit: Int = 100
-
-    """
-    Set to true to return distinct results.
-    """
-    distinct: Boolean = false
-
-    """
-    Filter condition to apply to the groups of aggregate queries.
-    """
-    having: Event_Having
-  ): [Event!]! @fdc_generated(from: "Event", purpose: QUERY_MULTIPLE)
+  ): [Product!]! @fdc_generated(from: "Product", purpose: QUERY_MULTIPLE)
   """
-  ✨ List `Ticket` objects in the table and return selected fields, optionally filtered by `where` conditions
+  ✨ List `Review` objects in the table, optionally filtered by `where` conditions.
   """
-  tickets(
+  reviews(
     """
     Filter condition to narrow down the query results.
     """
-    where: Ticket_Filter
+    where: Review_Filter
 
     """
     Order the query results by specific fields.
     """
-    orderBy: [Ticket_Order!]
+    orderBy: [Review_Order!]
 
     """
     Number of rows to skip before starting to return the results.
@@ -132,83 +84,110 @@ extend type Query {
     Maximum number of rows to return (defaults to 100 rows).
     """
     limit: Int = 100
-
-    """
-    Set to true to return distinct results.
-    """
-    distinct: Boolean = false
-
-    """
-    Filter condition to apply to the groups of aggregate queries.
-    """
-    having: Ticket_Having
-  ): [Ticket!]! @fdc_generated(from: "Ticket", purpose: QUERY_MULTIPLE)
+  ): [Review!]! @fdc_generated(from: "Review", purpose: QUERY_MULTIPLE)
   """
-  ✨ List `TicketType` objects in the table and return selected fields, optionally filtered by `where` conditions
+  ✨ List `Product` objects ordered by vector similarity between the `descriptionEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
   """
-  ticketTypes(
+  products_descriptionEmbedding_similarity(
     """
-    Filter condition to narrow down the query results.
+    Vector to compare with the stored vectors.
     """
-    where: TicketType_Filter
+    compare: Vector
 
     """
-    Order the query results by specific fields.
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
     """
-    orderBy: [TicketType_Order!]
+    compare_embed: Vector_Embed
 
     """
-    Number of rows to skip before starting to return the results.
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
     """
-    offset: Int
+    method: VectorSimilarityMethod = INNER_PRODUCT
 
     """
-    Maximum number of rows to return (defaults to 100 rows).
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Product_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
     """
     limit: Int = 100
-
-    """
-    Set to true to return distinct results.
-    """
-    distinct: Boolean = false
-
-    """
-    Filter condition to apply to the groups of aggregate queries.
-    """
-    having: TicketType_Having
-  ): [TicketType!]! @fdc_generated(from: "TicketType", purpose: QUERY_MULTIPLE)
+  ): [Product!]! @fdc_generated(from: "Product.descriptionEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
   """
-  ✨ List `User` objects in the table and return selected fields, optionally filtered by `where` conditions
+  ✨ List `Product` objects ordered by vector similarity between the `nameEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
   """
-  users(
+  products_nameEmbedding_similarity(
     """
-    Filter condition to narrow down the query results.
+    Vector to compare with the stored vectors.
     """
-    where: User_Filter
+    compare: Vector
 
     """
-    Order the query results by specific fields.
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
     """
-    orderBy: [User_Order!]
+    compare_embed: Vector_Embed
 
     """
-    Number of rows to skip before starting to return the results.
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
     """
-    offset: Int
+    method: VectorSimilarityMethod = INNER_PRODUCT
 
     """
-    Maximum number of rows to return (defaults to 100 rows).
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Product_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
     """
     limit: Int = 100
+  ): [Product!]! @fdc_generated(from: "Product.nameEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
+  """
+  ✨ List `Review` objects ordered by vector similarity between the `contentEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
+  """
+  reviews_contentEmbedding_similarity(
+    """
+    Vector to compare with the stored vectors.
+    """
+    compare: Vector
 
     """
-    Set to true to return distinct results.
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
     """
-    distinct: Boolean = false
+    compare_embed: Vector_Embed
 
     """
-    Filter condition to apply to the groups of aggregate queries.
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
     """
-    having: User_Having
-  ): [User!]! @fdc_generated(from: "User", purpose: QUERY_MULTIPLE)
+    method: VectorSimilarityMethod = INNER_PRODUCT
+
+    """
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Review_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Review!]! @fdc_generated(from: "Review.contentEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
 }

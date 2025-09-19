@@ -1,1266 +1,159 @@
 """
-✨ `Event_KeyOutput` returns the primary key fields of table type `Event`.
+✨ `Product_KeyOutput` returns the primary key fields of table type `Product`.
 
-It has the same format as `Event_Key`, but is only used as mutation return value.
+It has the same format as `Product_Key`, but is only used as mutation return value.
 """
-scalar Event_KeyOutput
+scalar Product_KeyOutput
 """
-✨ `Ticket_KeyOutput` returns the primary key fields of table type `Ticket`.
+✨ `Review_KeyOutput` returns the primary key fields of table type `Review`.
 
-It has the same format as `Ticket_Key`, but is only used as mutation return value.
+It has the same format as `Review_Key`, but is only used as mutation return value.
 """
-scalar Ticket_KeyOutput
+scalar Review_KeyOutput
 """
-✨ `TicketType_KeyOutput` returns the primary key fields of table type `TicketType`.
-
-It has the same format as `TicketType_Key`, but is only used as mutation return value.
+✨ Generated data input type for table 'Product'. It includes all necessary fields for creating or upserting rows into table.
 """
-scalar TicketType_KeyOutput
-"""
-✨ `User_KeyOutput` returns the primary key fields of table type `User`.
-
-It has the same format as `User_Key`, but is only used as mutation return value.
-"""
-scalar User_KeyOutput
-"""
-✨ Generated data input type for table 'Event'. It includes all necessary fields for creating or upserting rows into table.
-"""
-input Event_Data {
+input Product_Data {
   """
-  ✨ Generated from Field `Event`.`id` of type `UUID!`
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
   """
   id: UUID
   """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Event`.`id` of type `UUID!`)
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Product`.`id` of type `UUID!`)
   """
   id_expr: UUID_Expr
   """
-  ✨ Generated from Field `Event`.`organizerId` of type `UUID!`
-  """
-  organizerId: UUID
-  """
-  ✨ `_expr` server value variant of `organizerId` (✨ Generated from Field `Event`.`organizerId` of type `UUID!`)
-  """
-  organizerId_expr: UUID_Expr
-  """
-  ✨ Generated from Field `Event`.`organizer` of type `User!`
-  """
-  organizer: User_Key
-  """
-  ✨ Generated from Field `Event`.`capacity` of type `Int!`
-  """
-  capacity: Int
-  """
-  ✨ `_expr` server value variant of `capacity` (✨ Generated from Field `Event`.`capacity` of type `Int!`)
-  """
-  capacity_expr: Int_Expr
-  """
-  ✨ `_update` server value variant of `capacity` (✨ Generated from Field `Event`.`capacity` of type `Int!`)
-  """
-  capacity_update: [Int_Update!]
-  """
-  ✨ Generated from Field `Event`.`category` of type `String`
-  """
-  category: String
-  """
-  ✨ `_expr` server value variant of `category` (✨ Generated from Field `Event`.`category` of type `String`)
-  """
-  category_expr: String_Expr
-  """
-  ✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: Timestamp
-  """
-  ✨ `_expr` server value variant of `createdAt` (✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `createdAt` (✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `createdAt` (✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_update: [Timestamp_Update!]
-  """
-  ✨ Generated from Field `Event`.`description` of type `String!`
+  ✨ Generated from Field `Product`.`description` of type `String!`
   """
   description: String
   """
-  ✨ `_expr` server value variant of `description` (✨ Generated from Field `Event`.`description` of type `String!`)
+  ✨ `_expr` server value variant of `description` (✨ Generated from Field `Product`.`description` of type `String!`)
   """
   description_expr: String_Expr
   """
-  ✨ Generated from Field `Event`.`eventDate` of type `Date!`
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
   """
-  eventDate: Date
+  descriptionEmbedding: Vector
   """
-  ✨ `_date` server value variant of `eventDate` (✨ Generated from Field `Event`.`eventDate` of type `Date!`)
+  ✨ `_embed` server value variant of `descriptionEmbedding` (✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`)
   """
-  eventDate_date: Date_Relative
+  descriptionEmbedding_embed: Vector_Embed
   """
-  ✨ `_expr` server value variant of `eventDate` (✨ Generated from Field `Event`.`eventDate` of type `Date!`)
-  """
-  eventDate_expr: Date_Expr
-  """
-  ✨ `_update` server value variant of `eventDate` (✨ Generated from Field `Event`.`eventDate` of type `Date!`)
-  """
-  eventDate_update: [Date_Update!]
-  """
-  ✨ Generated from Field `Event`.`eventTime` of type `String!`
-  """
-  eventTime: String
-  """
-  ✨ `_expr` server value variant of `eventTime` (✨ Generated from Field `Event`.`eventTime` of type `String!`)
-  """
-  eventTime_expr: String_Expr
-  """
-  ✨ Generated from Field `Event`.`imageUrl` of type `String`
-  """
-  imageUrl: String
-  """
-  ✨ `_expr` server value variant of `imageUrl` (✨ Generated from Field `Event`.`imageUrl` of type `String`)
-  """
-  imageUrl_expr: String_Expr
-  """
-  ✨ Generated from Field `Event`.`isPublic` of type `Boolean`
-  """
-  isPublic: Boolean
-  """
-  ✨ `_expr` server value variant of `isPublic` (✨ Generated from Field `Event`.`isPublic` of type `Boolean`)
-  """
-  isPublic_expr: Boolean_Expr
-  """
-  ✨ Generated from Field `Event`.`location` of type `String!`
-  """
-  location: String
-  """
-  ✨ `_expr` server value variant of `location` (✨ Generated from Field `Event`.`location` of type `String!`)
-  """
-  location_expr: String_Expr
-  """
-  ✨ Generated from Field `Event`.`title` of type `String!`
-  """
-  title: String
-  """
-  ✨ `_expr` server value variant of `title` (✨ Generated from Field `Event`.`title` of type `String!`)
-  """
-  title_expr: String_Expr
-}
-"""
-✨ Generated filter input type for table 'Event'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
-"""
-input Event_Filter {
-  """
-  Apply multiple filter conditions using `AND` logic.
-  """
-  _and: [Event_Filter!]
-  """
-  Negate the result of the provided filter condition.
-  """
-  _not: Event_Filter
-  """
-  Apply multiple filter conditions using `OR` logic.
-  """
-  _or: [Event_Filter!]
-  """
-  ✨ Generated from Field `Event`.`id` of type `UUID!`
-  """
-  id: UUID_Filter
-  """
-  ✨ Generated from Field `Event`.`organizerId` of type `UUID!`
-  """
-  organizerId: UUID_Filter
-  """
-  ✨ Generated from Field `Event`.`organizer` of type `User!`
-  """
-  organizer: User_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity` of type `Int!`
-  """
-  capacity: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`category` of type `String`
-  """
-  category: String_Filter
-  """
-  ✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: Timestamp_Filter
-  """
-  ✨ Generated from Field `Event`.`description` of type `String!`
-  """
-  description: String_Filter
-  """
-  ✨ Generated from Field `Event`.`eventDate` of type `Date!`
-  """
-  eventDate: Date_Filter
-  """
-  ✨ Generated from Field `Event`.`eventTime` of type `String!`
-  """
-  eventTime: String_Filter
-  """
-  ✨ Generated from Field `Event`.`imageUrl` of type `String`
-  """
-  imageUrl: String_Filter
-  """
-  ✨ Generated from Field `Event`.`isPublic` of type `Boolean`
-  """
-  isPublic: Boolean_Filter
-  """
-  ✨ Generated from Field `Event`.`location` of type `String!`
-  """
-  location: String_Filter
-  """
-  ✨ Generated from Field `Event`.`title` of type `String!`
-  """
-  title: String_Filter
-  """
-  ✨ Generated from Field `Event`.`tickets_on_event` of type `[Ticket!]!`
-  """
-  tickets_on_event: Ticket_ListFilter
-  """
-  ✨ Generated from Field `Event`.`ticketTypes_on_event` of type `[TicketType!]!`
-  """
-  ticketTypes_on_event: TicketType_ListFilter
-}
-"""
-✨ Generated first-row input type for table 'Event'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
-"""
-input Event_FirstRow {
-  """
-  Order the result by the specified fields.
-  """
-  orderBy: [Event_Order!]
-  """
-  Filters rows based on the specified conditions.
-  """
-  where: Event_Filter
-}
-"""
-✨ Generated having input type for table 'Event'. This input allows you to filter groups during aggregate queries using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
-"""
-input Event_Having {
-  """
-  Apply multiple Having conditions using `AND` logic.
-  """
-  _and: [Event_Having!]
-  """
-  Whether to apply DISTINCT to the aggregate function.
-  """
-  _distinct: Boolean
-  """
-  Negate the result of the provided Having condition.
-  """
-  _not: Event_Having
-  """
-  Apply multiple Having conditions using `OR` logic.
-  """
-  _or: [Event_Having!]
-  """
-  ✨ Generated from Field `Event`.`_count` of type `Int!`
-  """
-  _count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity_count` of type `Int!`
-  """
-  capacity_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`category_count` of type `Int!`
-  """
-  category_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`createdAt_count` of type `Int!`
-  """
-  createdAt_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`description_count` of type `Int!`
-  """
-  description_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`eventDate_count` of type `Int!`
-  """
-  eventDate_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`eventTime_count` of type `Int!`
-  """
-  eventTime_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`id_count` of type `Int!`
-  """
-  id_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`imageUrl_count` of type `Int!`
-  """
-  imageUrl_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`isPublic_count` of type `Int!`
-  """
-  isPublic_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`location_count` of type `Int!`
-  """
-  location_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`organizerId_count` of type `Int!`
-  """
-  organizerId_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`title_count` of type `Int!`
-  """
-  title_count: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity_sum` of type `Int`
-  """
-  capacity_sum: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity_avg` of type `Float`
-  """
-  capacity_avg: Float_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity_min` of type `Int`
-  """
-  capacity_min: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `Event`.`eventDate_min` of type `Date`
-  """
-  eventDate_min: Date_Filter
-  """
-  ✨ Generated from Field `Event`.`capacity_max` of type `Int`
-  """
-  capacity_max: Int_Filter
-  """
-  ✨ Generated from Field `Event`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: Timestamp_Filter
-  """
-  ✨ Generated from Field `Event`.`eventDate_max` of type `Date`
-  """
-  eventDate_max: Date_Filter
-}
-"""
-✨ Generated key input type for table 'Event'. It represents the primary key fields used to uniquely identify a row in the table.
-"""
-input Event_Key {
-  """
-  ✨ Generated from Field `Event`.`id` of type `UUID!`
-  """
-  id: UUID
-  """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Event`.`id` of type `UUID!`)
-  """
-  id_expr: UUID_Expr
-}
-"""
-✨ Generated list filter input type for table 'Event'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
-"""
-input Event_ListFilter {
-  """
-  The desired number of objects that match the condition (defaults to at least one).
-  """
-  count: Int_Filter = {gt:0}
-  """
-  Condition of the related objects to filter for.
-  """
-  exist: Event_Filter
-}
-"""
-✨ Generated order input type for table 'Event'. This input defines the sorting order of rows in query results based on one or more fields.
-"""
-input Event_Order {
-  """
-  ✨ Generated from Field `Event`.`id` of type `UUID!`
-  """
-  id: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`organizerId` of type `UUID!`
-  """
-  organizerId: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`organizer` of type `User!`
-  """
-  organizer: User_Order
-  """
-  ✨ Generated from Field `Event`.`capacity` of type `Int!`
-  """
-  capacity: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`category` of type `String`
-  """
-  category: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`description` of type `String!`
-  """
-  description: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventDate` of type `Date!`
-  """
-  eventDate: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventTime` of type `String!`
-  """
-  eventTime: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`imageUrl` of type `String`
-  """
-  imageUrl: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`isPublic` of type `Boolean`
-  """
-  isPublic: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`location` of type `String!`
-  """
-  location: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`title` of type `String!`
-  """
-  title: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`_count` of type `Int!`
-  """
-  _count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`capacity_count` of type `Int!`
-  """
-  capacity_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`category_count` of type `Int!`
-  """
-  category_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`createdAt_count` of type `Int!`
-  """
-  createdAt_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`description_count` of type `Int!`
-  """
-  description_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventDate_count` of type `Int!`
-  """
-  eventDate_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventTime_count` of type `Int!`
-  """
-  eventTime_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`id_count` of type `Int!`
-  """
-  id_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`imageUrl_count` of type `Int!`
-  """
-  imageUrl_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`isPublic_count` of type `Int!`
-  """
-  isPublic_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`location_count` of type `Int!`
-  """
-  location_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`organizerId_count` of type `Int!`
-  """
-  organizerId_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`title_count` of type `Int!`
-  """
-  title_count: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`capacity_sum` of type `Int`
-  """
-  capacity_sum: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`capacity_avg` of type `Float`
-  """
-  capacity_avg: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`capacity_min` of type `Int`
-  """
-  capacity_min: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventDate_min` of type `Date`
-  """
-  eventDate_min: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`capacity_max` of type `Int`
-  """
-  capacity_max: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: OrderDirection
-  """
-  ✨ Generated from Field `Event`.`eventDate_max` of type `Date`
-  """
-  eventDate_max: OrderDirection
-}
-"""
-✨ Generated data input type for table 'Ticket'. It includes all necessary fields for creating or upserting rows into table.
-"""
-input Ticket_Data {
-  """
-  ✨ Generated from Field `Ticket`.`id` of type `UUID!`
-  """
-  id: UUID
-  """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Ticket`.`id` of type `UUID!`)
-  """
-  id_expr: UUID_Expr
-  """
-  ✨ Generated from Field `Ticket`.`eventId` of type `UUID!`
-  """
-  eventId: UUID
-  """
-  ✨ `_expr` server value variant of `eventId` (✨ Generated from Field `Ticket`.`eventId` of type `UUID!`)
-  """
-  eventId_expr: UUID_Expr
-  """
-  ✨ Generated from Field `Ticket`.`purchaserId` of type `UUID!`
-  """
-  purchaserId: UUID
-  """
-  ✨ `_expr` server value variant of `purchaserId` (✨ Generated from Field `Ticket`.`purchaserId` of type `UUID!`)
-  """
-  purchaserId_expr: UUID_Expr
-  """
-  ✨ Generated from Field `Ticket`.`ticketTypeId` of type `UUID!`
-  """
-  ticketTypeId: UUID
-  """
-  ✨ `_expr` server value variant of `ticketTypeId` (✨ Generated from Field `Ticket`.`ticketTypeId` of type `UUID!`)
-  """
-  ticketTypeId_expr: UUID_Expr
-  """
-  ✨ Generated from Field `Ticket`.`event` of type `Event!`
-  """
-  event: Event_Key
-  """
-  ✨ Generated from Field `Ticket`.`purchaser` of type `User!`
-  """
-  purchaser: User_Key
-  """
-  ✨ Generated from Field `Ticket`.`ticketType` of type `TicketType!`
-  """
-  ticketType: TicketType_Key
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`
-  """
-  checkedInAt: Timestamp
-  """
-  ✨ `_expr` server value variant of `checkedInAt` (✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`)
-  """
-  checkedInAt_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `checkedInAt` (✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`)
-  """
-  checkedInAt_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `checkedInAt` (✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`)
-  """
-  checkedInAt_update: [Timestamp_Update!]
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase` of type `Float`
-  """
-  priceAtPurchase: Float
-  """
-  ✨ `_expr` server value variant of `priceAtPurchase` (✨ Generated from Field `Ticket`.`priceAtPurchase` of type `Float`)
-  """
-  priceAtPurchase_expr: Float_Expr
-  """
-  ✨ `_update` server value variant of `priceAtPurchase` (✨ Generated from Field `Ticket`.`priceAtPurchase` of type `Float`)
-  """
-  priceAtPurchase_update: [Float_Update!]
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`
-  """
-  purchaseDate: Timestamp
-  """
-  ✨ `_expr` server value variant of `purchaseDate` (✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`)
-  """
-  purchaseDate_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `purchaseDate` (✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`)
-  """
-  purchaseDate_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `purchaseDate` (✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`)
-  """
-  purchaseDate_update: [Timestamp_Update!]
-  """
-  ✨ Generated from Field `Ticket`.`qrCode` of type `String!`
-  """
-  qrCode: String
-  """
-  ✨ `_expr` server value variant of `qrCode` (✨ Generated from Field `Ticket`.`qrCode` of type `String!`)
-  """
-  qrCode_expr: String_Expr
-  """
-  ✨ Generated from Field `Ticket`.`status` of type `String!`
-  """
-  status: String
-  """
-  ✨ `_expr` server value variant of `status` (✨ Generated from Field `Ticket`.`status` of type `String!`)
-  """
-  status_expr: String_Expr
-}
-"""
-✨ Generated filter input type for table 'Ticket'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
-"""
-input Ticket_Filter {
-  """
-  Apply multiple filter conditions using `AND` logic.
-  """
-  _and: [Ticket_Filter!]
-  """
-  Negate the result of the provided filter condition.
-  """
-  _not: Ticket_Filter
-  """
-  Apply multiple filter conditions using `OR` logic.
-  """
-  _or: [Ticket_Filter!]
-  """
-  ✨ Generated from Field `Ticket`.`id` of type `UUID!`
-  """
-  id: UUID_Filter
-  """
-  ✨ Generated from Field `Ticket`.`eventId` of type `UUID!`
-  """
-  eventId: UUID_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaserId` of type `UUID!`
-  """
-  purchaserId: UUID_Filter
-  """
-  ✨ Generated from Field `Ticket`.`ticketTypeId` of type `UUID!`
-  """
-  ticketTypeId: UUID_Filter
-  """
-  ✨ Generated from Field `Ticket`.`event` of type `Event!`
-  """
-  event: Event_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaser` of type `User!`
-  """
-  purchaser: User_Filter
-  """
-  ✨ Generated from Field `Ticket`.`ticketType` of type `TicketType!`
-  """
-  ticketType: TicketType_Filter
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`
-  """
-  checkedInAt: Timestamp_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase` of type `Float`
-  """
-  priceAtPurchase: Float_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`
-  """
-  purchaseDate: Timestamp_Filter
-  """
-  ✨ Generated from Field `Ticket`.`qrCode` of type `String!`
-  """
-  qrCode: String_Filter
-  """
-  ✨ Generated from Field `Ticket`.`status` of type `String!`
-  """
-  status: String_Filter
-}
-"""
-✨ Generated first-row input type for table 'Ticket'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
-"""
-input Ticket_FirstRow {
-  """
-  Order the result by the specified fields.
-  """
-  orderBy: [Ticket_Order!]
-  """
-  Filters rows based on the specified conditions.
-  """
-  where: Ticket_Filter
-}
-"""
-✨ Generated having input type for table 'Ticket'. This input allows you to filter groups during aggregate queries using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
-"""
-input Ticket_Having {
-  """
-  Apply multiple Having conditions using `AND` logic.
-  """
-  _and: [Ticket_Having!]
-  """
-  Whether to apply DISTINCT to the aggregate function.
-  """
-  _distinct: Boolean
-  """
-  Negate the result of the provided Having condition.
-  """
-  _not: Ticket_Having
-  """
-  Apply multiple Having conditions using `OR` logic.
-  """
-  _or: [Ticket_Having!]
-  """
-  ✨ Generated from Field `Ticket`.`_count` of type `Int!`
-  """
-  _count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_count` of type `Int!`
-  """
-  checkedInAt_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`eventId_count` of type `Int!`
-  """
-  eventId_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`id_count` of type `Int!`
-  """
-  id_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_count` of type `Int!`
-  """
-  priceAtPurchase_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_count` of type `Int!`
-  """
-  purchaseDate_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaserId_count` of type `Int!`
-  """
-  purchaserId_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`qrCode_count` of type `Int!`
-  """
-  qrCode_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`status_count` of type `Int!`
-  """
-  status_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`ticketTypeId_count` of type `Int!`
-  """
-  ticketTypeId_count: Int_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_sum` of type `Float`
-  """
-  priceAtPurchase_sum: Float_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_avg` of type `Float`
-  """
-  priceAtPurchase_avg: Float_Filter
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_min` of type `Timestamp`
-  """
-  checkedInAt_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_min` of type `Float`
-  """
-  priceAtPurchase_min: Float_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_min` of type `Timestamp`
-  """
-  purchaseDate_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_max` of type `Timestamp`
-  """
-  checkedInAt_max: Timestamp_Filter
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_max` of type `Float`
-  """
-  priceAtPurchase_max: Float_Filter
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_max` of type `Timestamp`
-  """
-  purchaseDate_max: Timestamp_Filter
-}
-"""
-✨ Generated key input type for table 'Ticket'. It represents the primary key fields used to uniquely identify a row in the table.
-"""
-input Ticket_Key {
-  """
-  ✨ Generated from Field `Ticket`.`id` of type `UUID!`
-  """
-  id: UUID
-  """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Ticket`.`id` of type `UUID!`)
-  """
-  id_expr: UUID_Expr
-}
-"""
-✨ Generated list filter input type for table 'Ticket'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
-"""
-input Ticket_ListFilter {
-  """
-  The desired number of objects that match the condition (defaults to at least one).
-  """
-  count: Int_Filter = {gt:0}
-  """
-  Condition of the related objects to filter for.
-  """
-  exist: Ticket_Filter
-}
-"""
-✨ Generated order input type for table 'Ticket'. This input defines the sorting order of rows in query results based on one or more fields.
-"""
-input Ticket_Order {
-  """
-  ✨ Generated from Field `Ticket`.`id` of type `UUID!`
-  """
-  id: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`eventId` of type `UUID!`
-  """
-  eventId: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaserId` of type `UUID!`
-  """
-  purchaserId: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`ticketTypeId` of type `UUID!`
-  """
-  ticketTypeId: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`event` of type `Event!`
-  """
-  event: Event_Order
-  """
-  ✨ Generated from Field `Ticket`.`purchaser` of type `User!`
-  """
-  purchaser: User_Order
-  """
-  ✨ Generated from Field `Ticket`.`ticketType` of type `TicketType!`
-  """
-  ticketType: TicketType_Order
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt` of type `Timestamp`
-  """
-  checkedInAt: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase` of type `Float`
-  """
-  priceAtPurchase: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate` of type `Timestamp!`
-  """
-  purchaseDate: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`qrCode` of type `String!`
-  """
-  qrCode: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`status` of type `String!`
-  """
-  status: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`_count` of type `Int!`
-  """
-  _count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_count` of type `Int!`
-  """
-  checkedInAt_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`eventId_count` of type `Int!`
-  """
-  eventId_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`id_count` of type `Int!`
-  """
-  id_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_count` of type `Int!`
-  """
-  priceAtPurchase_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_count` of type `Int!`
-  """
-  purchaseDate_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaserId_count` of type `Int!`
-  """
-  purchaserId_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`qrCode_count` of type `Int!`
-  """
-  qrCode_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`status_count` of type `Int!`
-  """
-  status_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`ticketTypeId_count` of type `Int!`
-  """
-  ticketTypeId_count: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_sum` of type `Float`
-  """
-  priceAtPurchase_sum: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_avg` of type `Float`
-  """
-  priceAtPurchase_avg: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_min` of type `Timestamp`
-  """
-  checkedInAt_min: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_min` of type `Float`
-  """
-  priceAtPurchase_min: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_min` of type `Timestamp`
-  """
-  purchaseDate_min: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`checkedInAt_max` of type `Timestamp`
-  """
-  checkedInAt_max: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`priceAtPurchase_max` of type `Float`
-  """
-  priceAtPurchase_max: OrderDirection
-  """
-  ✨ Generated from Field `Ticket`.`purchaseDate_max` of type `Timestamp`
-  """
-  purchaseDate_max: OrderDirection
-}
-"""
-✨ Generated data input type for table 'TicketType'. It includes all necessary fields for creating or upserting rows into table.
-"""
-input TicketType_Data {
-  """
-  ✨ Generated from Field `TicketType`.`id` of type `UUID!`
-  """
-  id: UUID
-  """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `TicketType`.`id` of type `UUID!`)
-  """
-  id_expr: UUID_Expr
-  """
-  ✨ Generated from Field `TicketType`.`eventId` of type `UUID!`
-  """
-  eventId: UUID
-  """
-  ✨ `_expr` server value variant of `eventId` (✨ Generated from Field `TicketType`.`eventId` of type `UUID!`)
-  """
-  eventId_expr: UUID_Expr
-  """
-  ✨ Generated from Field `TicketType`.`event` of type `Event!`
-  """
-  event: Event_Key
-  """
-  ✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: Timestamp
-  """
-  ✨ `_expr` server value variant of `createdAt` (✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `createdAt` (✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `createdAt` (✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`)
-  """
-  createdAt_update: [Timestamp_Update!]
-  """
-  ✨ Generated from Field `TicketType`.`description` of type `String`
-  """
-  description: String
-  """
-  ✨ `_expr` server value variant of `description` (✨ Generated from Field `TicketType`.`description` of type `String`)
-  """
-  description_expr: String_Expr
-  """
-  ✨ Generated from Field `TicketType`.`name` of type `String!`
+  ✨ Generated from Field `Product`.`name` of type `String!`
   """
   name: String
   """
-  ✨ `_expr` server value variant of `name` (✨ Generated from Field `TicketType`.`name` of type `String!`)
+  ✨ `_expr` server value variant of `name` (✨ Generated from Field `Product`.`name` of type `String!`)
   """
   name_expr: String_Expr
   """
-  ✨ Generated from Field `TicketType`.`price` of type `Float!`
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: Vector
+  """
+  ✨ `_embed` server value variant of `nameEmbedding` (✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`)
+  """
+  nameEmbedding_embed: Vector_Embed
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
   """
   price: Float
   """
-  ✨ `_expr` server value variant of `price` (✨ Generated from Field `TicketType`.`price` of type `Float!`)
+  ✨ Generated from Field `Product`.`productID` of type `String!`
   """
-  price_expr: Float_Expr
+  productID: String
   """
-  ✨ `_update` server value variant of `price` (✨ Generated from Field `TicketType`.`price` of type `Float!`)
+  ✨ `_expr` server value variant of `productID` (✨ Generated from Field `Product`.`productID` of type `String!`)
   """
-  price_update: [Float_Update!]
+  productID_expr: String_Expr
   """
-  ✨ Generated from Field `TicketType`.`quantityAvailable` of type `Int!`
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
   """
-  quantityAvailable: Int
+  productSlug: String
   """
-  ✨ `_expr` server value variant of `quantityAvailable` (✨ Generated from Field `TicketType`.`quantityAvailable` of type `Int!`)
+  ✨ `_expr` server value variant of `productSlug` (✨ Generated from Field `Product`.`productSlug` of type `String!`)
   """
-  quantityAvailable_expr: Int_Expr
-  """
-  ✨ `_update` server value variant of `quantityAvailable` (✨ Generated from Field `TicketType`.`quantityAvailable` of type `Int!`)
-  """
-  quantityAvailable_update: [Int_Update!]
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`
-  """
-  salesEndTime: Timestamp
-  """
-  ✨ `_expr` server value variant of `salesEndTime` (✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`)
-  """
-  salesEndTime_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `salesEndTime` (✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`)
-  """
-  salesEndTime_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `salesEndTime` (✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`)
-  """
-  salesEndTime_update: [Timestamp_Update!]
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`
-  """
-  salesStartTime: Timestamp
-  """
-  ✨ `_expr` server value variant of `salesStartTime` (✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`)
-  """
-  salesStartTime_expr: Timestamp_Expr
-  """
-  ✨ `_time` server value variant of `salesStartTime` (✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`)
-  """
-  salesStartTime_time: Timestamp_Relative
-  """
-  ✨ `_update` server value variant of `salesStartTime` (✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`)
-  """
-  salesStartTime_update: [Timestamp_Update!]
+  productSlug_expr: String_Expr
 }
 """
-✨ Generated filter input type for table 'TicketType'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+✨ Generated filter input type for table 'Product'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
 """
-input TicketType_Filter {
+input Product_Filter {
   """
   Apply multiple filter conditions using `AND` logic.
   """
-  _and: [TicketType_Filter!]
+  _and: [Product_Filter!]
   """
   Negate the result of the provided filter condition.
   """
-  _not: TicketType_Filter
+  _not: Product_Filter
   """
   Apply multiple filter conditions using `OR` logic.
   """
-  _or: [TicketType_Filter!]
+  _or: [Product_Filter!]
   """
-  ✨ Generated from Field `TicketType`.`id` of type `UUID!`
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
   """
   id: UUID_Filter
   """
-  ✨ Generated from Field `TicketType`.`eventId` of type `UUID!`
-  """
-  eventId: UUID_Filter
-  """
-  ✨ Generated from Field `TicketType`.`event` of type `Event!`
-  """
-  event: Event_Filter
-  """
-  ✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`description` of type `String`
+  ✨ Generated from Field `Product`.`description` of type `String!`
   """
   description: String_Filter
   """
-  ✨ Generated from Field `TicketType`.`name` of type `String!`
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
+  """
+  descriptionEmbedding: Vector_Filter
+  """
+  ✨ Generated from Field `Product`.`name` of type `String!`
   """
   name: String_Filter
   """
-  ✨ Generated from Field `TicketType`.`price` of type `Float!`
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: Vector_Filter
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
   """
   price: Float_Filter
   """
-  ✨ Generated from Field `TicketType`.`quantityAvailable` of type `Int!`
+  ✨ Generated from Field `Product`.`productID` of type `String!`
   """
-  quantityAvailable: Int_Filter
+  productID: String_Filter
   """
-  ✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
   """
-  salesEndTime: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`
-  """
-  salesStartTime: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`tickets_on_ticketType` of type `[Ticket!]!`
-  """
-  tickets_on_ticketType: Ticket_ListFilter
+  productSlug: String_Filter
 }
 """
-✨ Generated first-row input type for table 'TicketType'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
+✨ Generated first-row input type for table 'Product'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
 """
-input TicketType_FirstRow {
+input Product_FirstRow {
   """
   Order the result by the specified fields.
   """
-  orderBy: [TicketType_Order!]
+  orderBy: [Product_Order!]
   """
   Filters rows based on the specified conditions.
   """
-  where: TicketType_Filter
+  where: Product_Filter
 }
 """
-✨ Generated having input type for table 'TicketType'. This input allows you to filter groups during aggregate queries using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+✨ Generated key input type for table 'Product'. It represents the primary key fields used to uniquely identify a row in the table.
 """
-input TicketType_Having {
+input Product_Key {
   """
-  Apply multiple Having conditions using `AND` logic.
-  """
-  _and: [TicketType_Having!]
-  """
-  Whether to apply DISTINCT to the aggregate function.
-  """
-  _distinct: Boolean
-  """
-  Negate the result of the provided Having condition.
-  """
-  _not: TicketType_Having
-  """
-  Apply multiple Having conditions using `OR` logic.
-  """
-  _or: [TicketType_Having!]
-  """
-  ✨ Generated from Field `TicketType`.`_count` of type `Int!`
-  """
-  _count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_count` of type `Int!`
-  """
-  createdAt_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`description_count` of type `Int!`
-  """
-  description_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`eventId_count` of type `Int!`
-  """
-  eventId_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`id_count` of type `Int!`
-  """
-  id_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`name_count` of type `Int!`
-  """
-  name_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`price_count` of type `Int!`
-  """
-  price_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_count` of type `Int!`
-  """
-  quantityAvailable_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_count` of type `Int!`
-  """
-  salesEndTime_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_count` of type `Int!`
-  """
-  salesStartTime_count: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`price_sum` of type `Float`
-  """
-  price_sum: Float_Filter
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_sum` of type `Int`
-  """
-  quantityAvailable_sum: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`price_avg` of type `Float`
-  """
-  price_avg: Float_Filter
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_avg` of type `Float`
-  """
-  quantityAvailable_avg: Float_Filter
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`price_min` of type `Float`
-  """
-  price_min: Float_Filter
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_min` of type `Int`
-  """
-  quantityAvailable_min: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_min` of type `Timestamp`
-  """
-  salesEndTime_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_min` of type `Timestamp`
-  """
-  salesStartTime_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`price_max` of type `Float`
-  """
-  price_max: Float_Filter
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_max` of type `Int`
-  """
-  quantityAvailable_max: Int_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_max` of type `Timestamp`
-  """
-  salesEndTime_max: Timestamp_Filter
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_max` of type `Timestamp`
-  """
-  salesStartTime_max: Timestamp_Filter
-}
-"""
-✨ Generated key input type for table 'TicketType'. It represents the primary key fields used to uniquely identify a row in the table.
-"""
-input TicketType_Key {
-  """
-  ✨ Generated from Field `TicketType`.`id` of type `UUID!`
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
   """
   id: UUID
   """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `TicketType`.`id` of type `UUID!`)
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Product`.`id` of type `UUID!`)
   """
   id_expr: UUID_Expr
 }
 """
-✨ Generated list filter input type for table 'TicketType'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
+✨ Generated list filter input type for table 'Product'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
 """
-input TicketType_ListFilter {
+input Product_ListFilter {
   """
   The desired number of objects that match the condition (defaults to at least one).
   """
@@ -1268,330 +161,217 @@ input TicketType_ListFilter {
   """
   Condition of the related objects to filter for.
   """
-  exist: TicketType_Filter
+  exist: Product_Filter
 }
 """
-✨ Generated order input type for table 'TicketType'. This input defines the sorting order of rows in query results based on one or more fields.
+✨ Generated order input type for table 'Product'. This input defines the sorting order of rows in query results based on one or more fields.
 """
-input TicketType_Order {
+input Product_Order {
   """
-  ✨ Generated from Field `TicketType`.`id` of type `UUID!`
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
   """
   id: OrderDirection
   """
-  ✨ Generated from Field `TicketType`.`eventId` of type `UUID!`
-  """
-  eventId: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`event` of type `Event!`
-  """
-  event: Event_Order
-  """
-  ✨ Generated from Field `TicketType`.`createdAt` of type `Timestamp!`
-  """
-  createdAt: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`description` of type `String`
+  ✨ Generated from Field `Product`.`description` of type `String!`
   """
   description: OrderDirection
   """
-  ✨ Generated from Field `TicketType`.`name` of type `String!`
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
+  """
+  descriptionEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`name` of type `String!`
   """
   name: OrderDirection
   """
-  ✨ Generated from Field `TicketType`.`price` of type `Float!`
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
   """
   price: OrderDirection
   """
-  ✨ Generated from Field `TicketType`.`quantityAvailable` of type `Int!`
+  ✨ Generated from Field `Product`.`productID` of type `String!`
   """
-  quantityAvailable: OrderDirection
+  productID: OrderDirection
   """
-  ✨ Generated from Field `TicketType`.`salesEndTime` of type `Timestamp!`
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
   """
-  salesEndTime: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime` of type `Timestamp!`
-  """
-  salesStartTime: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`_count` of type `Int!`
-  """
-  _count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_count` of type `Int!`
-  """
-  createdAt_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`description_count` of type `Int!`
-  """
-  description_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`eventId_count` of type `Int!`
-  """
-  eventId_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`id_count` of type `Int!`
-  """
-  id_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`name_count` of type `Int!`
-  """
-  name_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`price_count` of type `Int!`
-  """
-  price_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_count` of type `Int!`
-  """
-  quantityAvailable_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_count` of type `Int!`
-  """
-  salesEndTime_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_count` of type `Int!`
-  """
-  salesStartTime_count: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`price_sum` of type `Float`
-  """
-  price_sum: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_sum` of type `Int`
-  """
-  quantityAvailable_sum: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`price_avg` of type `Float`
-  """
-  price_avg: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_avg` of type `Float`
-  """
-  quantityAvailable_avg: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`price_min` of type `Float`
-  """
-  price_min: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_min` of type `Int`
-  """
-  quantityAvailable_min: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_min` of type `Timestamp`
-  """
-  salesEndTime_min: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_min` of type `Timestamp`
-  """
-  salesStartTime_min: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`price_max` of type `Float`
-  """
-  price_max: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`quantityAvailable_max` of type `Int`
-  """
-  quantityAvailable_max: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesEndTime_max` of type `Timestamp`
-  """
-  salesEndTime_max: OrderDirection
-  """
-  ✨ Generated from Field `TicketType`.`salesStartTime_max` of type `Timestamp`
-  """
-  salesStartTime_max: OrderDirection
+  productSlug: OrderDirection
 }
 """
-✨ Generated data input type for table 'User'. It includes all necessary fields for creating or upserting rows into table.
+✨ Generated data input type for table 'Review'. It includes all necessary fields for creating or upserting rows into table.
 """
-input User_Data {
+input Review_Data {
   """
-  ✨ Generated from Field `User`.`id` of type `UUID!`
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
   """
   id: UUID
   """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `User`.`id` of type `UUID!`)
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Review`.`id` of type `UUID!`)
   """
   id_expr: UUID_Expr
   """
-  ✨ Generated from Field `User`.`createdAt` of type `Timestamp!`
+  ✨ Generated from Field `Review`.`content` of type `String!`
   """
-  createdAt: Timestamp
+  content: String
   """
-  ✨ `_expr` server value variant of `createdAt` (✨ Generated from Field `User`.`createdAt` of type `Timestamp!`)
+  ✨ `_expr` server value variant of `content` (✨ Generated from Field `Review`.`content` of type `String!`)
   """
-  createdAt_expr: Timestamp_Expr
+  content_expr: String_Expr
   """
-  ✨ `_time` server value variant of `createdAt` (✨ Generated from Field `User`.`createdAt` of type `Timestamp!`)
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
   """
-  createdAt_time: Timestamp_Relative
+  contentEmbedding: Vector
   """
-  ✨ `_update` server value variant of `createdAt` (✨ Generated from Field `User`.`createdAt` of type `Timestamp!`)
+  ✨ `_embed` server value variant of `contentEmbedding` (✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`)
   """
-  createdAt_update: [Timestamp_Update!]
+  contentEmbedding_embed: Vector_Embed
   """
-  ✨ Generated from Field `User`.`displayName` of type `String!`
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
   """
-  displayName: String
+  createdAt: Date
   """
-  ✨ `_expr` server value variant of `displayName` (✨ Generated from Field `User`.`displayName` of type `String!`)
+  ✨ `_date` server value variant of `createdAt` (✨ Generated from Field `Review`.`createdAt` of type `Date!`)
   """
-  displayName_expr: String_Expr
+  createdAt_date: Date_Relative
   """
-  ✨ Generated from Field `User`.`email` of type `String!`
+  ✨ `_expr` server value variant of `createdAt` (✨ Generated from Field `Review`.`createdAt` of type `Date!`)
   """
-  email: String
+  createdAt_expr: Date_Expr
   """
-  ✨ `_expr` server value variant of `email` (✨ Generated from Field `User`.`email` of type `String!`)
+  ✨ Generated from Field `Review`.`productID` of type `String!`
   """
-  email_expr: String_Expr
+  productID: String
   """
-  ✨ Generated from Field `User`.`photoUrl` of type `String`
+  ✨ `_expr` server value variant of `productID` (✨ Generated from Field `Review`.`productID` of type `String!`)
   """
-  photoUrl: String
+  productID_expr: String_Expr
   """
-  ✨ `_expr` server value variant of `photoUrl` (✨ Generated from Field `User`.`photoUrl` of type `String`)
+  ✨ Generated from Field `Review`.`productName` of type `String!`
   """
-  photoUrl_expr: String_Expr
+  productName: String
+  """
+  ✨ `_expr` server value variant of `productName` (✨ Generated from Field `Review`.`productName` of type `String!`)
+  """
+  productName_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
+  """
+  productSlug: String
+  """
+  ✨ `_expr` server value variant of `productSlug` (✨ Generated from Field `Review`.`productSlug` of type `String!`)
+  """
+  productSlug_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
+  """
+  rating: Float
+  """
+  ✨ Generated from Field `Review`.`userID` of type `String!`
+  """
+  userID: String
+  """
+  ✨ `_expr` server value variant of `userID` (✨ Generated from Field `Review`.`userID` of type `String!`)
+  """
+  userID_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`userName` of type `String!`
+  """
+  userName: String
+  """
+  ✨ `_expr` server value variant of `userName` (✨ Generated from Field `Review`.`userName` of type `String!`)
+  """
+  userName_expr: String_Expr
 }
 """
-✨ Generated filter input type for table 'User'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+✨ Generated filter input type for table 'Review'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
 """
-input User_Filter {
+input Review_Filter {
   """
   Apply multiple filter conditions using `AND` logic.
   """
-  _and: [User_Filter!]
+  _and: [Review_Filter!]
   """
   Negate the result of the provided filter condition.
   """
-  _not: User_Filter
+  _not: Review_Filter
   """
   Apply multiple filter conditions using `OR` logic.
   """
-  _or: [User_Filter!]
+  _or: [Review_Filter!]
   """
-  ✨ Generated from Field `User`.`id` of type `UUID!`
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
   """
   id: UUID_Filter
   """
-  ✨ Generated from Field `User`.`createdAt` of type `Timestamp!`
+  ✨ Generated from Field `Review`.`content` of type `String!`
   """
-  createdAt: Timestamp_Filter
+  content: String_Filter
   """
-  ✨ Generated from Field `User`.`displayName` of type `String!`
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
   """
-  displayName: String_Filter
+  contentEmbedding: Vector_Filter
   """
-  ✨ Generated from Field `User`.`email` of type `String!`
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
   """
-  email: String_Filter
+  createdAt: Date_Filter
   """
-  ✨ Generated from Field `User`.`photoUrl` of type `String`
+  ✨ Generated from Field `Review`.`productID` of type `String!`
   """
-  photoUrl: String_Filter
+  productID: String_Filter
   """
-  ✨ Generated from Field `User`.`events_on_organizer` of type `[Event!]!`
+  ✨ Generated from Field `Review`.`productName` of type `String!`
   """
-  events_on_organizer: Event_ListFilter
+  productName: String_Filter
   """
-  ✨ Generated from Field `User`.`tickets_on_purchaser` of type `[Ticket!]!`
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
   """
-  tickets_on_purchaser: Ticket_ListFilter
+  productSlug: String_Filter
+  """
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
+  """
+  rating: Float_Filter
+  """
+  ✨ Generated from Field `Review`.`userID` of type `String!`
+  """
+  userID: String_Filter
+  """
+  ✨ Generated from Field `Review`.`userName` of type `String!`
+  """
+  userName: String_Filter
 }
 """
-✨ Generated first-row input type for table 'User'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
+✨ Generated first-row input type for table 'Review'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
 """
-input User_FirstRow {
+input Review_FirstRow {
   """
   Order the result by the specified fields.
   """
-  orderBy: [User_Order!]
+  orderBy: [Review_Order!]
   """
   Filters rows based on the specified conditions.
   """
-  where: User_Filter
+  where: Review_Filter
 }
 """
-✨ Generated having input type for table 'User'. This input allows you to filter groups during aggregate queries using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+✨ Generated key input type for table 'Review'. It represents the primary key fields used to uniquely identify a row in the table.
 """
-input User_Having {
+input Review_Key {
   """
-  Apply multiple Having conditions using `AND` logic.
-  """
-  _and: [User_Having!]
-  """
-  Whether to apply DISTINCT to the aggregate function.
-  """
-  _distinct: Boolean
-  """
-  Negate the result of the provided Having condition.
-  """
-  _not: User_Having
-  """
-  Apply multiple Having conditions using `OR` logic.
-  """
-  _or: [User_Having!]
-  """
-  ✨ Generated from Field `User`.`_count` of type `Int!`
-  """
-  _count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`createdAt_count` of type `Int!`
-  """
-  createdAt_count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`displayName_count` of type `Int!`
-  """
-  displayName_count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`email_count` of type `Int!`
-  """
-  email_count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`id_count` of type `Int!`
-  """
-  id_count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`photoUrl_count` of type `Int!`
-  """
-  photoUrl_count: Int_Filter
-  """
-  ✨ Generated from Field `User`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: Timestamp_Filter
-  """
-  ✨ Generated from Field `User`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: Timestamp_Filter
-}
-"""
-✨ Generated key input type for table 'User'. It represents the primary key fields used to uniquely identify a row in the table.
-"""
-input User_Key {
-  """
-  ✨ Generated from Field `User`.`id` of type `UUID!`
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
   """
   id: UUID
   """
-  ✨ `_expr` server value variant of `id` (✨ Generated from Field `User`.`id` of type `UUID!`)
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Review`.`id` of type `UUID!`)
   """
   id_expr: UUID_Expr
 }
 """
-✨ Generated list filter input type for table 'User'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
+✨ Generated list filter input type for table 'Review'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
 """
-input User_ListFilter {
+input Review_ListFilter {
   """
   The desired number of objects that match the condition (defaults to at least one).
   """
@@ -1599,62 +379,50 @@ input User_ListFilter {
   """
   Condition of the related objects to filter for.
   """
-  exist: User_Filter
+  exist: Review_Filter
 }
 """
-✨ Generated order input type for table 'User'. This input defines the sorting order of rows in query results based on one or more fields.
+✨ Generated order input type for table 'Review'. This input defines the sorting order of rows in query results based on one or more fields.
 """
-input User_Order {
+input Review_Order {
   """
-  ✨ Generated from Field `User`.`id` of type `UUID!`
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
   """
   id: OrderDirection
   """
-  ✨ Generated from Field `User`.`createdAt` of type `Timestamp!`
+  ✨ Generated from Field `Review`.`content` of type `String!`
+  """
+  content: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
+  """
+  contentEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
   """
   createdAt: OrderDirection
   """
-  ✨ Generated from Field `User`.`displayName` of type `String!`
+  ✨ Generated from Field `Review`.`productID` of type `String!`
   """
-  displayName: OrderDirection
+  productID: OrderDirection
   """
-  ✨ Generated from Field `User`.`email` of type `String!`
+  ✨ Generated from Field `Review`.`productName` of type `String!`
   """
-  email: OrderDirection
+  productName: OrderDirection
   """
-  ✨ Generated from Field `User`.`photoUrl` of type `String`
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
   """
-  photoUrl: OrderDirection
+  productSlug: OrderDirection
   """
-  ✨ Generated from Field `User`.`_count` of type `Int!`
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
   """
-  _count: OrderDirection
+  rating: OrderDirection
   """
-  ✨ Generated from Field `User`.`createdAt_count` of type `Int!`
+  ✨ Generated from Field `Review`.`userID` of type `String!`
   """
-  createdAt_count: OrderDirection
+  userID: OrderDirection
   """
-  ✨ Generated from Field `User`.`displayName_count` of type `Int!`
+  ✨ Generated from Field `Review`.`userName` of type `String!`
   """
-  displayName_count: OrderDirection
-  """
-  ✨ Generated from Field `User`.`email_count` of type `Int!`
-  """
-  email_count: OrderDirection
-  """
-  ✨ Generated from Field `User`.`id_count` of type `Int!`
-  """
-  id_count: OrderDirection
-  """
-  ✨ Generated from Field `User`.`photoUrl_count` of type `Int!`
-  """
-  photoUrl_count: OrderDirection
-  """
-  ✨ Generated from Field `User`.`createdAt_min` of type `Timestamp`
-  """
-  createdAt_min: OrderDirection
-  """
-  ✨ Generated from Field `User`.`createdAt_max` of type `Timestamp`
-  """
-  createdAt_max: OrderDirection
+  userName: OrderDirection
 }
