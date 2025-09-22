@@ -2,6 +2,10 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  env: {
+    SHOPIFY_STORE_DOMAIN: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
+    SHOPIFY_STOREFRONT_ACCESS_TOKEN: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
@@ -35,5 +39,4 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
-    
     
