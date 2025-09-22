@@ -2,11 +2,11 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  /* config options here */
   env: {
     SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN,
     SHOPIFY_STOREFRONT_ACCESS_TOKEN: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
   },
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
