@@ -20,9 +20,12 @@ import {
 import { getProductQuery } from './queries/product'
 import { getCustomerQuery } from './queries/customer'
 import { cookies } from 'next/headers'
+import getConfig from 'next/config'
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN;
-const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+const { publicRuntimeConfig } = getConfig() || { publicRuntimeConfig: {} };
+
+const domain = publicRuntimeConfig.SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_DOMAIN;
+const key = publicRuntimeConfig.SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
 
 if (!domain || !key) {
