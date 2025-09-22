@@ -73,11 +73,8 @@ export async function shopifyFetch<T>({
       body
     }
   } catch (e) {
-    if (e instanceof Error && e.message.includes('No collection found')) {
-      throw e
-    }
+    console.error('Error in shopifyFetch:', e);
     const error = e as Error
-    console.error('Error in shopifyFetch:', error);
     throw new Error(error.message)
   }
 }
