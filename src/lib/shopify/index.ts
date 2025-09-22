@@ -28,7 +28,7 @@ if (!domain || !key) {
   throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set');
 }
 
-const endpoint = `https://${domain}/api/2024-07/graphql.json`;
+const endpoint = `https://${domain}.myshopify.com/api/2024-07/graphql.json`;
 
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never
