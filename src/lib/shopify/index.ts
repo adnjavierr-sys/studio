@@ -24,6 +24,7 @@ import { cookies } from 'next/headers'
 const domain = process.env.SHOPIFY_STORE_DOMAIN;
 const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
+
 if (!domain || !key) {
   throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set');
 }
