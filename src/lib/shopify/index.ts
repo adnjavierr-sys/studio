@@ -20,8 +20,8 @@ import { getProductQuery } from './queries/product'
 import { getCustomerQuery } from './queries/customer'
 import { cookies } from 'next/headers'
 
-const domain = 'graphql.myshopify.com';
-const key = '3b580e70970c4528da70c98e097c2fa0';
+const domain = process.env.SHOPIFY_STORE_DOMAIN;
+const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
 if (!domain || !key) {
   throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set');
