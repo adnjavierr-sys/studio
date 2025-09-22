@@ -20,9 +20,9 @@ import { getProductQuery } from './queries/product'
 import { getCustomerQuery } from './queries/customer'
 import { cookies } from 'next/headers'
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN || 'gem-headwear.myshopify.com'
+const domain = process.env.SHOPIFY_STORE_DOMAIN
 const endpoint = `https://${domain}/api/2024-07/graphql.json`
-const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || 'a6a7229415797f722a1f114c023d5423'
+const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never
 
