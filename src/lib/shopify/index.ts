@@ -21,8 +21,8 @@ import { getProductQuery } from './queries/product'
 import { getCustomerQuery } from './queries/customer'
 import { cookies } from 'next/headers'
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN;
-const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+const domain = process.env.SHOPIFY_STORE_DOMAIN || "unoti-ticket-i9spt.myshopify.com";
+const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || "298246e72950562e556b6c039a04a528";
 
 if (!domain || !key) {
   throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set');
