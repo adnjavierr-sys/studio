@@ -76,6 +76,7 @@ export async function shopifyFetch<T>({
       throw e
     }
     const error = e as Error
+    console.error('Error in shopifyFetch:', error);
     throw new Error(error.message)
   }
 }
