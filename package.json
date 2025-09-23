@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "SHOPIFY_STORE_DOMAIN='unoti-ticket-i9spt' SHOPIFY_STOREFRONT_ACCESS_TOKEN='529378070793' next dev",
-    "build": "SHOPIFY_STORE_DOMAIN='unoti-ticket-i9spt' SHOPIFY_STOREFRONT_ACCESS_TOKEN='529378070793' next build",
+    "dev": "SHOPIFY_STORE_DOMAIN='unoti-ticket-i9spt.myshopify.com' SHOPIFY_STOREFRONT_ACCESS_TOKEN='529378070793' next dev",
+    "build": "SHOPIFY_STORE_DOMAIN='unoti-ticket-i9spt.myshopify.com' SHOPIFY_STOREFRONT_ACCESS_TOKEN='529378070793' next build",
     "start": "next start",
     "lint": "next lint"
   },
