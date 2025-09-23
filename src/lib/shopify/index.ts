@@ -25,7 +25,7 @@ const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 const endpoint = `https://${domain}/api/2024-07/graphql.json`
 
 if (!domain || !key) {
-  throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set in .env file');
+  throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set in .env.local file');
 }
 
 
