@@ -23,12 +23,11 @@ import { cookies } from 'next/headers'
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
 const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+const endpoint = `https://${domain}.myshopify.com/api/2024-07/graphql.json`
 
 if (!domain || !key) {
   throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set');
 }
-
-const endpoint = `https://${domain}/api/2024-07/graphql.json`;
 
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never
