@@ -20,8 +20,8 @@ import { getProductQuery } from './queries/product'
 import { getCustomerQuery } from './queries/customer'
 import { cookies } from 'next/headers'
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN
-const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+const domain = process.env.SHOPIFY_STORE_DOMAIN || 'unoti-ticket-i9spt.myshopify.com';
+const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '2525703825e2561948d395709a351163';
 const endpoint = `https://${domain}/api/2024-07/graphql.json`
 
 if (!domain || !key) {
