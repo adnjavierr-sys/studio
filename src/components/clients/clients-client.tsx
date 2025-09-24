@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -39,12 +39,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase-config";
-import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc, Timestamp, orderBy, query } from "firebase/firestore";
+import { NewClientForm } from "./new-client-form";
 
 export function ClientsClient({ initialClients }: { initialClients: Client[] }) {
   const [clientList, setClientList] = useState<Client[]>(initialClients);
@@ -53,6 +55,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const { toast } = useToast();
 
@@ -82,13 +85,21 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       console.error("Error fetching clients: ", error);
       toast({
         title: "Error al Cargar Clientes",
-        description: "No se pudieron cargar los datos desde Firestore. Revisa las reglas de seguridad.",
+        description: "No se pudieron cargar los datos desde Firestore.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
+  
+  const filteredClients = useMemo(() => {
+    return clientList.filter(client =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.company.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [clientList, searchTerm]);
 
 
   const handleRowClick = (clientId: string) => {
@@ -103,9 +114,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   const handleDeleteClient = async () => {
     if (selectedClient) {
       try {
-        const clientDocRef = doc(db, "clients", selectedClient.id);
-        await deleteDoc(clientDocRef);
-        
+        await deleteDoc(doc(db, "clients", selectedClient.id));
         toast({
           title: "Cliente eliminado",
           description: `El cliente ${selectedClient.name} ha sido eliminado.`,
@@ -114,7 +123,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       } catch (error) {
          toast({
           title: "Error al Eliminar",
-          description: "No se pudo eliminar el cliente. Revisa los permisos de Firestore.",
+          description: "No se pudo eliminar el cliente.",
           variant: "destructive",
         });
       } finally {
@@ -143,7 +152,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       try {
         const clientRef = doc(db, "clients", selectedClient.id);
         await updateDoc(clientRef, updatedData);
-        
         toast({
           title: "Cliente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`
@@ -152,7 +160,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       } catch (error) {
         toast({
           title: "Error al Actualizar",
-          description: "No se pudo actualizar el cliente. Revisa los permisos de Firestore.",
+          description: "No se pudo actualizar el cliente.",
           variant: "destructive",
         });
       } finally {
@@ -162,49 +170,41 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     }
   };
 
-  const handleAddClient = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const newClient = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      company: formData.get('company') as string,
-      address: formData.get('address') as string,
-      createdAt: Timestamp.now(),
-    };
-    
-    try {
-      await addDoc(collection(db, "clients"), newClient);
-      
-      toast({
-        title: "Cliente añadido",
-        description: `El cliente ${newClient.name} ha sido añadido.`,
-      });
-      await fetchClients();
-    } catch (error) {
-       toast({
-        title: "Error al Añadir",
-        description: "No se pudo añadir el cliente. Revisa los permisos de Firestore.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAddModalOpen(false);
-    }
-  };
-
-
   return (
     <>
       <PageHeader
         title="Clientes"
         description="Administra los perfiles e información de tus clientes."
       >
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <PlusCircle />
-          Añadir Cliente
-        </Button>
+        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle />
+                    Añadir Cliente
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Añadir Nuevo Cliente</DialogTitle>
+                    <DialogDescription>
+                    Completa la información del nuevo cliente.
+                    </DialogDescription>
+                </DialogHeader>
+                <NewClientForm onFormSubmit={() => {
+                    setIsAddModalOpen(false);
+                    fetchClients();
+                }} />
+            </DialogContent>
+        </Dialog>
       </PageHeader>
       <div className="p-6 pt-0">
+        <div className="mb-4">
+          <Input
+            placeholder="Buscar por nombre, email o compañía..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
@@ -223,8 +223,8 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
                     <p className="mt-2 text-muted-foreground">Actualizando...</p>
                   </TableCell>
                 </TableRow>
-              ) : clientList.length > 0 ? (
-                clientList.map((client) => (
+              ) : filteredClients.length > 0 ? (
+                filteredClients.map((client) => (
                   <TableRow key={client.id} onClick={() => handleRowClick(client.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
@@ -280,7 +280,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -297,7 +296,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Edit Client Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -330,39 +328,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
               </div>
             </form>
           )}
-        </DialogContent>
-      </Dialog>
-      
-      {/* Add Client Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Añadir Nuevo Cliente</DialogTitle>
-            <DialogDescription>
-              Completa la información del nuevo cliente.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleAddClient} className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="add-name">Nombre</Label>
-              <Input id="add-name" name="name" placeholder="John Doe" required />
-            </div>
-            <div>
-              <Label htmlFor="add-email">Email</Label>
-              <Input id="add-email" name="email" type="email" placeholder="john.doe@example.com" required />
-            </div>
-            <div>
-              <Label htmlFor="add-company">Compañía</Label>
-              <Input id="add-company" name="company" placeholder="Acme Inc." required />
-            </div>
-            <div>
-              <Label htmlFor="add-address">Dirección</Label>
-              <Input id="add-address" name="address" placeholder="123 Main St, Anytown, USA" required />
-            </div>
-            <div className="flex justify-end pt-4">
-              <Button type="submit">Añadir Cliente</Button>
-            </div>
-          </form>
         </DialogContent>
       </Dialog>
     </>
