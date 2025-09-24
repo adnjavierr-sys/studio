@@ -1,53 +1,94 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: ['class'],
-  content: ['./src/app/**/*.{js,ts,jsx,tsx,mdx}', './src/components/**/*.{js,ts,jsx,tsx,mdx}'],
+import type { Config } from "tailwindcss"
+
+const config = {
+  darkMode: ["class"],
+  content: [
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+	],
+  prefix: "",
   theme: {
     container: {
       center: true,
-      padding: {
-        DEFAULT: '0.75em'
-      },
+      padding: "2rem",
       screens: {
-        xl: '1440px',
-        '2xl': '1600px'
-      }
+        "2xl": "1400px",
+      },
     },
     extend: {
       colors: {
-        foreground: 'hsl(var(--foreground))',
-        background: 'hsl(var(--background))',
-        gray: {
-          100: 'hsl(var(--gray-100))',
-          200: 'hsl(var(--gray-200))',
-          300: 'hsl(var(--gray-300))',
-          400: 'hsl(var(--gray-400))',
-          500: 'hsl(var(--gray-500))',
-          600: 'hsl(var(--gray-600))'
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
-        error: 'hsl(var(--error))'
-      },
-      fontSize: {
-        xs: ['12px', { lineHeight: '1.5', letterSpacing: '-0.12px' }],
-        sm: ['14px', { lineHeight: '1.5', letterSpacing: '-0.14px' }],
-        base: ['15px', { lineHeight: '1.5', letterSpacing: '-0.15px' }],
-        lg: ['18px', { lineHeight: '1.5', letterSpacing: '-0.18px' }],
-        xl: ['20px', { lineHeight: '1.2', letterSpacing: '-0.2px', fontWeight: '500' }],
-        '2xl': ['24px', { lineHeight: '1.2', letterSpacing: '-0.48px', fontWeight: '500' }],
-        '3xl': ['32px', { lineHeight: '1.2', letterSpacing: '-0.32px', fontWeight: '500' }],
-        '4xl': ['40px', { lineHeight: '1', letterSpacing: '-0.4px', fontWeight: '500' }],
-        '5xl': ['70px', { lineHeight: '0.9', letterSpacing: '-0.7px', fontWeight: '500' }],
-        '6xl': ['80px', { lineHeight: '0.9', letterSpacing: '-1.6px', fontWeight: '500' }],
-        '7xl': ['90px', { lineHeight: '0.9', letterSpacing: '-3.6px', fontWeight: '500' }],
-        '8xl': ['110px', { lineHeight: '0.9', letterSpacing: '-2.2px', fontWeight: '500' }],
-        '9xl': ['150px', { lineHeight: '0.9', letterSpacing: '-3.6px', fontWeight: '500' }]
-      },
-      transitionTimingFunction: {
-        'm-ease': 'var(--m-ease)'
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+        }
       },
       borderRadius: {
-        '4xl': '32px'
-      }
-    }
-  }
-}
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config
+
+export default config

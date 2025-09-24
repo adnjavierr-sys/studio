@@ -1,6 +1,6 @@
 
 {
-  "name": "v-card-app",
+  "name": "uno-ti-ticket",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,6 +12,7 @@
   "dependencies": {
     "@dataconnect/ecommerce-template": "file:dataconnect-generated/js/ecommerce-template",
     "@headlessui/react": "^2.2.0",
+    "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
@@ -31,12 +32,13 @@
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
+    "@radix-ui/react-tooltip": "^1.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cookies-next": "^4.2.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.1",
-    "firebase": "^11.0.2",
+    "firebase": "^10.12.3",
     "lucide-react": "^0.417.0",
     "next": "^14.2.5",
     "next-themes": "^0.3.0",
@@ -72,4 +74,3 @@
     "trailingComma": "none"
   }
 }
-    
