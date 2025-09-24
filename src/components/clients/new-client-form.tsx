@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -27,7 +28,7 @@ const clientSchema = z.object({
 
 type ClientFormValues = z.infer<typeof clientSchema>;
 
-export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => void }) {
+export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => Promise<void> }) {
   const { toast } = useToast();
 
   const form = useForm<ClientFormValues>({
@@ -52,7 +53,7 @@ export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => void }) {
         title: "Cliente añadido",
         description: `El cliente ${data.name} ha sido añadido.`,
       });
-      onFormSubmit();
+      await onFormSubmit();
     } catch (error) {
       console.error("Error adding client:", error);
       toast({

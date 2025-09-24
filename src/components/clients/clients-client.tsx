@@ -170,6 +170,11 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     }
   };
 
+  const handleFormSubmitted = async () => {
+    setIsAddModalOpen(false);
+    await fetchClients();
+  };
+
   return (
     <>
       <PageHeader
@@ -190,10 +195,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
                     Completa la información del nuevo cliente.
                     </DialogDescription>
                 </DialogHeader>
-                <NewClientForm onFormSubmit={() => {
-                    setIsAddModalOpen(false);
-                    fetchClients();
-                }} />
+                <NewClientForm onFormSubmit={handleFormSubmitted} />
             </DialogContent>
         </Dialog>
       </PageHeader>
