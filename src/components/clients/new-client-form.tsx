@@ -1,7 +1,5 @@
-
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,7 +28,6 @@ const clientSchema = z.object({
 type ClientFormValues = z.infer<typeof clientSchema>;
 
 export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => void }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<ClientFormValues>({
@@ -42,9 +39,10 @@ export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       address: "",
     },
   });
+  
+  const { isSubmitting } = form.formState;
 
   const onSubmit = async (data: ClientFormValues) => {
-    setIsSubmitting(true);
     try {
       await addDoc(collection(db, "clients"), {
         ...data,
@@ -62,8 +60,6 @@ export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => void }) {
         description: "No se pudo añadir el cliente.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
