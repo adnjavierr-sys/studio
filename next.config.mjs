@@ -1,8 +1,17 @@
+import './src/lib/loadEnv.mjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    remotePatterns: [{ hostname: 'cdn.shopify.com' }, { hostname: 'rstr.in' }]
-  }
-}
-
-export default nextConfig
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'cdn.shopify.com',
+          pathname: '/s/files/**',
+        },
+      ],
+    },
+  };
+  
+  export default nextConfig;
+  

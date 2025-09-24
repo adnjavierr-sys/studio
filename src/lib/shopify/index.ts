@@ -23,12 +23,12 @@ import { cookies } from 'next/headers'
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN;
 const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-const endpoint = `https://${domain}/api/2024-07/graphql.json`
 
-if (!domain || !key) {
-  throw new Error('SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN must be set in .env file');
+if (!domain || !key || domain === 'your-store-name.myshopify.com') {
+  throw new Error('Las variables de entorno de Shopify no están configuradas correctamente. Por favor, actualice su archivo .env con las credenciales correctas.');
 }
 
+const endpoint = `https://${domain}/api/2024-07/graphql.json`
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never
 
