@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -72,8 +71,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       isActive={pathname.startsWith('/settings')}
                       tooltip={{ children: 'Configuración', className: 'bg-primary text-primary-foreground' }}
                     >
