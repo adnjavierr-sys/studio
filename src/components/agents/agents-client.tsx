@@ -187,7 +187,11 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
       
       try {
         const agentRef = doc(db, "agents", selectedAgent.id);
-        await updateDoc(agentRef, updatedData);
+        await updateDoc(agentRef, {
+            name: updatedData.name,
+            email: updatedData.email,
+            role: updatedData.role,
+        });
         toast({
           title: "Agente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`

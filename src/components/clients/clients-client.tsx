@@ -151,7 +151,12 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       
       try {
         const clientRef = doc(db, "clients", selectedClient.id);
-        await updateDoc(clientRef, updatedData);
+        await updateDoc(clientRef, {
+            name: updatedData.name,
+            email: updatedData.email,
+            company: updatedData.company,
+            address: updatedData.address,
+        });
         toast({
           title: "Cliente actualizado",
           description: `Los datos de ${updatedData.name} han sido actualizados.`

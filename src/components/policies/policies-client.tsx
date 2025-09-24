@@ -139,7 +139,12 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
       
       try {
         const policyRef = doc(db, "policies", selectedPolicy.id);
-        await updateDoc(policyRef, updatedData);
+        await updateDoc(policyRef, {
+            title: updatedData.title,
+            description: updatedData.description,
+            type: updatedData.type,
+            clientName: updatedData.clientName,
+        });
         toast({
           title: "Póliza actualizada",
           description: `La póliza "${updatedData.title}" ha sido actualizada.`
