@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -66,6 +66,8 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
+  
+  const [editFormData, setEditFormData] = useState({ name: '', email: '', role: '' });
 
   const fetchAgents = async () => {
     setIsLoading(true);
@@ -119,6 +121,7 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
 
   const openEditModal = (agent: Agent) => {
     setSelectedAgent(agent);
+    setEditFormData({ name: agent.name, email: agent.email, role: agent.role });
     setIsEditModalOpen(true);
   };
 
@@ -178,19 +181,12 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedAgent) {
-      const formData = new FormData(event.currentTarget);
-      const updatedData = {
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
-      };
-      
       try {
         const agentRef = doc(db, "agents", selectedAgent.id);
-        await updateDoc(agentRef, updatedData);
+        await updateDoc(agentRef, editFormData);
         toast({
           title: "Agente actualizado",
-          description: `Los datos de ${updatedData.name} han sido actualizados.`
+          description: `Los datos de ${editFormData.name} han sido actualizados.`
         });
         await fetchAgents();
       } catch (error) {
@@ -399,15 +395,15 @@ export function AgentsClient({ initialAgents }: { initialAgents: Agent[] }) {
             <form onSubmit={handleUpdateAgent} className="space-y-4 py-4">
               <div>
                 <Label htmlFor="edit-name">Nombre</Label>
-                <Input id="edit-name" name="name" defaultValue={selectedAgent.name} required />
+                <Input id="edit-name" name="name" value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} required />
               </div>
               <div>
                 <Label htmlFor="edit-email">Email</Label>
-                <Input id="edit-email" name="email" type="email" defaultValue={selectedAgent.email} required />
+                <Input id="edit-email" name="email" type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} required />
               </div>
               <div>
                 <Label htmlFor="edit-role">Rol</Label>
-                 <Select name="role" required defaultValue={selectedAgent.role}>
+                 <Select name="role" required value={editFormData.role} onValueChange={(value) => setEditFormData({...editFormData, role: value})}>
                     <SelectTrigger id="edit-role">
                     <SelectValue placeholder="Selecciona un rol" />
                     </SelectTrigger>

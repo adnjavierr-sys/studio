@@ -67,6 +67,8 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
   const { toast } = useToast();
+  
+  const [editFormData, setEditFormData] = useState({ title: '', description: '', type: '', clientName: '' });
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -123,18 +125,16 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
 
   const openEditModal = (policy: Policy) => {
     setSelectedPolicy(policy);
+    setEditFormData({ title: policy.title, description: policy.description, type: policy.type, clientName: policy.clientName });
     setIsEditModalOpen(true);
   };
 
   const handleUpdatePolicy = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedPolicy) {
-      const formData = new FormData(event.currentTarget);
       const updatedData = {
-        title: formData.get('title') as string,
-        description: formData.get('description') as string,
-        type: formData.get('type') as 'Mensual' | 'Anual' | 'Ilimitada',
-        clientName: formData.get('clientName') as string,
+        ...editFormData,
+        type: editFormData.type as 'Mensual' | 'Anual' | 'Ilimitada',
       };
       
       try {
@@ -314,11 +314,11 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
             <form onSubmit={handleUpdatePolicy} className="space-y-4 py-4">
               <div>
                 <Label htmlFor="edit-title">Título</Label>
-                <Input id="edit-title" name="title" defaultValue={selectedPolicy.title} required />
+                <Input id="edit-title" name="title" value={editFormData.title} onChange={(e) => setEditFormData({...editFormData, title: e.target.value})} required />
               </div>
               <div>
                 <Label htmlFor="edit-clientName">Cliente</Label>
-                <Select name="clientName" required defaultValue={selectedPolicy.clientName}>
+                <Select name="clientName" required value={editFormData.clientName} onValueChange={(value) => setEditFormData({...editFormData, clientName: value})}>
                   <SelectTrigger id="edit-clientName">
                     <SelectValue placeholder="Selecciona un cliente" />
                   </SelectTrigger>
@@ -331,7 +331,7 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
               </div>
               <div>
                 <Label htmlFor="edit-type">Tipo de Póliza</Label>
-                <Select name="type" required defaultValue={selectedPolicy.type}>
+                <Select name="type" required value={editFormData.type} onValueChange={(value) => setEditFormData({...editFormData, type: value})}>
                   <SelectTrigger id="edit-type">
                     <SelectValue placeholder="Selecciona un tipo" />
                   </SelectTrigger>
@@ -344,7 +344,7 @@ export function PoliciesClient({ initialPolicies, clients }: { initialPolicies: 
               </div>
               <div>
                 <Label htmlFor="edit-description">Descripción</Label>
-                <Textarea id="edit-description" name="description" defaultValue={selectedPolicy.description} required rows={5} />
+                <Textarea id="edit-description" name="description" value={editFormData.description} onChange={(e) => setEditFormData({...editFormData, description: e.target.value})} required rows={5} />
               </div>
               <div className="flex justify-end pt-4 gap-2">
                 <Button type="button" variant="outline" onClick={() => {setIsEditModalOpen(false); setSelectedPolicy(null)}}>Cancelar</Button>

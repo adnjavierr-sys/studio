@@ -50,6 +50,8 @@ export default function AgentDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ name: '', email: '', role: '' });
+
 
   const fetchAgent = useCallback(async () => {
     if (typeof id !== 'string') return;
@@ -68,6 +70,7 @@ export default function AgentDetailsPage() {
           createdAt: data.createdAt.toDate(),
         };
         setAgent(agentData);
+        setEditFormData({ name: agentData.name, email: agentData.email, role: agentData.role });
       } else {
         toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
       }
@@ -103,20 +106,17 @@ export default function AgentDetailsPage() {
   const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (agent) {
-      const formData = new FormData(event.currentTarget);
-      const updatedData = {
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        role: formData.get('role') as 'Admin' | 'Support Level 1' | 'Support Level 2',
-      };
-      
       try {
         const agentRef = doc(db, "agents", agent.id);
-        await updateDoc(agentRef, updatedData);
+        await updateDoc(agentRef, {
+            name: editFormData.name,
+            email: editFormData.email,
+            role: editFormData.role,
+        });
         
         toast({
           title: "Agente actualizado",
-          description: `Los datos de ${updatedData.name} han sido actualizados.`
+          description: `Los datos de ${editFormData.name} han sido actualizados.`
         });
         await fetchAgent(); // Re-fetch the agent data to show the latest changes
       } catch (error) {
@@ -218,15 +218,15 @@ export default function AgentDetailsPage() {
             <form onSubmit={handleUpdateAgent} className="space-y-4 py-4">
               <div>
                 <Label htmlFor="edit-name">Nombre</Label>
-                <Input id="edit-name" name="name" defaultValue={agent.name} required />
+                <Input id="edit-name" name="name" value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} required />
               </div>
               <div>
                 <Label htmlFor="edit-email">Email</Label>
-                <Input id="edit-email" name="email" type="email" defaultValue={agent.email} required />
+                <Input id="edit-email" name="email" type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} required />
               </div>
               <div>
                 <Label htmlFor="edit-role">Rol</Label>
-                 <Select name="role" required defaultValue={agent.role}>
+                 <Select name="role" required value={editFormData.role} onValueChange={(value) => setEditFormData({...editFormData, role: value as any})}>
                     <SelectTrigger id="edit-role">
                     <SelectValue placeholder="Selecciona un rol" />
                     </SelectTrigger>

@@ -58,6 +58,8 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const { toast } = useToast();
+  
+  const [editFormData, setEditFormData] = useState({ name: '', email: '', company: '', address: '' });
 
   const fetchClients = async () => {
     setIsLoading(true);
@@ -135,26 +137,19 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   
   const openEditModal = (client: Client) => {
     setSelectedClient(client);
+    setEditFormData({ name: client.name, email: client.email, company: client.company, address: client.address });
     setIsEditModalOpen(true);
   };
 
   const handleUpdateClient = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedClient) {
-      const formData = new FormData(event.currentTarget);
-      const updatedData = {
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        company: formData.get('company') as string,
-        address: formData.get('address') as string,
-      };
-      
       try {
         const clientRef = doc(db, "clients", selectedClient.id);
-        await updateDoc(clientRef, updatedData);
+        await updateDoc(clientRef, editFormData);
         toast({
           title: "Cliente actualizado",
-          description: `Los datos de ${updatedData.name} han sido actualizados.`
+          description: `Los datos de ${editFormData.name} han sido actualizados.`
         });
         await fetchClients();
       } catch (error) {
@@ -310,19 +305,19 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
             <form onSubmit={handleUpdateClient} className="space-y-4 py-4">
               <div>
                 <Label htmlFor="name">Nombre</Label>
-                <Input id="name" name="name" defaultValue={selectedClient.name} />
+                <Input id="name" name="name" value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" defaultValue={selectedClient.email} />
+                <Input id="email" name="email" type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} />
               </div>
               <div>
                 <Label htmlFor="company">Compañía</Label>
-                <Input id="company" name="company" defaultValue={selectedClient.company} />
+                <Input id="company" name="company" value={editFormData.company} onChange={(e) => setEditFormData({...editFormData, company: e.target.value})} />
               </div>
               <div>
                 <Label htmlFor="address">Dirección</Label>
-                <Input id="address" name="address" defaultValue={selectedClient.address} />
+                <Input id="address" name="address" value={editFormData.address} onChange={(e) => setEditFormData({...editFormData, address: e.target.value})} />
               </div>
               <div className="flex justify-end pt-4 gap-2">
                  <Button type="button" variant="outline" onClick={() => {setIsEditModalOpen(false); setSelectedClient(null)}}>Cancelar</Button>
