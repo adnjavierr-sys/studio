@@ -112,7 +112,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
     }
 
     const newTicketData = {
-      title: data.description,
+      title: data.title,
       client: data.client,
       category: data.category,
       status: 'Open' as 'Open' | 'In Progress' | 'Closed',
@@ -122,7 +122,7 @@ export function NewTicketForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       updates: [{
         timestamp: Timestamp.now(),
         author: 'System',
-        update: `Ticket Creado: ${data.title}`
+        update: data.description
       }]
     };
 
