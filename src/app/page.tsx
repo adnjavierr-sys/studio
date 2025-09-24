@@ -23,7 +23,7 @@ export default async function Home() {
       <Hero
         title={mainCollection?.title as string}
         description={mainCollection?.description as string}
-        image={mainCollection?.image.url as string}
+        image={mainCollection?.image?.url as string}
         primaryCta={{ label: 'Shop Now', href: '/products' }}
         secondaryCta={{ label: 'Learn More', href: '/products' }}
       />
@@ -39,7 +39,7 @@ export default async function Home() {
         title={mistCollection?.title as string}
         description={mistCollection?.description as string}
         cta={{ label: 'Shop Now', href: `/category/${mistCollection?.handle}` }}
-        image={mistCollection?.image.url as string}
+        image={mistCollection?.image?.url as string}
       />
       <ProductGrid
         title={winterEssentials?.title as string}
@@ -49,3 +49,5 @@ export default async function Home() {
     </>
   )
 }
+
+    
