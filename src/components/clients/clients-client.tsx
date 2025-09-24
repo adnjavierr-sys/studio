@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
   
   const [editFormData, setEditFormData] = useState({ name: '', email: '', company: '', address: '' });
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     setIsLoading(true);
     try {
       const clientsCollection = collection(db, "clients");
@@ -72,13 +72,14 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
       const clients: Client[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate() : new Date();
         clients.push({
           id: doc.id,
           name: data.name,
           email: data.email,
           company: data.company,
           address: data.address,
-          createdAt: (data.createdAt as Timestamp).toDate(),
+          createdAt: createdAt,
         });
       });
       
@@ -93,7 +94,11 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    // We can use this to refresh data if needed, but initial data is enough for now.
+  }, []);
   
   const filteredClients = useMemo(() => {
     return clientList.filter(client =>
@@ -217,7 +222,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
-                    <p className="mt-2 text-muted-foreground">Actualizando...</p>
+                    <p className="mt-2 text-muted-foreground">Cargando...</p>
                   </TableCell>
                 </TableRow>
               ) : filteredClients.length > 0 ? (
