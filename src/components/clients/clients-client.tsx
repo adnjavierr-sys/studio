@@ -96,10 +96,6 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     }
   }, [toast]);
 
-  useEffect(() => {
-    // We can use this to refresh data if needed, but initial data is enough for now.
-  }, []);
-  
   const filteredClients = useMemo(() => {
     return clientList.filter(client =>
       client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -157,15 +153,14 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
           description: `Los datos de ${editFormData.name} han sido actualizados.`
         });
         await fetchClients();
+        setIsEditModalOpen(false);
+        setSelectedClient(null);
       } catch (error) {
         toast({
           title: "Error al Actualizar",
           description: "No se pudo actualizar el cliente.",
           variant: "destructive",
         });
-      } finally {
-        setIsEditModalOpen(false);
-        setSelectedClient(null);
       }
     }
   };
