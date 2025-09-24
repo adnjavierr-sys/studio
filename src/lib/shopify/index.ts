@@ -443,5 +443,3 @@ export async function getCustomer(
     return undefined
   }
 }
-
-    
