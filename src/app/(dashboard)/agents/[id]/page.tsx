@@ -39,6 +39,19 @@ import {
 } from "@/components/ui/select";
 import { db } from "@/lib/firebase-config";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+
+const agentSchema = z.object({
+  name: z.string().min(1, "El nombre es obligatorio."),
+  email: z.string().email("El email no es válido."),
+  role: z.enum(["Admin", "Support Level 1", "Support Level 2"]),
+});
+
+type AgentFormValues = z.infer<typeof agentSchema>;
 
 export default function AgentDetailsPage() {
   const router = useRouter();
@@ -50,8 +63,11 @@ export default function AgentDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({ name: '', email: '', role: '' });
-
+  
+  const form = useForm<AgentFormValues>({
+    resolver: zodResolver(agentSchema),
+  });
+  const { isSubmitting } = form.formState;
 
   const fetchAgent = useCallback(async () => {
     if (typeof id !== 'string') return;
@@ -70,7 +86,7 @@ export default function AgentDetailsPage() {
           createdAt: data.createdAt.toDate(),
         };
         setAgent(agentData);
-        setEditFormData({ name: agentData.name, email: agentData.email, role: agentData.role });
+        form.reset({ name: agentData.name, email: agentData.email, role: agentData.role });
       } else {
         toast({ title: "Error", description: "Agente no encontrado.", variant: "destructive" });
       }
@@ -80,7 +96,7 @@ export default function AgentDetailsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [id, toast]);
+  }, [id, toast, form]);
 
   useEffect(() => {
     fetchAgent();
@@ -103,20 +119,15 @@ export default function AgentDetailsPage() {
     }
   };
 
-  const handleUpdateAgent = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleUpdateAgent = async (data: AgentFormValues) => {
     if (agent) {
       try {
         const agentRef = doc(db, "agents", agent.id);
-        await updateDoc(agentRef, {
-            name: editFormData.name,
-            email: editFormData.email,
-            role: editFormData.role,
-        });
+        await updateDoc(agentRef, data);
         
         toast({
           title: "Agente actualizado",
-          description: `Los datos de ${editFormData.name} han sido actualizados.`
+          description: `Los datos de ${data.name} han sido actualizados.`
         });
         await fetchAgent(); // Re-fetch the agent data to show the latest changes
       } catch (error) {
@@ -214,35 +225,65 @@ export default function AgentDetailsPage() {
               Actualiza la información del agente.
             </DialogDescription>
           </DialogHeader>
-          {agent && (
-            <form onSubmit={handleUpdateAgent} className="space-y-4 py-4">
-              <div>
-                <Label htmlFor="edit-name">Nombre</Label>
-                <Input id="edit-name" name="name" value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} required />
-              </div>
-              <div>
-                <Label htmlFor="edit-email">Email</Label>
-                <Input id="edit-email" name="email" type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} required />
-              </div>
-              <div>
-                <Label htmlFor="edit-role">Rol</Label>
-                 <Select name="role" required value={editFormData.role} onValueChange={(value) => setEditFormData({...editFormData, role: value as any})}>
-                    <SelectTrigger id="edit-role">
-                    <SelectValue placeholder="Selecciona un rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    <SelectItem value="Support Level 1">Soporte Nivel 1</SelectItem>
-                    <SelectItem value="Support Level 2">Soporte Nivel 2</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    </SelectContent>
-                </Select>
-              </div>
-               <div className="flex justify-end pt-4 gap-2">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleUpdateAgent)} className="space-y-4 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Rol</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecciona un rol" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="Support Level 1">Soporte Nivel 1</SelectItem>
+                            <SelectItem value="Support Level 2">Soporte Nivel 2</SelectItem>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end pt-4 gap-2">
                 <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancelar</Button>
-                <Button type="submit">Guardar Cambios</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Guardar Cambios
+                </Button>
               </div>
             </form>
-          )}
+          </Form>
         </DialogContent>
       </Dialog>
 
