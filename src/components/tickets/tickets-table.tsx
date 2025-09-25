@@ -148,7 +148,7 @@ export function TicketsTable({ initialTickets }: { initialTickets: Ticket[] }) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {format(ticket.createdAt, "PPP")}
+                    {format(new Date(ticket.createdAt), "PPP")}
                   </TableCell>
                 </TableRow>
               ))
