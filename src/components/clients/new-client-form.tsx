@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase-config";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
+import { Client } from "@/lib/data";
 
 const clientSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio."),
@@ -28,7 +29,7 @@ const clientSchema = z.object({
 
 type ClientFormValues = z.infer<typeof clientSchema>;
 
-export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => Promise<void> }) {
+export function NewClientForm({ onFormSubmit }: { onFormSubmit: (newClient: Client) => void }) {
   const { toast } = useToast();
 
   const form = useForm<ClientFormValues>({
@@ -45,7 +46,7 @@ export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => Promise<vo
 
   const onSubmit = async (data: ClientFormValues) => {
     try {
-      await addDoc(collection(db, "clients"), {
+      const docRef = await addDoc(collection(db, "clients"), {
         ...data,
         createdAt: Timestamp.now(),
       });
@@ -53,7 +54,12 @@ export function NewClientForm({ onFormSubmit }: { onFormSubmit: () => Promise<vo
         title: "Cliente añadido",
         description: `El cliente ${data.name} ha sido añadido.`,
       });
-      await onFormSubmit();
+      const newClient: Client = {
+        id: docRef.id,
+        ...data,
+        createdAt: new Date(),
+      };
+      onFormSubmit(newClient);
     } catch (error) {
       console.error("Error adding client:", error);
       toast({

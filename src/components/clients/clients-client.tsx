@@ -122,7 +122,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
           title: "Cliente eliminado",
           description: `El cliente ${selectedClient.name} ha sido eliminado.`,
         });
-        await fetchClients();
+        setClientList(clientList.filter(c => c.id !== selectedClient.id));
       } catch (error) {
          toast({
           title: "Error al Eliminar",
@@ -152,7 +152,7 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
           title: "Cliente actualizado",
           description: `Los datos de ${editFormData.name} han sido actualizados.`
         });
-        await fetchClients();
+        setClientList(clientList.map(c => c.id === selectedClient.id ? { ...c, ...editFormData } : c));
         setIsEditModalOpen(false);
         setSelectedClient(null);
       } catch (error) {
@@ -165,9 +165,9 @@ export function ClientsClient({ initialClients }: { initialClients: Client[] }) 
     }
   };
 
-  const handleFormSubmitted = async () => {
+  const handleFormSubmitted = (newClient: Client) => {
+    setClientList(prevClients => [newClient, ...prevClients]);
     setIsAddModalOpen(false);
-    await fetchClients();
   };
 
   return (
