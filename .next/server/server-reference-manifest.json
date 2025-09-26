@@ -1,5 +1,17 @@
 {
-  "node": {},
+  "node": {
+    "40e4b0efefa5c43f7a663d165c14cfe7fe54231f98": {
+      "workers": {
+        "app/(dashboard)/tickets/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fuser%2Fstudio%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%5B%2240e4b0efefa5c43f7a663d165c14cfe7fe54231f98%22%2C%22getTicketCategorySuggestion%22%5D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(dashboard)/tickets/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
   "encryptionKey": "Ka6wl9kDDc2hf8o7dESAAKiAAV0kelojK1ntnkNspDg="
 }
