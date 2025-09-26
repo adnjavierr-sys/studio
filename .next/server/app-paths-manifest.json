@@ -3,5 +3,6 @@
   "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
   "/(dashboard)/clients/page": "app/(dashboard)/clients/page.js",
   "/(dashboard)/tickets/page": "app/(dashboard)/tickets/page.js",
-  "/(dashboard)/agents/page": "app/(dashboard)/agents/page.js"
+  "/(dashboard)/agents/page": "app/(dashboard)/agents/page.js",
+  "/(dashboard)/policies/page": "app/(dashboard)/policies/page.js"
 }
