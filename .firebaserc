@@ -1,1 +1,6 @@
-{"projects":{"default":"unoti-ticket-i9spt"}}
+
+{
+  "projects": {
+    "default": "unoti-ticket"
+  }
+}
